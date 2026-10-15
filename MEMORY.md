@@ -65,7 +65,16 @@ Do not guess legal/tax/shipping/payment/return/staff permissions. Ask the owner 
     - Brand asset: DIMSGLOW gold embossed logo provided in `.user_uploaded/media_1792077392939.jpg`.
   - Reference audit: Detailed 69-page catalog, quick-view, PDP, exclusive coupons, pincode check, Before/After slider, accordion FAQs, reviews, and admin dashboard requirements cataloged.
   - Blockers identified: Cloudinary API Key, Firebase service account/admin credentials for trusted server routes (or emulator plan for Phase 1-3), seller GSTIN/business legal details.
-- **Next Task:** Phase 1 — Scaffold and environment separation (Next.js App Router + TypeScript + Tailwind + shadcn/lucide tokens, `.env.example`, emulator setup).
+- **Phase 1 Scaffold & Environment Separation (Completed 2026-10-15):**
+  - Scaffolded Next.js App Router (16.4.0) with strict TypeScript, Tailwind v4, Lucide icons, clsx/tailwind-merge.
+  - Initialized Git repository with clean commits; `.env.local` strictly git-ignored; `.env.example` created with placeholders and documentation.
+  - Copied official DIMSGLOW brand gold crest emblem to `public/brand/dimsglow-logo.jpg`.
+  - Configured design tokens in `app/globals.css` and built accessible UI primitives: `Button`, `Badge`, `Input`, `Card`, `Modal` in `components/ui/`.
+  - Configured test runner (`vitest`, `jsdom`, `@testing-library/react`) with 8 passing unit/component tests in `tests/smoke.test.ts` and `tests/components.test.tsx`.
+  - Created baseline Firebase config (`firebase.json`, `firestore.rules` default-deny, `database.rules.json` default-deny, `firestore.indexes.json`).
+  - Added CI workflow `.github/workflows/ci.yml`.
+  - `typecheck` and production `next build` executed with 0 errors.
+- **Next Task:** Phase 2 — Firebase Auth and route/access guards (`lib/firebase/client.ts`, `lib/firebase/admin.ts`, auth context, customer login/signup/reset, server role & permission verification).
 
 ## Update protocol
 

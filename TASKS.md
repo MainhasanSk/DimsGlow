@@ -14,13 +14,13 @@ Use the checkboxes to track work. Each phase needs a verified deliverable before
 
 ## Phase 1 — Scaffold and environment separation
 
-- [ ] Keep or establish Next.js App Router + TypeScript according to repo audit.
-- [ ] Add strict typing/lint/format scripts and commit lockfile.
-- [ ] Add design tokens and accessible UI primitives.
-- [ ] Add `.env.example` with safe placeholders; separate dev/staging/prod settings.
-- [ ] Configure Firebase Emulator Suite and local scripts.
-- [ ] Add CI for install, lint, typecheck, unit tests and production build.
-- [ ] Confirm hosting, region and budget alerts before provisioning resources.
+- [x] Keep or establish Next.js App Router + TypeScript according to repo audit.
+- [x] Add strict typing/lint/format scripts and commit lockfile.
+- [x] Add design tokens and accessible UI primitives.
+- [x] Add `.env.example` with safe placeholders; separate dev/staging/prod settings.
+- [x] Configure Firebase Emulator Suite and local scripts.
+- [x] Add CI for install, lint, typecheck, unit tests and production build.
+- [x] Confirm hosting, region and budget alerts before provisioning resources.
 
 **Deliverables:** reproducible start/build, env template, CI, emulator guide. **Exit:** clean clone works without production secrets.
 
