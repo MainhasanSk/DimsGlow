@@ -89,12 +89,12 @@ Use the checkboxes to track work. Each phase needs a verified deliverable before
 
 ## Phase 8 — Admin orders and live tracking
 
-- [ ] Build newest-first orders table with filters/search/pagination and detail view.
-- [ ] Implement validated status actions: confirm, pack, ship, deliver, cancel with reason/courier data.
-- [ ] Implement reservation release, shipment deduction and idempotent cancellation effects.
-- [ ] Subscribe customer view to relevant Firestore updates; handle unsubscribe/loading/error states.
-- [ ] Show timeline and manually entered courier/tracking information.
-- [ ] Test invoice eligibility after confirm/cancel/refund.
+- [x] Build newest-first orders table with filters/search/pagination and detail view.
+- [x] Implement validated status actions: confirm, pack, ship, deliver, cancel with reason/courier data.
+- [x] Implement reservation release, shipment deduction and idempotent cancellation effects.
+- [x] Subscribe customer view to relevant Firestore updates; handle unsubscribe/loading/error states.
+- [x] Show timeline and manually entered courier/tracking information.
+- [x] Test invoice eligibility after confirm/cancel/refund.
 
 **Deliverables:** operational order management and live tracking. **Exit:** admin/customer states stay consistent under refresh and rapid status changes.
 

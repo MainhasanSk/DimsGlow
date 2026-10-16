@@ -111,7 +111,14 @@ Do not guess legal/tax/shipping/payment/return/staff permissions. Ask the owner 
   - Built order confirmation success page `/checkout/success` with 4-step fulfillment timeline, order ID reference, customer dashboard links, and WhatsApp VIP support assistance.
   - Added 5 unit and schema validation tests in `tests/checkout.test.ts` (all 29 tests passing across 6 suites).
   - Production `next build` compiled all 43 routes with 0 errors.
-- **Current Task:** Phase 8 — Admin orders and live tracking (Newest-first orders table, validated status transition state machine `placed` -> `confirmed` -> `packing` -> `shipped` -> `delivered`/`cancelled`, courier/AWB entry, stock release/deduction effects, and real-time Firestore synchronization).
+- **Phase 8 Admin Orders and Live Tracking (Completed 2026-10-16):**
+  - Built order state machine in `lib/orders/orderService.ts` enforcing strict linear lifecycle (`placed` -> `confirmed` -> `packing` -> `shipped` -> `delivered` / `cancelled`), courier tracking validation on shipping, stock reservation release on cancellation, and audit log recording.
+  - Built protected admin API routes `GET /api/admin/orders` and `POST /api/admin/orders/[id]/status` enforcing staff RBAC (`orders:read`, `orders:manage`).
+  - Built full admin layout shell `app/(admin)/admin/layout.tsx` guarded by `AdminRouteGuard` with navigation to all admin modules.
+  - Built administrative orders management view `app/(admin)/admin/orders/page.tsx` with newest-first queue, search, status filter pills, and quick action modal for status transitions and courier metadata entry.
+  - Built admin overview dashboard `app/(admin)/admin/page.tsx` displaying revenue, pending fulfillment counts, and system metrics.
+  - Added 4 unit and integration tests in `tests/adminOrders.test.ts` (all 33 tests passing). Next.js production build succeeded with 46 routes.
+- **Current Task:** Phase 9 — Invoices, manual payments and refunds (Server-side invoice generation/snapshotting, protected PDF download with eligibility checks, manual payment recording, and refund credit-note references).
 
 ## Update protocol
 

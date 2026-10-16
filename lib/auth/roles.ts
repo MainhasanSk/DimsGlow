@@ -73,3 +73,9 @@ export interface UserAccessRecord {
   createdAt: number;
   updatedAt: number;
 }
+
+export function hasPermission(role: UserRole, permission: Permission): boolean {
+  if (role === 'customer') return false;
+  const permissions = ROLE_DEFAULT_PERMISSIONS[role as StaffRole] || [];
+  return permissions.includes(permission);
+}

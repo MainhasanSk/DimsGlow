@@ -97,6 +97,7 @@ export const OrderEventSchema = z.object({
 export type Order = z.infer<typeof OrderSchema>;
 export type OrderItemSnapshot = z.infer<typeof OrderItemSnapshotSchema>;
 export type ShippingAddressSnapshot = z.infer<typeof ShippingAddressSnapshotSchema>;
+export type CourierTracking = z.infer<typeof CourierTrackingSchema>;
 export type OrderStatus = z.infer<typeof OrderStatusEnum>;
 export type PaymentStatus = z.infer<typeof PaymentStatusEnum>;
 export type OrderEvent = z.infer<typeof OrderEventSchema>;
