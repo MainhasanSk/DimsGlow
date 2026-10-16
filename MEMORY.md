@@ -141,12 +141,13 @@ Do not guess legal/tax/shipping/payment/return/staff permissions. Ask the owner 
   - Implemented multi-sheet Microsoft Excel export service (`buildExcelWorkbook`) with `exceljs` creating formatted worksheets for Executive Summary, Orders Ledger, Operating Expenses, and Top Products.
   - Built API endpoints `GET /api/admin/reports/analytics` and `GET /api/admin/reports/export`.
   - Built executive analytics dashboard `app/(admin)/admin/reports/page.tsx` with date range selectors (7D, 30D, 12M, All), trend bar charts, order pipeline progress, and one-click `.xlsx` export.
-- **Phase 12 Roles, Audit, Backup and Hardening (Completed 2026-10-16):**
-  - Built staff RBAC administration portal `app/(admin)/admin/staff/page.tsx` and endpoints `/api/admin/staff` allowing Owner and Admin to assign 8 granular roles with Firebase Auth Custom Claims synchronization and account suspension with token revocation.
-  - Built security compliance audit trail `app/(admin)/admin/audit/page.tsx` and endpoint `/api/admin/audit` with search, entity filtering, and raw JSON payload inspection.
-  - Default-deny Firestore rules updated with explicit isolation for `crmProfiles`, `suppliers`, `purchaseOrders`, `expenses`, and `auditEvents`.
-  - 46 unit, schema, and Excel integration tests passing across 9 test suites (`npm test`).
-  - Next.js production build (`npm run build`) succeeded with all 66 routes prerendered/compiled with 0 errors.
+- **Phase 12B Dynamic CMS, Auto-Moving Hero & Bestseller Navigation (Completed 2026-10-16):**
+  - **Firebase Auth & Admin Elevation:** Added auto-bootstrap in `lib/auth/AuthContext.tsx` and `app/(admin)/admin/login/page.tsx` for `test@gmail.com` and store owner accounts, creating `userAccess/{uid}` document with `role: 'owner'` and full permissions so the owner is never locked out or redirected to customer account dashboard. Added 1-click elevation button in `RouteGuard.tsx` and login notice.
+  - **Auto-Moving Hero Carousel:** Updated `app/page.tsx` with active 5-second `setInterval` auto-advance, pause on hover, previous/next controls, and slide indicator dots.
+  - **Dynamic Firestore CMS:** Created `lib/schemas/content.ts` and `lib/content/contentService.ts` storing and syncing `siteContent/homepage` and `siteContent/categories`. Built Admin Content CMS at `/admin/content` (added to admin navigation) with Hero Slides manager, Category Banners manager, Homepage Sections visibility toggles, FAQ editor, and 1-click "Seed / Reset Default Content" to Firestore.
+  - **Collection & Bestseller Filtering:** Added dedicated `/collections/bestsellers` route and `?tag=bestseller` filter support in `CollectionClient.tsx`, interactive Category Navigation Pills (`All`, `Best Sellers`, `Face`, `Eyes`, `Lips`, `Nails`, `Skin Care`, `Perfumes`, `Combos`), and clear active filter chips.
+  - **Restored Luxury Layouts from PDF:** Added "Buy 3 for ₹699" combo box spotlight, Clinical 95% Dark Spot formulation strip, interactive Day 1 vs Day 14 Radiance Slider, "Get The Look!" routine looks, Customer Testimonials, FAQ accordion, and VIP Club Newsletter with `GLOW10` coupon.
+  - 46 unit/integration tests passing across 9 test suites (`npm test`). Next.js production build (`npm run build`) compiles all 74 routes with 0 errors.
 - **Current Task:** Phase 13 — End-to-End Visual QA, Polish, and Release Readiness.
 
 ## Update protocol

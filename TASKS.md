@@ -141,6 +141,15 @@ Use the checkboxes to track work. Each phase needs a verified deliverable before
 
 **Deliverables:** access controls, security runbook, restore proof and release checklist. **Exit:** least privilege and staging restore verified; no unresolved critical/high issue.
 
+## Phase 12B — Dynamic Firestore Content CMS, Auto-Moving Hero & Bestseller Navigation
+
+- [x] Auto-bootstrap and 1-click elevation for store owner account (`test@gmail.com`).
+- [x] Auto-moving Hero Carousel with 5-second interval, pause on hover, next/prev controls, and indicator dots.
+- [x] Dynamic Firestore site content schema and service (`siteContent/homepage` and `siteContent/categories`).
+- [x] Full Admin Content CMS at `/admin/content` for Hero Slides, Category Banners, Homepage Sections, and FAQs with 1-click Firestore sync and seeding.
+- [x] Fixed collection and bestsellers navigation with dedicated `/collections/bestsellers` route, `?tag=bestseller` filtering, and category navigation pills.
+- [x] Restored and refined rich PDF layout structures: "Buy 3 for ₹699" Combo Box, Clinical 95% Dark Spot Banner, Day 1 vs Day 14 Radiance Slider, Routine Looks, Testimonials, FAQ Accordion, and VIP Club Newsletter.
+
 ## Phase 13 — End-to-end QA, visual polish and launch
 
 - [ ] Execute `TEST_PLAN.md` across available browsers and viewport sizes.
