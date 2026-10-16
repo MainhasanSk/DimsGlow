@@ -96,7 +96,15 @@ Do not guess legal/tax/shipping/payment/return/staff permissions. Ask the owner 
   - Built comprehensive storefront homepage `/` featuring hero carousel, category pills, bestseller grid, dark spots clinical highlight, "Get The Look!" lifestyle lookbook, "Our Promise" badges, verified customer testimonials, and trust marquee banner.
   - Implemented all mandatory policy and information routes: `/shipping-policy`, `/cancellation-refund-policy`, `/privacy-policy`, `/terms`, `/contact`, `/about`, `/faq`.
   - 20 unit/schema tests passing; all 13 Next.js static routes compiled and prerendered cleanly.
-- **Next Task:** Phase 5 — Catalog, Cloudinary and editorial content (Collection pages with category banners, filter/sort controls, cursor pagination, Cloudinary upload signature service, and Product Detail Page with rich editorial sections).
+- **Phase 6 Customer Dashboard, Cart & Favorites (Completed 2026-10-16):**
+  - Implemented real-time Firestore-backed persistent cart and favorites in `lib/cart/CartContext.tsx` with guest session merging upon authentication, enforcing zero authoritative client-only state.
+  - Built interactive slide-over `CartDrawer` with free delivery milestone meter (threshold ₹399), quantity steppers, unit prices in integer paise, and quick checkout CTAs.
+  - Built full dedicated `/cart` page with line items, shade details, signature luxury gift box addon (+₹99), order note, and promotional coupon engine (`EXTRA5`, `SHIPFREE`, `LIPOIL`, `CASE`).
+  - Wired live bag counter and wishlist indicator into `StorefrontHeader`, and integrated instant `addToCart` and wishlist heart toggles across all `ProductCard`, PDP (`ProductDetailClient`), and collection quick-view views.
+  - Built customer dashboard shell `/account` guarded by `CustomerRouteGuard`, featuring overview metrics, saved address book with Indian PIN code validation (`/account/addresses`), live order tracking with status badges and courier info (`/account/orders`), wishlist gallery with move-to-bag actions (`/account/wishlist`), and reviews management (`/account/reviews`).
+  - Added 4 cart and math test assertions in `tests/cart.test.ts` (all 24 tests passing).
+  - Production `next build` statically prerendered all 39 routes with 0 errors.
+- **Current Task:** Phase 7 — Checkout, order creation and stock consistency (Server-side checkout calculation, idempotent `placeOrder` Firestore transaction, address/item snapshots, stock reservation movement ledger, and concurrency conflict resilience).
 
 ## Update protocol
 

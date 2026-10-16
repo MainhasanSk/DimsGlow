@@ -70,10 +70,10 @@ Use the checkboxes to track work. Each phase needs a verified deliverable before
 
 ## Phase 6 — Customer dashboard, cart and favorites
 
-- [ ] Implement own-profile and saved-address edit with ownership rules.
-- [ ] Implement persistent Firestore cart, variant/quantity/removal and favorites.
-- [ ] Build customer overview/orders/reviews/navigation shell.
-- [ ] Verify Customer A cannot read Customer B's profile/cart/address/favorites.
+- [x] Implement own-profile and saved-address edit with ownership rules.
+- [x] Implement persistent Firestore cart, variant/quantity/removal and favorites.
+- [x] Build customer overview/orders/reviews/navigation shell.
+- [x] Verify Customer A cannot read Customer B's profile/cart/address/favorites.
 
 **Deliverables:** functional customer account. **Exit:** cross-device data restores from Firestore; no authoritative localStorage state.
 

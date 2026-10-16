@@ -5,9 +5,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Product, ProductVariant } from '@/lib/schemas/product';
 import { formatPricePaise } from '@/lib/utils';
-import { Star, ChevronDown, Check, ShoppingBag } from 'lucide-react';
+import { Star, ChevronDown, Check, ShoppingBag, Heart } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useCart } from '@/lib/cart/CartContext';
 
 export interface ProductCardProps {
   product: Product;
@@ -16,8 +17,10 @@ export interface ProductCardProps {
 }
 
 export function ProductCard({ product, onQuickView, onAddToCart }: ProductCardProps) {
+  const { addToCart, toggleFavorite, isFavorite } = useCart();
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const currentVariant = product.variants[selectedVariantIndex] || product.variants[0];
+  const isFav = isFavorite(product.id);
 
   const primaryImage =
     currentVariant?.imageUrl ||
@@ -29,10 +32,43 @@ export function ProductCard({ product, onQuickView, onAddToCart }: ProductCardPr
   const compareAtPaise = currentVariant?.compareAtPricePaise || product.compareAtPricePaise;
   const isOutOfStock = currentVariant ? currentVariant.onHand <= currentVariant.reserved : false;
 
+  const handleAddToCart = () => {
+    if (onAddToCart) {
+      onAddToCart(product, currentVariant);
+    } else {
+      addToCart({
+        id: `${product.id}_${currentVariant?.id || 'default'}`,
+        productId: product.id,
+        variantId: currentVariant?.id,
+        productName: product.name,
+        variantTitle: currentVariant?.title,
+        quantity: 1,
+        unitPricePaise: pricePaise,
+        compareAtPricePaise: compareAtPaise,
+        imageUrl: primaryImage,
+        slug: product.slug,
+      });
+    }
+  };
+
   return (
     <div className="group relative bg-white border border-[#E8E2E7] rounded-[10px] overflow-hidden flex flex-col justify-between transition-all duration-300 hover:shadow-md hover:border-[#B83B63]/40">
       {/* Top Media Container */}
       <div className="relative aspect-square w-full bg-[#FAF8FA] overflow-hidden flex items-center justify-center p-4">
+        {/* Wishlist Heart Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleFavorite(product.id);
+          }}
+          className="absolute top-2.5 left-2.5 z-10 p-1.5 rounded-full bg-white/90 shadow-xs hover:bg-white text-[#6D6670] hover:text-[#B83B63] transition-colors cursor-pointer"
+          aria-label={isFav ? 'Remove from wishlist' : 'Add to wishlist'}
+        >
+          <Heart className={`w-4 h-4 ${isFav ? 'fill-[#B83B63] text-[#B83B63]' : ''}`} />
+        </button>
+
         {/* Unlock Free Gift Badge */}
         {product.unlockFreeGift && (
           <div className="absolute top-2.5 right-2.5 z-10">
@@ -143,7 +179,7 @@ export function ProductCard({ product, onQuickView, onAddToCart }: ProductCardPr
             <Button
               variant="primary"
               size="sm"
-              onClick={() => onAddToCart ? onAddToCart(product, currentVariant) : null}
+              onClick={handleAddToCart}
               className="w-full text-xs font-bold"
             >
               <ShoppingBag className="w-3.5 h-3.5 mr-1" /> ADD TO CART

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import React from "react";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth/AuthContext";
+import { CartProvider } from "@/lib/cart/CartContext";
+import { CartDrawer } from "@/components/storefront/CartDrawer";
 
 export const metadata: Metadata = {
   title: "DIMSGLOW — Luxury Beauty & Cosmetics",
@@ -28,7 +30,12 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full bg-white text-[#19161A] antialiased selection:bg-[#FBEAF0] selection:text-[#B83B63]">
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <CartProvider>
+            {children}
+            <CartDrawer />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import { StorefrontShell } from '@/components/storefront/StorefrontShell';
 import { ProductCard } from '@/components/storefront/ProductCard';
 import { getProductBySlug, CATALOG_PRODUCTS } from '@/lib/data/catalog';
@@ -30,12 +30,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { FAQAccordion } from '../../faq/page';
+import { useCart } from '@/lib/cart/CartContext';
 
 interface ProductDetailClientProps {
   slug: string;
 }
 
 export function ProductDetailClient({ slug }: ProductDetailClientProps) {
+  const router = useRouter();
+  const { addToCart, toggleFavorite, isFavorite } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
@@ -97,6 +100,37 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
   const currentPrice = activeVar?.pricePaise || activeProduct.pricePaise;
   const currentCompareAt = activeVar?.compareAtPricePaise || activeProduct.compareAtPricePaise;
 
+  const handleAddToCart = () => {
+    addToCart({
+      id: `${activeProduct.id}_${activeVar?.id || 'default'}`,
+      productId: activeProduct.id,
+      variantId: activeVar?.id,
+      productName: activeProduct.name,
+      variantTitle: activeVar?.title,
+      quantity: 1,
+      unitPricePaise: currentPrice,
+      compareAtPricePaise: currentCompareAt,
+      imageUrl: activeVar?.imageUrl || activeProduct.media[0]?.secureUrl,
+      slug: activeProduct.slug,
+    });
+  };
+
+  const handleBuyNow = () => {
+    addToCart({
+      id: `${activeProduct.id}_${activeVar?.id || 'default'}`,
+      productId: activeProduct.id,
+      variantId: activeVar?.id,
+      productName: activeProduct.name,
+      variantTitle: activeVar?.title,
+      quantity: 1,
+      unitPricePaise: currentPrice,
+      compareAtPricePaise: currentCompareAt,
+      imageUrl: activeVar?.imageUrl || activeProduct.media[0]?.secureUrl,
+      slug: activeProduct.slug,
+    });
+    router.push('/checkout');
+  };
+
   const exclusiveCoupons = [
     { code: 'LIPOIL', title: 'FREE Lip Oil & Lip Color', subtitle: 'On orders above ₹699' },
     { code: 'CASE', title: 'FREE Lipstick Case', subtitle: 'On orders above ₹599' },
@@ -138,10 +172,11 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
               {/* Wishlist Button */}
               <button
                 type="button"
+                onClick={() => toggleFavorite(activeProduct.id)}
                 className="absolute top-4 right-4 z-10 p-2.5 rounded-full bg-white/90 hover:bg-[#FBEAF0] text-[#6D6670] hover:text-[#B83B63] shadow-sm transition-colors cursor-pointer"
-                aria-label="Add to wishlist"
+                aria-label={isFavorite(activeProduct.id) ? "Remove from wishlist" : "Add to wishlist"}
               >
-                <Heart className="w-5 h-5" />
+                <Heart className={`w-5 h-5 ${isFavorite(activeProduct.id) ? 'fill-[#B83B63] text-[#B83B63]' : ''}`} />
               </button>
 
               <div className="relative w-full h-full flex items-center justify-center">
@@ -323,8 +358,8 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
               <Button
                 variant="outline"
                 size="lg"
-                className="w-full text-xs font-bold border-2 border-[#B83B63] text-[#B83B63] hover:bg-[#FBEAF0]"
-                onClick={() => alert(`Added ${activeProduct.name} (${activeVar?.title}) to bag!`)}
+                className="w-full text-xs font-bold border-2 border-[#B83B63] text-[#B83B63] hover:bg-[#FBEAF0] cursor-pointer"
+                onClick={handleAddToCart}
               >
                 <ShoppingBag className="w-4 h-4 mr-2" /> ADD TO CART
               </Button>
@@ -332,8 +367,8 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
               <Button
                 variant="primary"
                 size="lg"
-                className="w-full text-xs font-bold shadow-md bg-[#B83B63] hover:bg-[#982D50]"
-                onClick={() => alert(`Initiating instant checkout for ${activeProduct.name}!`)}
+                className="w-full text-xs font-bold shadow-md bg-[#B83B63] hover:bg-[#982D50] cursor-pointer"
+                onClick={handleBuyNow}
               >
                 <Zap className="w-4 h-4 mr-1.5 fill-current" /> BUY NOW
               </Button>
@@ -650,16 +685,16 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => alert(`Added ${activeProduct.name} to cart!`)}
-                className="text-xs font-bold"
+                onClick={handleAddToCart}
+                className="text-xs font-bold cursor-pointer"
               >
                 ADD TO CART
               </Button>
               <Button
                 variant="primary"
                 size="sm"
-                onClick={() => alert(`Proceeding to checkout!`)}
-                className="text-xs font-bold"
+                onClick={handleBuyNow}
+                className="text-xs font-bold cursor-pointer"
               >
                 BUY NOW
               </Button>

@@ -18,16 +18,15 @@ import {
 import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { useCart } from '@/lib/cart/CartContext';
 
 export function StorefrontHeader() {
   const { user, profile } = useAuth();
+  const { totalItemCount, setIsCartDrawerOpen, favoritesCount } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-
-  // Cart item count (will synchronize with Firestore cart in Phase 6)
-  const cartItemCount = 0;
 
   const navLinks = [
     {
@@ -158,25 +157,31 @@ export function StorefrontHeader() {
               </Link>
 
               <Link
-                href="/account/favorites"
-                className="p-2 text-[#19161A] hover:text-[#B83B63] hover:bg-[#F7F5F7] rounded-full transition-colors hidden sm:inline-flex"
+                href="/account/wishlist"
+                className="relative p-2 text-[#19161A] hover:text-[#B83B63] hover:bg-[#F7F5F7] rounded-full transition-colors hidden sm:inline-flex"
                 aria-label="Wishlist"
               >
                 <Heart className="w-5 h-5" />
-              </Link>
-
-              <Link
-                href="/cart"
-                className="relative p-2 text-[#19161A] hover:text-[#B83B63] hover:bg-[#F7F5F7] rounded-full transition-colors"
-                aria-label={`Shopping bag with ${cartItemCount} items`}
-              >
-                <ShoppingBag className="w-5 h-5" />
-                {cartItemCount > 0 && (
-                  <span className="absolute top-1 right-1 bg-[#B83B63] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                    {cartItemCount}
+                {favoritesCount > 0 && (
+                  <span className="absolute top-1 right-1 bg-[#AA771C] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                    {favoritesCount}
                   </span>
                 )}
               </Link>
+
+              <button
+                type="button"
+                onClick={() => setIsCartDrawerOpen(true)}
+                className="relative p-2 text-[#19161A] hover:text-[#B83B63] hover:bg-[#F7F5F7] rounded-full transition-colors cursor-pointer"
+                aria-label={`Shopping bag with ${totalItemCount} items`}
+              >
+                <ShoppingBag className="w-5 h-5" />
+                {totalItemCount > 0 && (
+                  <span className="absolute top-1 right-1 bg-[#B83B63] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                    {totalItemCount}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
         </div>

@@ -12,6 +12,7 @@ import { formatPricePaise } from '@/lib/utils';
 import { SlidersHorizontal, ArrowUpDown, ChevronRight, Check, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
+import { useCart } from '@/lib/cart/CartContext';
 
 interface CollectionClientProps {
   slug: string;
@@ -66,9 +67,22 @@ export function CollectionClient({ slug }: CollectionClientProps) {
     setQuickViewSelectedVariant(variant || product.variants[0] || null);
   };
 
+  const { addToCart } = useCart();
+
   const handleAddToCart = (product: Product, variant?: ProductVariant) => {
-    // Phase 6 will wire this to persistent Firestore cart state
-    alert(`Added to cart: ${product.name} ${variant?.title ? `(${variant.title})` : ''}`);
+    const chosenVar = variant || product.variants[0];
+    addToCart({
+      id: `${product.id}_${chosenVar?.id || 'default'}`,
+      productId: product.id,
+      variantId: chosenVar?.id,
+      productName: product.name,
+      variantTitle: chosenVar?.title,
+      quantity: 1,
+      unitPricePaise: chosenVar?.pricePaise || product.pricePaise,
+      compareAtPricePaise: chosenVar?.compareAtPricePaise || product.compareAtPricePaise,
+      imageUrl: chosenVar?.imageUrl || product.media[0]?.secureUrl,
+      slug: product.slug,
+    });
     setQuickViewProduct(null);
   };
 
