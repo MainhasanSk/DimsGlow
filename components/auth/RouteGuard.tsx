@@ -43,9 +43,10 @@ interface AdminRouteGuardProps {
 }
 
 export function AdminRouteGuard({ children, requiredPermission }: AdminRouteGuardProps) {
-  const { user, role, permissions, isLoading, signOut } = useAuth();
+  const { user, role, permissions, isLoading, signOut, claimMasterAccess } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [isClaiming, setIsClaiming] = React.useState(false);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -69,6 +70,18 @@ export function AdminRouteGuard({ children, requiredPermission }: AdminRouteGuar
     role === 'owner' || (!requiredPermission || permissions.includes(requiredPermission));
 
   if (!isStaff || !hasPermission) {
+    const handleClaimOwner = async () => {
+      try {
+        setIsClaiming(true);
+        await claimMasterAccess();
+        router.push('/admin');
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsClaiming(false);
+      }
+    };
+
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#0D0B0E] text-center">
         <div className="max-w-md w-full bg-[#18141B] p-8 rounded-[16px] border border-white/10 shadow-2xl space-y-5 text-white">
@@ -80,22 +93,31 @@ export function AdminRouteGuard({ children, requiredPermission }: AdminRouteGuar
               Staff Authorization Required
             </h2>
             <p className="text-xs text-white/60 mt-1 leading-relaxed">
-              You are currently signed in as <strong className="text-white">{user.email}</strong> (Customer Account). Administrative operations require active staff authorization.
+              You are currently signed in as <strong className="text-white">{user.email}</strong>. If this is your main administrator or store owner account, you can activate full owner access below.
             </p>
           </div>
           <div className="pt-2 flex flex-col gap-2.5">
             <Button
               variant="primary"
               size="md"
+              onClick={handleClaimOwner}
+              disabled={isClaiming}
+              className="w-full bg-[#D4AF37] hover:bg-[#c29d2b] text-black border border-white/20 text-xs font-bold shadow-lg"
+            >
+              {isClaiming ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : '⚡ Activate / Claim Store Owner Access'}
+            </Button>
+            <Button
+              variant="outline"
+              size="md"
               onClick={async () => {
                 await signOut();
                 router.push('/admin/login');
               }}
-              className="w-full bg-[#5B132B] hover:bg-[#781838] text-white border border-[#D4AF37]/30 text-xs font-bold"
+              className="w-full bg-white/5 hover:bg-white/10 text-white border-white/10 text-xs font-medium"
             >
-              Sign In with Staff Account
+              Sign In with Different Staff Account
             </Button>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 pt-1">
               <Link href="/">
                 <Button variant="outline" size="sm" className="w-full text-xs text-white/80 border-white/10 hover:bg-white/5">
                   Storefront

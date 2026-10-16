@@ -3,13 +3,15 @@
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { useSearchParams, notFound } from 'next/navigation';
 import { StorefrontShell } from '@/components/storefront/StorefrontShell';
 import { ProductCard } from '@/components/storefront/ProductCard';
 import { CATEGORIES, CATALOG_PRODUCTS } from '@/lib/data/catalog';
+import { getCategoryHeroes, DEFAULT_CATEGORY_HEROES } from '@/lib/content/contentService';
 import type { Product, ProductVariant } from '@/lib/schemas/product';
+import type { CategoryHero } from '@/lib/schemas/content';
 import { formatPricePaise } from '@/lib/utils';
-import { SlidersHorizontal, ArrowUpDown, ChevronRight, Check, ShoppingBag } from 'lucide-react';
+import { SlidersHorizontal, ArrowUpDown, ChevronRight, Check, ShoppingBag, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
 import { useCart } from '@/lib/cart/CartContext';
@@ -18,18 +20,75 @@ interface CollectionClientProps {
   slug: string;
 }
 
-export function CollectionClient({ slug }: CollectionClientProps) {
-  const category = CATEGORIES[slug] || (slug === 'all' ? {
-    id: 'all',
-    slug: 'all',
-    title: 'All Products',
-    description: 'Explore our complete luxury cosmetic, skincare, and fragrance collections.',
-    bannerTitle: 'Explore Complete DIMSGLOW Collection',
-    bannerSubtitle: 'High-performance, toxic-free formulations designed for everyday luxury',
-    bannerBg: 'from-[#2D0B1E] via-[#541235] to-[#141215]',
-  } : null);
+const CATEGORY_TABS = [
+  { label: 'All Products', href: '/collections/all', slug: 'all' },
+  { label: '★ Best Sellers', href: '/collections/bestsellers', slug: 'bestsellers' },
+  { label: 'Face', href: '/collections/face', slug: 'face' },
+  { label: 'Eyes', href: '/collections/eyes', slug: 'eyes' },
+  { label: 'Lips', href: '/collections/lips', slug: 'lips' },
+  { label: 'Nails', href: '/collections/nails', slug: 'nails' },
+  { label: 'Skin Care', href: '/collections/skin-care', slug: 'skin-care' },
+  { label: 'Perfumes', href: '/collections/perfumes', slug: 'perfumes' },
+  { label: 'Combos & Sets', href: '/collections/combos', slug: 'combos' },
+];
 
-  if (!category) {
+export function CollectionClient({ slug }: CollectionClientProps) {
+  const searchParams = useSearchParams();
+  const tagParam = searchParams.get('tag');
+
+  const isBestsellerView =
+    slug === 'bestsellers' || slug === 'bestseller' || tagParam === 'bestseller';
+
+  const defaultMeta = isBestsellerView
+    ? {
+        id: 'bestsellers',
+        slug: 'bestsellers',
+        title: 'Best Sellers',
+        tagline: 'CUSTOMER LOVED FORMULATIONS',
+        description: 'The top-rated, viral beauty formulas adored by thousands of customers.',
+        bannerTitle: 'DIMSGLOW BEST SELLERS',
+        bannerSubtitle: 'Our most awarded, viral formulas for effortless daily radiance and 24-hour wear',
+        bannerBg: 'from-[#4A0E17] via-[#8B1E3F] to-[#24050D]',
+        bannerImageUrl: '/brand/dimsglow-logo.jpg',
+        accentBadge: 'TOP RATED FAVORITES',
+      }
+    : CATEGORIES[slug] ||
+      (slug === 'all'
+        ? {
+            id: 'all',
+            slug: 'all',
+            title: 'All Products',
+            tagline: 'COMPLETE LUXURY CATALOG',
+            description: 'Explore our complete luxury cosmetic, skincare, and fragrance collections.',
+            bannerTitle: 'Explore Complete DIMSGLOW Collection',
+            bannerSubtitle: 'High-performance, toxic-free formulations designed for everyday luxury',
+            bannerBg: 'from-[#2D0B1E] via-[#541235] to-[#141215]',
+            bannerImageUrl: '/brand/dimsglow-logo.jpg',
+            accentBadge: 'ALL CREATIONS',
+          }
+        : null);
+
+  const [categoryMeta, setCategoryMeta] = useState<CategoryHero>(
+    (defaultMeta as CategoryHero) || DEFAULT_CATEGORY_HEROES['all']
+  );
+
+  // Fetch dynamic category banner from Firestore
+  React.useEffect(() => {
+    async function loadMeta() {
+      try {
+        const heroes = await getCategoryHeroes();
+        const key = isBestsellerView ? 'bestsellers' : slug;
+        if (heroes[key]) {
+          setCategoryMeta(heroes[key]);
+        }
+      } catch (err) {
+        console.warn('Could not load dynamic category meta:', err);
+      }
+    }
+    loadMeta();
+  }, [slug, isBestsellerView]);
+
+  if (!defaultMeta) {
     notFound();
   }
 
@@ -37,15 +96,26 @@ export function CollectionClient({ slug }: CollectionClientProps) {
   const [filterInStockOnly, setFilterInStockOnly] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
-  // Quick-view / Choose options state (matching page 23 of PDF)
+  // Quick-view / Choose options state
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [quickViewSelectedVariant, setQuickViewSelectedVariant] = useState<ProductVariant | null>(null);
 
-  // Filter products by category and stock
+  // Filter products by category, tag, and stock
   const filteredProducts = useMemo(() => {
-    let list = slug === 'all' 
-      ? CATALOG_PRODUCTS 
-      : CATALOG_PRODUCTS.filter((p) => p.categoryIds.includes(category.id));
+    let list = [...CATALOG_PRODUCTS];
+
+    if (isBestsellerView) {
+      list = list.filter((p) => p.bestseller === true);
+    } else if (slug !== 'all') {
+      list = list.filter((p) => p.categoryIds.includes(categoryMeta.id || slug));
+    }
+
+    // Additional query param filters
+    if (tagParam === 'new') {
+      list = list.filter((p) => p.featured === true);
+    } else if (tagParam === 'gift') {
+      list = list.filter((p) => p.unlockFreeGift === true);
+    }
 
     if (filterInStockOnly) {
       list = list.filter((p) => p.variants.some((v) => v.onHand > v.reserved));
@@ -53,14 +123,20 @@ export function CollectionClient({ slug }: CollectionClientProps) {
 
     const sorted = [...list];
     if (sortBy === 'priceLow') {
-      sorted.sort((a, b) => (a.variants[0]?.pricePaise || a.pricePaise) - (b.variants[0]?.pricePaise || b.pricePaise));
+      sorted.sort(
+        (a, b) =>
+          (a.variants[0]?.pricePaise || a.pricePaise) - (b.variants[0]?.pricePaise || b.pricePaise)
+      );
     } else if (sortBy === 'priceHigh') {
-      sorted.sort((a, b) => (b.variants[0]?.pricePaise || b.pricePaise) - (a.variants[0]?.pricePaise || a.pricePaise));
+      sorted.sort(
+        (a, b) =>
+          (b.variants[0]?.pricePaise || b.pricePaise) - (a.variants[0]?.pricePaise || a.pricePaise)
+      );
     } else if (sortBy === 'rating') {
       sorted.sort((a, b) => (b.ratingSummary?.average || 5) - (a.ratingSummary?.average || 5));
     }
     return sorted;
-  }, [slug, category.id, filterInStockOnly, sortBy]);
+  }, [slug, isBestsellerView, tagParam, categoryMeta.id, filterInStockOnly, sortBy]);
 
   const handleOpenQuickView = (product: Product, variant?: ProductVariant) => {
     setQuickViewProduct(product);
@@ -89,36 +165,73 @@ export function CollectionClient({ slug }: CollectionClientProps) {
   return (
     <StorefrontShell>
       {/* Category Hero Banner matching PDF pages 15-20 */}
-      <section className={`w-full bg-gradient-to-r ${category.bannerBg} text-white py-12 md:py-16 px-4`}>
+      <section className={`w-full bg-gradient-to-r ${categoryMeta.bannerBg} text-white py-12 md:py-16 px-4`}>
         <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
           <span className="text-[11px] font-bold tracking-[0.25em] uppercase text-[#D4AF37] mb-2">
-            DIMSGLOW EXCLUSIVE COLLECTION
+            {categoryMeta.accentBadge || 'DIMSGLOW EXCLUSIVE COLLECTION'}
           </span>
           <h1 className="text-3xl md:text-5xl font-serif font-bold text-white uppercase tracking-wider mb-3">
-            {category.bannerTitle}
+            {categoryMeta.bannerTitle}
           </h1>
           <p className="text-white/80 text-sm md:text-base max-w-2xl font-light">
-            {category.bannerSubtitle}
+            {categoryMeta.bannerSubtitle}
           </p>
 
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 mt-6 text-xs text-white/60">
             <Link href="/" className="hover:text-white transition">Home</Link>
             <ChevronRight className="w-3 h-3" />
-            <Link href="/collections" className="hover:text-white transition">Collections</Link>
+            <Link href="/collections/all" className="hover:text-white transition">Collections</Link>
             <ChevronRight className="w-3 h-3" />
-            <span className="text-white font-medium">{category.title}</span>
+            <span className="text-white font-medium">{categoryMeta.title}</span>
           </nav>
         </div>
       </section>
 
+      {/* Category Filter Tabs */}
+      <div className="bg-[#FAF8FA] border-b border-[#E8E2E7] py-3.5 px-4 sticky top-16 sm:top-20 z-30 shadow-2xs">
+        <div className="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
+          {CATEGORY_TABS.map((tab) => {
+            const isActive =
+              (tab.slug === 'bestsellers' && isBestsellerView) ||
+              (tab.slug === slug && !tagParam && !isBestsellerView) ||
+              (tab.slug === 'all' && slug === 'all' && !tagParam && !isBestsellerView);
+            return (
+              <Link
+                key={tab.slug}
+                href={tab.href}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
+                  isActive
+                    ? 'bg-[#5B132B] text-white shadow-xs'
+                    : 'bg-white text-[#19161A] border border-[#E8E2E7] hover:border-[#5B132B] hover:text-[#5B132B]'
+                }`}
+              >
+                {tab.label}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Main Catalog View */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        {tagParam && (
+          <div className="flex items-center gap-2 mb-6">
+            <span className="text-xs text-[#6D6670] font-medium">Active Filter:</span>
+            <Link
+              href={`/collections/${slug}`}
+              className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-[#5B132B]/10 text-[#5B132B] hover:bg-[#5B132B]/20 transition-colors"
+            >
+              Tag: {tagParam.toUpperCase()} <X className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        )}
+
         {/* Toolbar: Counter, Sort, and Mobile Filter Toggle */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-[#E8E2E7] gap-4 mb-8">
           <div>
             <h2 className="text-xl font-serif font-bold text-[#2A1810]">
-              {category.title}
+              {categoryMeta.title}
             </h2>
             <p className="text-xs text-[#705335] mt-0.5">
               Showing {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'}

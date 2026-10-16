@@ -8,7 +8,16 @@ import { CATEGORIES } from '@/lib/data/catalog';
 import { ArrowRight } from 'lucide-react';
 
 export default function CollectionListPage() {
-  const collections = Object.values(CATEGORIES);
+  const collections = [
+    {
+      id: 'bestsellers',
+      slug: 'bestsellers',
+      title: '★ Best Sellers',
+      description: 'Our most awarded, viral formulas for effortless daily radiance and 24-hour non-drying wear.',
+      bannerBg: 'from-[#4A0E17] via-[#8B1E3F] to-[#24050D]',
+    },
+    ...Object.values(CATEGORIES),
+  ];
 
   return (
     <StorefrontShell>

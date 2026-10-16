@@ -5,6 +5,8 @@ import { CATEGORIES } from '@/lib/data/catalog';
 export function generateStaticParams() {
   return [
     { slug: 'all' },
+    { slug: 'bestsellers' },
+    { slug: 'bestseller' },
     ...Object.keys(CATEGORIES).map((key) => ({ slug: key })),
   ];
 }
