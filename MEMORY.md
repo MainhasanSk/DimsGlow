@@ -128,7 +128,26 @@ Do not guess legal/tax/shipping/payment/return/staff permissions. Ask the owner 
   - Added interactive payment and refund forms and invoice download button in admin orders modal (`app/(admin)/admin/orders/page.tsx`).
   - Added live tax invoice download and cancellation/refund void explanations in customer order history (`app/(customer)/account/orders/page.tsx`).
   - Added 6 unit, eligibility and PDF verification tests in `tests/invoices.test.ts` (all 39 tests passing across 8 suites). Production `next build` compiled all 48 routes with 0 errors.
-- **Current Task:** Phase 10 — Purchase, supplier, expense, CRM and reviews (Supplier directory, purchase orders with partial/full receipt and idempotent stock increments, expense tracker, CRM customer lifetime summary/notes, and review moderation).
+- **Phase 10 Purchases, Suppliers, Expenses, CRM & Reviews (Completed 2026-10-16):**
+  - Created operational schemas in `lib/schemas/operations.ts`: `SupplierSchema`, `PurchaseOrderSchema`, `ExpenseSchema`, `CrmCustomerProfileSchema`, `CrmStaffNoteSchema`, `ReviewSchema`.
+  - Built `lib/operations/supplierService.ts` and `lib/operations/purchaseService.ts` with atomic stock receipt ledger transactions appending to `stockMovements` with idempotency protection against double-counting.
+  - Built `lib/operations/expenseService.ts` for tracking operational overhead, logistics settlements, and packaging disbursements with category breakdowns and integer paise amounts.
+  - Built `lib/crm/crmService.ts` computing customer lifetime value (LTV), order frequency, automatic VIP tagging (>=₹5,000 spend or >=3 orders), and private chronological staff notes.
+  - Built `lib/reviews/reviewService.ts` with authenticated buyer verification against past completed orders, deduplication, and administrative moderation queue.
+  - Built interactive admin consoles: `/admin/purchases`, `/admin/expenses`, `/admin/crm`, and `/admin/reviews`.
+  - Integrated dynamic reviews and "Write a Review" modal dialog in storefront PDP (`ProductDetailClient.tsx`).
+- **Phase 11 Dashboard Analytics & Excel (.xlsx) Export (Completed 2026-10-16):**
+  - Built `lib/reports/reportService.ts` calculating net vs gross revenue, delivered order volume, AOV, operational expenses, operating EBITDA margin, daily sales vs expense trends, and top-selling product velocity.
+  - Implemented multi-sheet Microsoft Excel export service (`buildExcelWorkbook`) with `exceljs` creating formatted worksheets for Executive Summary, Orders Ledger, Operating Expenses, and Top Products.
+  - Built API endpoints `GET /api/admin/reports/analytics` and `GET /api/admin/reports/export`.
+  - Built executive analytics dashboard `app/(admin)/admin/reports/page.tsx` with date range selectors (7D, 30D, 12M, All), trend bar charts, order pipeline progress, and one-click `.xlsx` export.
+- **Phase 12 Roles, Audit, Backup and Hardening (Completed 2026-10-16):**
+  - Built staff RBAC administration portal `app/(admin)/admin/staff/page.tsx` and endpoints `/api/admin/staff` allowing Owner and Admin to assign 8 granular roles with Firebase Auth Custom Claims synchronization and account suspension with token revocation.
+  - Built security compliance audit trail `app/(admin)/admin/audit/page.tsx` and endpoint `/api/admin/audit` with search, entity filtering, and raw JSON payload inspection.
+  - Default-deny Firestore rules updated with explicit isolation for `crmProfiles`, `suppliers`, `purchaseOrders`, `expenses`, and `auditEvents`.
+  - 46 unit, schema, and Excel integration tests passing across 9 test suites (`npm test`).
+  - Next.js production build (`npm run build`) succeeded with all 66 routes prerendered/compiled with 0 errors.
+- **Current Task:** Phase 13 — End-to-End Visual QA, Polish, and Release Readiness.
 
 ## Update protocol
 
