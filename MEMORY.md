@@ -118,7 +118,17 @@ Do not guess legal/tax/shipping/payment/return/staff permissions. Ask the owner 
   - Built administrative orders management view `app/(admin)/admin/orders/page.tsx` with newest-first queue, search, status filter pills, and quick action modal for status transitions and courier metadata entry.
   - Built admin overview dashboard `app/(admin)/admin/page.tsx` displaying revenue, pending fulfillment counts, and system metrics.
   - Added 4 unit and integration tests in `tests/adminOrders.test.ts` (all 33 tests passing). Next.js production build succeeded with 46 routes.
-- **Current Task:** Phase 9 — Invoices, manual payments and refunds (Server-side invoice generation/snapshotting, protected PDF download with eligibility checks, manual payment recording, and refund credit-note references).
+- **Phase 9 Invoices, Manual Payments and Refunds (Completed 2026-10-16):**
+  - Created store and tax settings schema `StoreInvoiceSettingsSchema` and defaults in `lib/schemas/settings.ts` with Assam state code 18, MCA legal entity name, and cosmetic HSN 33041000.
+  - Built official A4 GST tax invoice generation service `lib/invoices/pdfGenerator.ts` using `pdf-lib` with standard Type-1 Helvetica fonts, DIMSGLOW luxury burgundy/gold headers, two-column party details, itemized table, and void watermark banners.
+  - Built invoice service `lib/invoices/invoiceService.ts` with immutable snapshotting upon order confirmation, live multi-factor eligibility verification (`checkInvoiceEligibility`), and statutory voiding preservation with credit note references.
+  - Built manual payment & refund services `lib/payments/paymentService.ts` for authorized staff reconciliation without external gateway dependencies in v1.
+  - Created protected streaming endpoints: `GET /api/orders/[id]/invoice` (re-evaluates eligibility on every download), `POST /api/admin/orders/[id]/payment`, `POST /api/admin/orders/[id]/refund`, and `GET /api/admin/invoices`.
+  - Built admin tax invoices management view `app/(admin)/admin/invoices/page.tsx` with volume metrics, status filter pills, search, and instant PDF download.
+  - Added interactive payment and refund forms and invoice download button in admin orders modal (`app/(admin)/admin/orders/page.tsx`).
+  - Added live tax invoice download and cancellation/refund void explanations in customer order history (`app/(customer)/account/orders/page.tsx`).
+  - Added 6 unit, eligibility and PDF verification tests in `tests/invoices.test.ts` (all 39 tests passing across 8 suites). Production `next build` compiled all 48 routes with 0 errors.
+- **Current Task:** Phase 10 — Purchase, supplier, expense, CRM and reviews (Supplier directory, purchase orders with partial/full receipt and idempotent stock increments, expense tracker, CRM customer lifetime summary/notes, and review moderation).
 
 ## Update protocol
 

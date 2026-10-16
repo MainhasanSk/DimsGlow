@@ -83,6 +83,8 @@ export const OrderEventSchema = z.object({
     'order_cancelled',
     'payment_recorded',
     'refund_recorded',
+    'invoice_generated',
+    'invoice_voided',
   ]),
   fromStatus: OrderStatusEnum.optional(),
   toStatus: OrderStatusEnum.optional(),

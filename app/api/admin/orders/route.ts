@@ -3,8 +3,6 @@ import { verifyServerSession } from '@/lib/auth/serverAuth';
 import { fetchAdminOrders } from '@/lib/orders/orderService';
 import { hasPermission } from '@/lib/auth/roles';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET(req: NextRequest) {
   try {
     const authHeader = req.headers.get('Authorization');

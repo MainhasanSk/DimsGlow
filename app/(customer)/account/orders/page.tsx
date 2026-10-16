@@ -24,6 +24,8 @@ import {
   CheckCircle2,
   AlertCircle,
   HelpCircle,
+  FileText,
+  Download,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -32,6 +34,41 @@ export default function CustomerOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'delivered' | 'cancelled'>('all');
+  const [downloadingOrderId, setDownloadingOrderId] = useState<string | null>(null);
+
+  const handleDownloadInvoice = async (orderId: string, orderNumber: string) => {
+    if (!user) return;
+    setDownloadingOrderId(orderId);
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch(`/api/orders/${orderId}/invoice`, {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || 'Invoice download is currently unavailable for this order.');
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Invoice-${orderNumber}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err: any) {
+      console.error('Invoice download error:', err);
+      alert('Unable to download invoice at this moment. Please reach out to WhatsApp VIP support.');
+    } finally {
+      setDownloadingOrderId(null);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -235,12 +272,45 @@ export default function CustomerOrdersPage() {
                   )}
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  {/* Invoice Download Action & Eligibility */}
+                  {['confirmed', 'packing', 'shipped', 'delivered'].includes(order.status) &&
+                    order.paymentStatus !== 'refunded' && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={downloadingOrderId === order.id}
+                        onClick={() => handleDownloadInvoice(order.id, order.orderNumber)}
+                        className="text-xs h-7 px-2.5 flex items-center gap-1.5 border-[#E8E2E7] hover:border-[#B83B63] hover:text-[#B83B63]"
+                      >
+                        <FileText className="w-3.5 h-3.5 text-[#B83B63]" />
+                        {downloadingOrderId === order.id ? 'Preparing...' : 'Tax Invoice'}
+                      </Button>
+                    )}
+
+                  {order.status === 'cancelled' && (
+                    <span className="text-[11px] font-medium text-[#DC2626] bg-[#FEF2F2] border border-[#FECACA] px-2.5 py-1 rounded-md flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" /> Invoice Voided
+                    </span>
+                  )}
+
+                  {order.paymentStatus === 'refunded' && (
+                    <span className="text-[11px] font-medium text-[#DC2626] bg-[#FEF2F2] border border-[#FECACA] px-2.5 py-1 rounded-md flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" /> Invoice Voided (Refund Issued)
+                    </span>
+                  )}
+
+                  {order.status === 'placed' && (
+                    <span className="text-[11px] text-[#8C8490] italic">
+                      Invoice generated upon confirmation
+                    </span>
+                  )}
+
                   <a
                     href={`https://wa.me/913614556830?text=Hi%20DIMSGLOW,%20I%20have%20an%20inquiry%20regarding%20Order%20${order.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs font-semibold text-[#B83B63] hover:underline flex items-center gap-1"
+                    className="text-xs font-semibold text-[#B83B63] hover:underline flex items-center gap-1 ml-1"
                   >
                     <HelpCircle className="w-3.5 h-3.5" /> Order Help
                   </a>

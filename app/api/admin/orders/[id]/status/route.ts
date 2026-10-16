@@ -3,8 +3,6 @@ import { verifyServerSession } from '@/lib/auth/serverAuth';
 import { transitionOrderStatus } from '@/lib/orders/orderService';
 import { OrderStatusEnum } from '@/lib/schemas/order';
 
-export const dynamic = 'force-dynamic';
-
 interface RouteParams {
   params: Promise<{ id: string }>;
 }

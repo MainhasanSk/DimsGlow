@@ -22,6 +22,10 @@ import {
   Eye,
   RefreshCw,
   XCircle,
+  FileText,
+  CreditCard,
+  RotateCcw,
+  Download,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,6 +53,20 @@ export default function AdminOrdersPage() {
   // Cancel Form fields
   const [cancellationReason, setCancellationReason] = useState('');
   const [showCancelForm, setShowCancelForm] = useState(false);
+
+  // Payment Form fields
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'cash_on_delivery' | 'upi_manual' | 'bank_transfer'>('cash_on_delivery');
+  const [paymentRefNumber, setPaymentRefNumber] = useState('');
+  const [paymentNotes, setPaymentNotes] = useState('');
+
+  // Refund Form fields
+  const [showRefundForm, setShowRefundForm] = useState(false);
+  const [refundReason, setRefundReason] = useState('');
+  const [refundCreditNote, setRefundCreditNote] = useState('');
+
+  // Invoice Download
+  const [downloadingInvoice, setDownloadingInvoice] = useState(false);
 
   // Real-time Firestore subscription to orders collection
   useEffect(() => {
@@ -150,6 +168,117 @@ export default function AdminOrdersPage() {
     } catch (err: any) {
       console.error('Error transitioning order status:', err);
       setActionError(err.message || 'Error updating order');
+    } finally {
+      setTransitioning(false);
+    }
+  };
+
+  const handleDownloadInvoice = async () => {
+    if (!selectedOrder || !user) return;
+    setDownloadingInvoice(true);
+    setActionError(null);
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch(`/api/orders/${selectedOrder.id}/invoice`, {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to download invoice');
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Invoice-${selectedOrder.orderNumber}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err: any) {
+      console.error('Invoice error:', err);
+      setActionError(err.message || 'Cannot download invoice');
+    } finally {
+      setDownloadingInvoice(false);
+    }
+  };
+
+  const executeRecordPayment = async () => {
+    if (!selectedOrder || !user) return;
+    setTransitioning(true);
+    setActionError(null);
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch(`/api/admin/orders/${selectedOrder.id}/payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          amountPaise: selectedOrder.totalPaise,
+          paymentMethod,
+          referenceNumber: paymentRefNumber.trim() || undefined,
+          notes: paymentNotes.trim() || undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to record payment');
+      }
+
+      setSelectedOrder(data.order);
+      setShowPaymentForm(false);
+      setPaymentRefNumber('');
+      setPaymentNotes('');
+    } catch (err: any) {
+      console.error('Payment error:', err);
+      setActionError(err.message || 'Error recording payment');
+    } finally {
+      setTransitioning(false);
+    }
+  };
+
+  const executeRecordRefund = async () => {
+    if (!selectedOrder || !user) return;
+    if (!refundReason.trim()) {
+      setActionError('A refund reason is required');
+      return;
+    }
+    setTransitioning(true);
+    setActionError(null);
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch(`/api/admin/orders/${selectedOrder.id}/refund`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          amountPaise: selectedOrder.totalPaise,
+          reason: refundReason.trim(),
+          creditNoteReference: refundCreditNote.trim() || undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to record refund');
+      }
+
+      setSelectedOrder(data.order);
+      setShowRefundForm(false);
+      setRefundReason('');
+      setRefundCreditNote('');
+    } catch (err: any) {
+      console.error('Refund error:', err);
+      setActionError(err.message || 'Error recording refund');
     } finally {
       setTransitioning(false);
     }
@@ -443,6 +572,58 @@ export default function AdminOrdersPage() {
                     <XCircle className="w-4 h-4" /> Order Cancelled
                   </span>
                 )}
+
+                {/* Invoice Button for staff */}
+                {selectedOrder.status !== 'placed' && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={downloadingInvoice}
+                    onClick={handleDownloadInvoice}
+                    className="text-xs font-semibold flex items-center gap-1.5 border-[#5B132B]/30 text-[#5B132B] hover:bg-[#5B132B]/5"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    {downloadingInvoice ? 'Generating...' : 'Invoice PDF'}
+                  </Button>
+                )}
+
+                {/* Record Payment Button */}
+                {selectedOrder.paymentStatus !== 'paid' && selectedOrder.status !== 'cancelled' && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={transitioning}
+                    onClick={() => {
+                      setShowPaymentForm(true);
+                      setShowRefundForm(false);
+                      setShowShipForm(false);
+                      setShowCancelForm(false);
+                    }}
+                    className="text-xs font-semibold flex items-center gap-1.5 border-emerald-600/30 text-emerald-700 hover:bg-emerald-50"
+                  >
+                    <CreditCard className="w-3.5 h-3.5" />
+                    Record Payment
+                  </Button>
+                )}
+
+                {/* Issue Refund Button */}
+                {selectedOrder.paymentStatus === 'paid' && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={transitioning}
+                    onClick={() => {
+                      setShowRefundForm(true);
+                      setShowPaymentForm(false);
+                      setShowShipForm(false);
+                      setShowCancelForm(false);
+                    }}
+                    className="text-xs font-semibold flex items-center gap-1.5 border-rose-600/30 text-rose-700 hover:bg-rose-50"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    Issue Refund
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -539,6 +720,130 @@ export default function AdminOrdersPage() {
                     className="text-xs font-bold bg-[#DC2626] hover:bg-[#B91C1C]"
                   >
                     {transitioning ? 'Cancelling...' : 'Confirm Cancellation'}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Record Payment Form */}
+            {showPaymentForm && (
+              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-[10px] space-y-3">
+                <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
+                  <CreditCard className="w-4 h-4" /> Record Manual Payment
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-[#19161A] mb-1">
+                      Payment Method *
+                    </label>
+                    <select
+                      value={paymentMethod}
+                      onChange={(e: any) => setPaymentMethod(e.target.value)}
+                      className="w-full text-xs bg-white border border-[#E8E2E7] rounded-md px-3 py-2"
+                    >
+                      <option value="cash_on_delivery">Cash on Delivery (COD Collected)</option>
+                      <option value="upi_manual">UPI Transfer (Manual Verification)</option>
+                      <option value="bank_transfer">Direct Bank / NEFT Transfer</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-[#19161A] mb-1">
+                      Transaction / Reference # (UTR)
+                    </label>
+                    <Input
+                      value={paymentRefNumber}
+                      onChange={(e) => setPaymentRefNumber(e.target.value)}
+                      placeholder="e.g. UTR-982348123 or COD Receipt"
+                      className="text-xs bg-white"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-[#19161A] mb-1">Notes</label>
+                  <Input
+                    value={paymentNotes}
+                    onChange={(e) => setPaymentNotes(e.target.value)}
+                    placeholder="Optional staff notes"
+                    className="text-xs bg-white"
+                  />
+                </div>
+                <div className="flex justify-end gap-2 pt-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowPaymentForm(false)}
+                    className="text-xs"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    size="sm"
+                    disabled={transitioning}
+                    onClick={executeRecordPayment}
+                    className="text-xs font-bold bg-emerald-700 hover:bg-emerald-800"
+                  >
+                    {transitioning ? 'Saving...' : 'Confirm Payment Received'}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Refund & Void Invoice Form */}
+            {showRefundForm && (
+              <div className="p-4 bg-rose-50 border border-rose-200 rounded-[10px] space-y-3">
+                <h4 className="text-xs font-bold text-rose-800 uppercase tracking-wider flex items-center gap-1.5">
+                  <RotateCcw className="w-4 h-4" /> Issue Refund & Void Tax Invoice
+                </h4>
+                <p className="text-[11px] text-rose-700">
+                  This action marks the order payment as Refunded, automatically voids the GST tax invoice, and assigns a Credit Note reference.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-[#19161A] mb-1">
+                      Refund Reason *
+                    </label>
+                    <Input
+                      value={refundReason}
+                      onChange={(e) => setRefundReason(e.target.value)}
+                      placeholder="e.g. Returned damaged item / Order cancelled"
+                      className="text-xs bg-white"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-[#19161A] mb-1">
+                      Credit Note Reference #
+                    </label>
+                    <Input
+                      value={refundCreditNote}
+                      onChange={(e) => setRefundCreditNote(e.target.value)}
+                      placeholder="e.g. CRN-2026-001 (auto-generated if empty)"
+                      className="text-xs bg-white"
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2 pt-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowRefundForm(false)}
+                    className="text-xs"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    size="sm"
+                    disabled={transitioning}
+                    onClick={executeRecordRefund}
+                    className="text-xs font-bold bg-rose-700 hover:bg-rose-800"
+                  >
+                    {transitioning ? 'Processing...' : 'Confirm Refund & Void Invoice'}
                   </Button>
                 </div>
               </div>

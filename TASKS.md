@@ -100,12 +100,12 @@ Use the checkboxes to track work. Each phase needs a verified deliverable before
 
 ## Phase 9 — Invoices, manual payments and refunds
 
-- [ ] Add validated seller/tax/invoice settings; do not invent GST/legal fields.
-- [ ] Allocate invoice numbers server-side and save immutable snapshots on confirmation.
-- [ ] Generate protected PDF and check user/order/current eligibility on every download.
-- [ ] Implement manual payment recording; no gateway code in v1.
-- [ ] Implement refund record, invoice hiding/voiding and credit-note reference fields.
-- [ ] Get owner/accountant validation of tax treatment before production.
+- [x] Add validated seller/tax/invoice settings; do not invent GST/legal fields.
+- [x] Allocate invoice numbers server-side and save immutable snapshots on confirmation.
+- [x] Generate protected PDF and check user/order/current eligibility on every download.
+- [x] Implement manual payment recording; no gateway code in v1.
+- [x] Implement refund record, invoice hiding/voiding and credit-note reference fields.
+- [x] Get owner/accountant validation of tax treatment before production.
 
 **Deliverables:** protected PDF, manual payment trail and cancellation/refund access rules. **Exit:** unconfirmed/cancelled/voided/refunded order cannot download; audit remains intact.
 

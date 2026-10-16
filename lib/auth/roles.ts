@@ -49,6 +49,7 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<StaffRole, Permission[]> = {
     'orders:manage',
     'inventory:read',
     'inventory:manage',
+    'finance:read',
     'catalog:read',
     'catalog:manage',
     'crm:read',

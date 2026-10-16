@@ -3,6 +3,7 @@ import { adminDb } from '@/lib/firebase/admin';
 import type { Order, OrderStatus, CourierTracking } from '@/lib/schemas/order';
 import { logAuditEvent } from '@/lib/audit/auditLogger';
 import { hasPermission, type UserRole } from '@/lib/auth/roles';
+import { generateOrderInvoiceSnapshot, voidOrderInvoice } from '@/lib/invoices/invoiceService';
 
 const ALLOWED_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   placed: ['confirmed', 'cancelled'],
@@ -151,6 +152,31 @@ export async function transitionOrderStatus(input: StatusTransitionInput): Promi
     throw new Error('Failed to update order');
   }
 
+  // Handle invoice generation on confirmation
+  if (toStatus === 'confirmed') {
+    try {
+      const invoice = await generateOrderInvoiceSnapshot(updatedOrder, actorUid, actorRole);
+      (updatedOrder as Order).invoiceId = invoice.id;
+    } catch (invErr) {
+      console.error('Failed to generate invoice snapshot on confirmation:', invErr);
+    }
+  }
+
+  // Handle invoice voiding on cancellation
+  if (toStatus === 'cancelled') {
+    try {
+      await voidOrderInvoice(
+        orderId,
+        cancellationReason || 'Order cancelled by staff',
+        undefined,
+        actorUid,
+        actorRole
+      );
+    } catch (invErr) {
+      console.error('Failed to void invoice on cancellation:', invErr);
+    }
+  }
+
   // Audit logging
   await logAuditEvent({
     actorUid,
@@ -164,6 +190,7 @@ export async function transitionOrderStatus(input: StatusTransitionInput): Promi
       orderNumber: (updatedOrder as Order).orderNumber,
       courier: courierData?.courierName,
       cancellationReason,
+      invoiceId: (updatedOrder as Order).invoiceId,
     },
   });
 
