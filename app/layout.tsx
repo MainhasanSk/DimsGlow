@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import React from "react";
 import "./globals.css";
+import { AuthProvider } from "@/lib/auth/AuthContext";
 
 export const metadata: Metadata = {
   title: "DIMSGLOW — Luxury Beauty & Cosmetics",
@@ -27,7 +28,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full bg-white text-[#19161A] antialiased selection:bg-[#FBEAF0] selection:text-[#B83B63]">
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

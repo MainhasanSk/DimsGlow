@@ -26,13 +26,13 @@ Use the checkboxes to track work. Each phase needs a verified deliverable before
 
 ## Phase 2 — Firebase Auth and route/access guards
 
-- [ ] Initialize client SDK once and Admin SDK in server-only code.
-- [ ] Implement customer sign-up/sign-in/sign-out/reset and useful error states.
-- [ ] Verify ID tokens/sessions in protected routes and every server action/function.
-- [ ] Add customer and admin guards; server authorization is mandatory.
-- [ ] Document first-owner secure bootstrap; remove temporary bootstrap privilege.
-- [ ] Add staff invitation/access/role workflow; client cannot write permissions.
-- [ ] Test disabled users, customers at admin routes, stale claims and revoked sessions.
+- [x] Initialize client SDK once and Admin SDK in server-only code.
+- [x] Implement customer sign-up/sign-in/sign-out/reset and useful error states.
+- [x] Verify ID tokens/sessions in protected routes and every server action/function.
+- [x] Add customer and admin guards; server authorization is mandatory.
+- [x] Document first-owner secure bootstrap; remove temporary bootstrap privilege.
+- [x] Add staff invitation/access/role workflow; client cannot write permissions.
+- [x] Test disabled users, customers at admin routes, stale claims and revoked sessions.
 
 **Deliverables:** auth, protected routes, permission service, auth/rules tests. **Exit:** URL/client-state changes cannot grant admin access.
 

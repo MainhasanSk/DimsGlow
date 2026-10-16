@@ -74,7 +74,17 @@ Do not guess legal/tax/shipping/payment/return/staff permissions. Ask the owner 
   - Created baseline Firebase config (`firebase.json`, `firestore.rules` default-deny, `database.rules.json` default-deny, `firestore.indexes.json`).
   - Added CI workflow `.github/workflows/ci.yml`.
   - `typecheck` and production `next build` executed with 0 errors.
-- **Next Task:** Phase 2 — Firebase Auth and route/access guards (`lib/firebase/client.ts`, `lib/firebase/admin.ts`, auth context, customer login/signup/reset, server role & permission verification).
+- **Phase 2 Firebase Auth & Route/Access Guards (Completed 2026-10-16):**
+  - Initialized singleton client Firebase SDK (`lib/firebase/client.ts`) and server-only Admin SDK (`lib/firebase/admin.ts`).
+  - Implemented typed RBAC system with roles (`owner`, `admin`, `order_manager`, `inventory_manager`, `finance_manager`, `support_manager`, `analyst_readonly`, `customer`) and granular permissions in `lib/auth/roles.ts`.
+  - Built server-side token & access verification in `lib/auth/serverAuth.ts` verifying against canonical Firestore `userAccess/{uid}`.
+  - Built React `AuthProvider` and `useAuth` hook in `lib/auth/AuthContext.tsx` with dynamic listener to `userAccess/{uid}` for real-time permission revocation.
+  - Created customer authentication pages: `/sign-in` (with Suspense streaming), `/sign-up`, and `/reset-password` (with account enumeration protection).
+  - Implemented client route guards: `CustomerRouteGuard` and `AdminRouteGuard` in `components/auth/RouteGuard.tsx`.
+  - Built server-side staff provisioning & revocation service `lib/auth/staffService.ts`.
+  - Created first-owner secure bootstrap script `scripts/bootstrap-owner.ts` and documentation `docs/OWNER_BOOTSTRAP.md`.
+  - 15 unit/component/auth tests passing in Vitest; Next.js production build succeeds with 0 errors.
+- **Next Task:** Phase 3 — Firestore schema, rules, indexes and audit (typed Zod models for products/orders/invoices/stock, default-deny rules with isolated customer ownership, and audit logger).
 
 ## Update protocol
 
