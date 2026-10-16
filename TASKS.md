@@ -79,11 +79,11 @@ Use the checkboxes to track work. Each phase needs a verified deliverable before
 
 ## Phase 7 — Checkout, order creation and stock consistency
 
-- [ ] Implement checkout and server-side total calculation from canonical catalog/settings.
-- [ ] Build idempotent `placeOrder` with Firestore transaction, snapshots, stock reservation and order event.
-- [ ] Build on-hand/reserved/available views and append-only movement ledger.
-- [ ] Test stale prices, stock conflicts, repeated click/retry and competing purchases of last unit.
-- [ ] Build confirmation/order detail UI.
+- [x] Implement checkout and server-side total calculation from canonical catalog/settings.
+- [x] Build idempotent `placeOrder` with Firestore transaction, snapshots, stock reservation and order event.
+- [x] Build on-hand/reserved/available views and append-only movement ledger.
+- [x] Test stale prices, stock conflicts, repeated click/retry and competing purchases of last unit.
+- [x] Build confirmation/order detail UI.
 
 **Deliverables:** order placement and safe stock reserve. **Exit:** no negative stock, duplicate order or client-controlled total in concurrency tests.
 

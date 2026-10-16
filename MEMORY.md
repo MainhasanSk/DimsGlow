@@ -104,7 +104,14 @@ Do not guess legal/tax/shipping/payment/return/staff permissions. Ask the owner 
   - Built customer dashboard shell `/account` guarded by `CustomerRouteGuard`, featuring overview metrics, saved address book with Indian PIN code validation (`/account/addresses`), live order tracking with status badges and courier info (`/account/orders`), wishlist gallery with move-to-bag actions (`/account/wishlist`), and reviews management (`/account/reviews`).
   - Added 4 cart and math test assertions in `tests/cart.test.ts` (all 24 tests passing).
   - Production `next build` statically prerendered all 39 routes with 0 errors.
-- **Current Task:** Phase 7 — Checkout, order creation and stock consistency (Server-side checkout calculation, idempotent `placeOrder` Firestore transaction, address/item snapshots, stock reservation movement ledger, and concurrency conflict resilience).
+- **Phase 7 Checkout, Order Creation & Stock Consistency (Completed 2026-10-16):**
+  - Built server-side checkout calculation service `lib/checkout/checkoutService.ts` and public API `/api/checkout/calculate`, enforcing canonical catalog pricing in integer paise and coupon rules (`EXTRA5`, `SHIPFREE`, `LIPOIL`, `CASE`, `MASCARA`, `LIPCREAM`).
+  - Built idempotent `placeOrderTransaction` and protected API endpoint `/api/checkout/place-order` executing in an atomic Firestore transaction with client `idempotencyKey` replay protection, stock reservation ledger entries in `stockMovements`, and initial `order_placed` lifecycle event.
+  - Built 3-step checkout page `/checkout` (Delivery Address selection/inline add, Express Shipping, Cash/UPI on Delivery payment) with double-click submission prevention and automatic cart clearing.
+  - Built order confirmation success page `/checkout/success` with 4-step fulfillment timeline, order ID reference, customer dashboard links, and WhatsApp VIP support assistance.
+  - Added 5 unit and schema validation tests in `tests/checkout.test.ts` (all 29 tests passing across 6 suites).
+  - Production `next build` compiled all 43 routes with 0 errors.
+- **Current Task:** Phase 8 — Admin orders and live tracking (Newest-first orders table, validated status transition state machine `placed` -> `confirmed` -> `packing` -> `shipped` -> `delivered`/`cancelled`, courier/AWB entry, stock release/deduction effects, and real-time Firestore synchronization).
 
 ## Update protocol
 
