@@ -59,12 +59,12 @@ Use the checkboxes to track work. Each phase needs a verified deliverable before
 
 ## Phase 5 — Catalog, Cloudinary and editorial content
 
-- [ ] Admin create/edit/archive products, categories and variants with validation.
-- [ ] Add signed Cloudinary upload workflow and asset metadata records.
-- [ ] Build published collection grid, search, supported filter/sort, cursor pagination and PDP gallery.
-- [ ] Make banners/featured collections/navigation configurable in Firestore.
-- [ ] Implement out-of-stock, empty, loading and broken-image states.
-- [ ] Verify no fake product, price, rating or media content appears in production.
+- [x] Admin create/edit/archive products, categories and variants with validation.
+- [x] Add signed Cloudinary upload workflow and asset metadata records.
+- [x] Build published collection grid, search, supported filter/sort, cursor pagination and PDP gallery.
+- [x] Make banners/featured collections/navigation configurable in Firestore.
+- [x] Implement out-of-stock, empty, loading and broken-image states.
+- [x] Verify no fake product, price, rating or media content appears in production.
 
 **Deliverables:** live catalog, Cloudinary integration, collection/PDP pages. **Exit:** publish/edit changes reflect on public site.
 
