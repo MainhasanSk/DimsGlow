@@ -49,11 +49,11 @@ Use the checkboxes to track work. Each phase needs a verified deliverable before
 
 ## Phase 4 — Design system and storefront shell
 
-- [ ] Implement tokens, typography, responsive containers, buttons, inputs, cards, badges, dialogs, drawers, toasts and skeletons.
-- [ ] Build announcement bar, centered-logo header, category nav, search/account/cart utilities.
-- [ ] Build footer, policy/contact/about pages and mobile navigation.
-- [ ] Implement reference hierarchy using approved DIMSGLOW assets.
-- [ ] Test keyboard, Escape, focus management and reduced motion.
+- [x] Implement tokens, typography, responsive containers, buttons, inputs, cards, badges, dialogs, drawers, toasts and skeletons.
+- [x] Build announcement bar, centered-logo header, category nav, search/account/cart utilities.
+- [x] Build footer, policy/contact/about pages and mobile navigation.
+- [x] Implement reference hierarchy using approved DIMSGLOW assets.
+- [x] Test keyboard, Escape, focus management and reduced motion.
 
 **Deliverables:** reusable shell, responsive pages and screenshot comparisons. **Exit:** header/navigation/footer approved on desktop and mobile.
 
