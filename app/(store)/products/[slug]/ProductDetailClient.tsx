@@ -48,6 +48,8 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
   const [activeTab, setActiveTab] = useState<'desc' | 'faq'>('desc');
   const [beforeAfterSlider, setBeforeAfterSlider] = useState(50);
   const [showStickyBar, setShowStickyBar] = useState(false);
+  const [recCategory, setRecCategory] = useState<string>('all');
+  const [addingCombo, setAddingCombo] = useState(false);
 
   useEffect(() => {
     async function loadProduct() {
@@ -130,6 +132,42 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
     });
     router.push('/checkout');
   };
+
+  // Find complementary pair product for the current product
+  const pairedProduct =
+    CATALOG_PRODUCTS.find((p) => {
+      if (p.id === activeProduct.id) return false;
+      if (activeProduct.categoryIds.includes('face')) return p.categoryIds.includes('lips');
+      if (activeProduct.categoryIds.includes('lips')) return p.categoryIds.includes('eyes');
+      if (activeProduct.categoryIds.includes('eyes')) return p.categoryIds.includes('face');
+      return p.categoryIds.includes('face');
+    }) || CATALOG_PRODUCTS.find((p) => p.id !== activeProduct.id);
+
+  const handleAddComboBoth = () => {
+    if (!pairedProduct) return;
+    setAddingCombo(true);
+    handleAddToCart();
+    const pairedVar = pairedProduct.variants[0];
+    addToCart({
+      id: `${pairedProduct.id}_${pairedVar?.id || 'default'}`,
+      productId: pairedProduct.id,
+      variantId: pairedVar?.id,
+      productName: pairedProduct.name,
+      variantTitle: pairedVar?.title,
+      quantity: 1,
+      unitPricePaise: pairedVar?.pricePaise || pairedProduct.pricePaise,
+      compareAtPricePaise: pairedVar?.compareAtPricePaise || pairedProduct.compareAtPricePaise,
+      imageUrl: pairedVar?.imageUrl || pairedProduct.media[0]?.secureUrl,
+      slug: pairedProduct.slug,
+    });
+    setTimeout(() => setAddingCombo(false), 500);
+  };
+
+  const recProducts = CATALOG_PRODUCTS.filter((p) => {
+    if (p.id === activeProduct.id) return false;
+    if (recCategory === 'all') return true;
+    return p.categoryIds.includes(recCategory);
+  });
 
   const exclusiveCoupons = [
     { code: 'LIPOIL', title: 'FREE Lip Oil & Lip Color', subtitle: 'On orders above ₹699' },
@@ -656,6 +694,152 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
                   <h5 className="text-xs font-bold text-[#19161A]">{rev.title}</h5>
                   <p className="text-xs text-[#6D6670] leading-relaxed">{rev.body}</p>
                 </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Section 6: Frequently Paired Together (Combo Routine) */}
+          {pairedProduct && (
+            <section className="p-6 sm:p-8 rounded-[16px] bg-[#FAF8FA] border border-[#E8E2E7] space-y-6">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-widest text-[#B83B63]">
+                  FREQUENTLY PAIRED TOGETHER
+                </span>
+                <h3 className="text-xl sm:text-2xl font-bold font-serif-brand text-[#19161A] mt-1">
+                  Complete Your Glam Routine & Save
+                </h3>
+                <p className="text-xs text-[#6D6670] mt-0.5">
+                  Pair this formulation with our bestselling match for all-day radiance and coverage.
+                </p>
+              </div>
+
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white p-5 rounded-[12px] border border-[#E8E2E7]">
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6 justify-center md:justify-start">
+                  {/* Item 1: Current Product */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-16 h-16 rounded-[8px] border border-[#E8E2E7] bg-[#FAF8FA] relative overflow-hidden shrink-0">
+                      <Image
+                        src={activeProduct.media[0]?.secureUrl || '/brand/dimsglow-logo.jpg'}
+                        alt={activeProduct.name}
+                        fill
+                        className="object-contain p-1"
+                      />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-[#19161A] line-clamp-1 max-w-[150px]">
+                        {activeProduct.name}
+                      </h4>
+                      <p className="text-xs font-bold text-[#B83B63]">{formatPricePaise(currentPrice)}</p>
+                      <span className="text-[10px] text-[#6D6670]">{activeVar?.title || 'Selected'}</span>
+                    </div>
+                  </div>
+
+                  {/* Plus Symbol */}
+                  <span className="text-xl font-bold text-[#D4AF37] px-1">+</span>
+
+                  {/* Item 2: Paired Product */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-16 h-16 rounded-[8px] border border-[#E8E2E7] bg-[#FAF8FA] relative overflow-hidden shrink-0">
+                      <Image
+                        src={pairedProduct.media[0]?.secureUrl || '/brand/dimsglow-logo.jpg'}
+                        alt={pairedProduct.name}
+                        fill
+                        className="object-contain p-1"
+                      />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-[#19161A] line-clamp-1 max-w-[150px]">
+                        {pairedProduct.name}
+                      </h4>
+                      <p className="text-xs font-bold text-[#B83B63]">
+                        {formatPricePaise(pairedProduct.pricePaise)}
+                      </p>
+                      <span className="text-[10px] text-[#6D6670]">
+                        {pairedProduct.variants[0]?.title || 'Bestseller Shade'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bundle Total & CTA */}
+                <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0 text-center md:text-right">
+                  <div>
+                    <span className="text-[11px] text-[#6D6670] block">Combo Price (10% Extra Off):</span>
+                    <div className="flex items-center gap-2 justify-center md:justify-end">
+                      <span className="text-lg font-bold text-[#19161A]">
+                        {formatPricePaise(Math.round((currentPrice + pairedProduct.pricePaise) * 0.9))}
+                      </span>
+                      <span className="text-xs text-[#8C8490] line-through">
+                        {formatPricePaise(currentPrice + pairedProduct.pricePaise)}
+                      </span>
+                    </div>
+                  </div>
+                  <Button
+                    variant="primary"
+                    size="md"
+                    disabled={addingCombo}
+                    onClick={handleAddComboBoth}
+                    className="text-xs font-bold uppercase tracking-wider px-5 shadow-md"
+                  >
+                    {addingCombo ? 'Adding Both...' : 'Add Both to Bag'}
+                  </Button>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Section 7: Explore More By Category */}
+          <section className="space-y-8 border-t border-[#E8E2E7] pt-12">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-widest text-[#B83B63]">
+                  EXPLORE OUR LUXURY COLLECTIONS
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-bold font-serif-brand text-[#19161A] mt-1">
+                  You May Also Love
+                </h3>
+                <p className="text-xs text-[#6D6670] mt-0.5">
+                  Select a category below to discover matching shades, active skincare serums, and eye essentials.
+                </p>
+              </div>
+              <Link
+                href="/collections/all"
+                className="text-xs font-bold text-[#B83B63] hover:text-[#982D50] flex items-center gap-1 group"
+              >
+                View Full Catalog <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+
+            {/* Category Filter Pills */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+              {[
+                { id: 'all', label: 'All Products' },
+                { id: 'face', label: 'Face Essentials' },
+                { id: 'lips', label: 'Lip Luxury' },
+                { id: 'eyes', label: 'Eyes & Lashes' },
+                { id: 'skin-care', label: 'Skin Radiance' },
+                { id: 'nails', label: 'Nail Lacquers' },
+                { id: 'perfumes', label: 'Fragrances & Sets' },
+              ].map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setRecCategory(cat.id)}
+                  className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all shrink-0 cursor-pointer ${
+                    recCategory === cat.id
+                      ? 'bg-[#B83B63] text-white shadow-sm'
+                      : 'bg-white border border-[#E8E2E7] text-[#6D6670] hover:text-[#19161A] hover:border-[#B83B63]'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Product Recommendations Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+              {recProducts.slice(0, 4).map((p) => (
+                <ProductCard key={p.id} product={p} />
               ))}
             </div>
           </section>

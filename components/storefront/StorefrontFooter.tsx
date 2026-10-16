@@ -194,11 +194,11 @@ export function StorefrontFooter() {
               </li>
               <li>
                 <Link href="/contact" className="hover:text-white transition-colors">
-                  Store Locator
+                  Store Locator & Contact
                 </Link>
               </li>
               <li>
-                <Link href="/account" className="hover:text-white transition-colors">
+                <Link href="/account/orders" className="hover:text-white transition-colors">
                   Track Order
                 </Link>
               </li>
@@ -210,6 +210,11 @@ export function StorefrontFooter() {
               <li>
                 <Link href="/cancellation-refund-policy" className="hover:text-white transition-colors">
                   Returns & Exchange
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin/login" className="hover:text-[#D4AF37] text-white/60 transition-colors">
+                  Staff Operations
                 </Link>
               </li>
             </ul>

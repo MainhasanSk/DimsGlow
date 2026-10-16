@@ -1,6 +1,13 @@
 {
   "rules": {
     ".read": false,
-    ".write": false
+    ".write": false,
+    "presence": {
+      "$userId": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid === $userId",
+        ".validate": "newData.hasChildren(['status', 'lastSeen']) && (newData.child('status').val() === 'online' || newData.child('status').val() === 'offline')"
+      }
+    }
   }
 }

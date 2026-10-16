@@ -80,7 +80,31 @@ service cloud.firestore {
       allow read, write: if false; // All invoice access is gated through authenticated server endpoint
     }
 
-    // 8. Audits, Ledgers, Reports, Settings (Strictly server-only)
+    // 8. Reviews & Ratings (Approved reviews publicly readable, mutations server-authorized)
+    match /reviews/{reviewId} {
+      allow read: if resource.data.status == 'approved';
+      allow write: if false; // Customer submissions and staff moderation routed through server API
+    }
+
+    // 9. Operations & Finance: Suppliers, Purchase Orders, Expenses (Strictly server-only)
+    match /suppliers/{supplierId} {
+      allow read, write: if false;
+    }
+
+    match /purchaseOrders/{poId} {
+      allow read, write: if false;
+    }
+
+    match /expenses/{expenseId} {
+      allow read, write: if false;
+    }
+
+    // 10. CRM Customer Notes & History (Strictly server-only)
+    match /crmNotes/{customerId}/{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    // 11. Audits, Ledgers, Reports, Settings (Strictly server-only)
     match /stockMovements/{movementId} {
       allow read, write: if false;
     }

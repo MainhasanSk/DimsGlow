@@ -47,6 +47,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const displayName = profile?.displayName || user?.displayName || 'Admin Staff';
   const roleLabel = role?.replace('_', ' ').toUpperCase() || 'STAFF';
 
+  // Render standalone login page without admin dashboard shell
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
+
   return (
     <AdminRouteGuard>
       <div className="min-h-screen bg-[#F4F1F4] flex flex-col">

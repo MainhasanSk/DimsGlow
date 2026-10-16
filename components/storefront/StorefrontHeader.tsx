@@ -14,6 +14,7 @@ import {
   ChevronDown,
   Sparkles,
   ArrowRight,
+  ShieldCheck,
 } from 'lucide-react';
 import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
@@ -21,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import { useCart } from '@/lib/cart/CartContext';
 
 export function StorefrontHeader() {
-  const { user, profile } = useAuth();
+  const { user, profile, role } = useAuth();
   const { totalItemCount, setIsCartDrawerOpen, favoritesCount } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -136,8 +137,19 @@ export function StorefrontHeader() {
               </Link>
             </div>
 
-            {/* Right Utility Icons (Search, Account, Wishlist, Bag) */}
+            {/* Right Utility Icons (Admin Portal, Search, Account, Wishlist, Bag) */}
             <div className="flex items-center gap-3 sm:gap-4">
+              {role && role !== 'customer' && (
+                <Link
+                  href="/admin"
+                  className="px-2.5 py-1 rounded-full bg-[#1F161E] text-[#D4AF37] border border-[#D4AF37]/40 text-[10px] font-bold tracking-wider uppercase hover:bg-[#3B2C3A] transition-colors flex items-center gap-1 shadow-xs"
+                  title="Open Administrative Console"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  <span>Admin</span>
+                </Link>
+              )}
+
               <button
                 type="button"
                 onClick={() => setIsSearchOpen(true)}
@@ -351,8 +363,17 @@ export function StorefrontHeader() {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block text-xs text-[#B83B63] font-semibold hover:underline"
                   >
-                    Open Dashboard →
+                    My Customer Orders →
                   </Link>
+                  {role && role !== 'customer' && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block text-xs text-[#AA771C] font-bold hover:underline"
+                    >
+                      ★ Operations Console →
+                    </Link>
+                  )}
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-2">
