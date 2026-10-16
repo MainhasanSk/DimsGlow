@@ -104,6 +104,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /crmProfiles/{allPaths=**} {
+      allow read, write: if false;
+    }
+
     // 11. Audits, Ledgers, Reports, Settings (Strictly server-only)
     match /stockMovements/{movementId} {
       allow read, write: if false;

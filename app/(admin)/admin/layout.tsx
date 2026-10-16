@@ -23,6 +23,8 @@ import {
   Building,
   Receipt,
   BarChart3,
+  Star,
+  UserCheck,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
@@ -34,6 +36,8 @@ const ADMIN_NAV = [
   { label: 'Invoices & Tax', href: '/admin/invoices', icon: FileText },
   { label: 'Purchases & Vendors', href: '/admin/purchases', icon: Building },
   { label: 'Expenses', href: '/admin/expenses', icon: Receipt },
+  { label: 'CRM & Clients', href: '/admin/crm', icon: UserCheck },
+  { label: 'Reviews', href: '/admin/reviews', icon: Star },
   { label: 'Analytics & Reports', href: '/admin/reports', icon: BarChart3 },
   { label: 'Staff & Roles', href: '/admin/staff', icon: Users },
   { label: 'Audit Security', href: '/admin/audit', icon: ShieldCheck },

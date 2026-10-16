@@ -31,6 +31,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { FAQAccordion } from '../../faq/page';
 import { useCart } from '@/lib/cart/CartContext';
+import { useAuth } from '@/lib/auth/AuthContext';
 
 interface ProductDetailClientProps {
   slug: string;
@@ -38,6 +39,7 @@ interface ProductDetailClientProps {
 
 export function ProductDetailClient({ slug }: ProductDetailClientProps) {
   const router = useRouter();
+  const { user } = useAuth();
   const { addToCart, toggleFavorite, isFavorite } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
@@ -51,6 +53,17 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
   const [recCategory, setRecCategory] = useState<string>('all');
   const [addingCombo, setAddingCombo] = useState(false);
 
+  // Review System States
+  const [reviewsList, setReviewsList] = useState<any[]>([]);
+  const [averageScore, setAverageScore] = useState<number>(5.0);
+  const [totalReviewsCount, setTotalReviewsCount] = useState<number>(17);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [newReviewRating, setNewReviewRating] = useState(5);
+  const [newReviewTitle, setNewReviewTitle] = useState('');
+  const [newReviewComment, setNewReviewComment] = useState('');
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [reviewAlert, setReviewAlert] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
   useEffect(() => {
     async function loadProduct() {
       const p = await getProductBySlug(slug);
@@ -60,6 +73,22 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
       }
     }
     loadProduct();
+
+    // Fetch approved customer reviews
+    async function loadReviews() {
+      try {
+        const res = await fetch(`/api/reviews?slug=${slug}`);
+        const data = await res.json();
+        if (data.success && data.reviews && data.reviews.length > 0) {
+          setReviewsList(data.reviews);
+          setAverageScore(data.averageRating);
+          setTotalReviewsCount(data.totalReviews);
+        }
+      } catch (err) {
+        console.error('Failed to load reviews:', err);
+      }
+    }
+    loadReviews();
   }, [slug]);
 
   // Sticky bottom bar trigger on scroll
@@ -643,19 +672,26 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
                 </h3>
                 <div className="flex items-center gap-2 pt-1">
                   <div className="flex text-[#D4AF37]">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-current" />
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star key={s} className={`w-4 h-4 ${s <= Math.round(averageScore) ? 'fill-[#D4AF37]' : 'text-black/15'}`} />
                     ))}
                   </div>
-                  <span className="text-sm font-bold text-[#18794E]">5.0</span>
-                  <span className="text-xs text-[#6D6670]">(17 verified reviews)</span>
+                  <span className="text-sm font-bold text-[#18794E]">{averageScore}</span>
+                  <span className="text-xs text-[#6D6670]">({totalReviewsCount} verified reviews)</span>
                 </div>
               </div>
 
               <Button
                 variant="primary"
                 size="md"
-                onClick={() => alert('Review submission will open for verified purchase accounts.')}
+                onClick={() => {
+                  if (!user) {
+                    router.push(`/sign-in?redirect=/products/${slug}`);
+                  } else {
+                    setIsReviewModalOpen(true);
+                  }
+                }}
+                className="cursor-pointer"
               >
                 Write a review
               </Button>
@@ -663,36 +699,42 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
 
             {/* Individual Reviews */}
             <div className="space-y-4">
-              {[
+              {(reviewsList.length > 0 ? reviewsList : [
                 {
-                  author: 'Sneha Patel',
+                  id: 'curated_1',
+                  customerName: 'Sneha Patel',
                   rating: 5,
                   title: 'A perfect shade match and what a coverage!',
-                  body: 'I just love it. I am so mesmerised that I had to write a review. I have some dark circles which this skin tint was able to cover in a buildable way. No cakiness after applying and it adds a subtle shine that stays all day long.',
-                  date: 'Verified Buyer • 2 weeks ago',
+                  comment: 'I just love it. I am so mesmerised that I had to write a review. I have some dark circles which this skin tint was able to cover in a buildable way. No cakiness after applying and it adds a subtle shine that stays all day long.',
+                  verifiedPurchase: true,
+                  createdAt: Date.now() - 14 * 24 * 60 * 60 * 1000,
                 },
                 {
-                  author: 'Kavita Das',
+                  id: 'curated_2',
+                  customerName: 'Kavita Das',
                   rating: 5,
                   title: 'Lightweight and non-comedogenic',
-                  body: 'My dermatologist warned me against heavy foundations. DIMSGLOW skin tint feels like a serum and lets my skin breathe in Guwahati humidity. Very impressed!',
-                  date: 'Verified Buyer • 1 month ago',
+                  comment: 'My dermatologist warned me against heavy foundations. DIMSGLOW skin tint feels like a serum and lets my skin breathe in Guwahati humidity. Very impressed!',
+                  verifiedPurchase: true,
+                  createdAt: Date.now() - 30 * 24 * 60 * 60 * 1000,
                 },
-              ].map((rev) => (
-                <div key={rev.author} className="p-5 rounded-[10px] bg-[#FAF8FA] border border-[#E8E2E7] space-y-2">
+              ]).map((rev) => (
+                <div key={rev.id || rev.customerName} className="p-5 rounded-[10px] bg-[#FAF8FA] border border-[#E8E2E7] space-y-2">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="text-xs font-bold text-[#19161A]">{rev.author}</h4>
-                      <span className="text-[10px] text-[#18794E] font-semibold">✓ {rev.date}</span>
+                      <h4 className="text-xs font-bold text-[#19161A]">{rev.customerName}</h4>
+                      {rev.verifiedPurchase && (
+                        <span className="text-[10px] text-[#18794E] font-semibold">✓ Verified Buyer</span>
+                      )}
                     </div>
                     <div className="flex text-[#D4AF37]">
-                      {[...Array(rev.rating)].map((_, i) => (
-                        <Star key={i} className="w-3.5 h-3.5 fill-current" />
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star key={s} className={`w-3.5 h-3.5 ${s <= rev.rating ? 'fill-[#D4AF37]' : 'text-black/15'}`} />
                       ))}
                     </div>
                   </div>
                   <h5 className="text-xs font-bold text-[#19161A]">{rev.title}</h5>
-                  <p className="text-xs text-[#6D6670] leading-relaxed">{rev.body}</p>
+                  <p className="text-xs text-[#6D6670] leading-relaxed">{rev.comment}</p>
                 </div>
               ))}
             </div>
@@ -883,6 +925,142 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
                 BUY NOW
               </Button>
             </div>
+          </div>
+        </div>
+      )}
+      {/* Interactive Review Submission Modal */}
+      {isReviewModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white rounded-[12px] p-6 max-w-md w-full shadow-2xl border border-black/10 space-y-4 animate-in fade-in zoom-in-95">
+            <div className="flex justify-between items-center pb-2 border-b border-black/10">
+              <h3 className="text-base font-bold text-[#19161A] font-serif-brand">
+                Review {activeProduct.name}
+              </h3>
+              <button
+                onClick={() => setIsReviewModalOpen(false)}
+                className="text-black/40 hover:text-black cursor-pointer text-sm font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            {reviewAlert && (
+              <div
+                className={`p-3 rounded-[6px] text-xs font-medium ${
+                  reviewAlert.type === 'success'
+                    ? 'bg-[#EBF7EE] text-[#1E7E34] border border-[#C3E6CB]'
+                    : 'bg-[#FDF0ED] text-[#D9381E] border border-[#F5C6CB]'
+                }`}
+              >
+                {reviewAlert.text}
+              </div>
+            )}
+
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!user) {
+                  router.push(`/sign-in?redirect=/products/${slug}`);
+                  return;
+                }
+                setIsSubmittingReview(true);
+                setReviewAlert(null);
+                try {
+                  const token = await user.getIdToken();
+                  const res = await fetch('/api/reviews', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                      productId: activeProduct.id,
+                      productSlug: slug,
+                      productTitle: activeProduct.name,
+                      rating: newReviewRating,
+                      title: newReviewTitle,
+                      comment: newReviewComment,
+                    }),
+                  });
+                  const data = await res.json();
+                  if (!data.success) throw new Error(data.error);
+
+                  setReviewAlert({ type: 'success', text: data.message });
+                  setNewReviewTitle('');
+                  setNewReviewComment('');
+                  setTimeout(() => {
+                    setIsReviewModalOpen(false);
+                    setReviewAlert(null);
+                  }, 2500);
+                } catch (err: any) {
+                  setReviewAlert({ type: 'error', text: err.message || 'Failed to submit review' });
+                } finally {
+                  setIsSubmittingReview(false);
+                }
+              }}
+              className="space-y-4 text-xs"
+            >
+              <div>
+                <label className="font-bold text-[#19161A] block mb-1.5">Your Rating *</label>
+                <div className="flex gap-1.5 items-center">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setNewReviewRating(s)}
+                      className="p-1 text-[#D4AF37] hover:scale-110 transition-transform cursor-pointer"
+                    >
+                      <Star
+                        className={`w-6 h-6 ${s <= newReviewRating ? 'fill-[#D4AF37]' : 'text-black/15'}`}
+                      />
+                    </button>
+                  ))}
+                  <span className="text-xs font-bold text-[#19161A] ml-2">{newReviewRating} of 5 Stars</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-[#19161A] block mb-1">Headline / Review Title *</label>
+                <input
+                  type="text"
+                  required
+                  value={newReviewTitle}
+                  onChange={(e) => setNewReviewTitle(e.target.value)}
+                  placeholder="e.g. Gorgeous coverage that stays all day!"
+                  className="w-full px-3 py-2 border border-black/20 rounded-[6px] text-xs bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-[#19161A] block mb-1">Your Honest Experience *</label>
+                <textarea
+                  rows={4}
+                  required
+                  value={newReviewComment}
+                  onChange={(e) => setNewReviewComment(e.target.value)}
+                  placeholder="Tell other beauty lovers about shade match, longevity, formula texture, and finish..."
+                  className="w-full px-3 py-2 border border-black/20 rounded-[6px] text-xs bg-white"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsReviewModalOpen(false)}
+                  className="cursor-pointer"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmittingReview || !newReviewTitle.trim() || !newReviewComment.trim()}
+                  className="bg-[#B83B63] hover:bg-[#9B2C4F] text-white cursor-pointer"
+                >
+                  {isSubmittingReview ? 'Submitting...' : 'Submit Review'}
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       )}

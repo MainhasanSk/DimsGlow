@@ -111,33 +111,33 @@ Use the checkboxes to track work. Each phase needs a verified deliverable before
 
 ## Phase 10 — Purchase, supplier, expense, CRM and reviews
 
-- [ ] Supplier management and purchase history.
-- [ ] Purchase orders with partial/full receipt and idempotent stock increment.
-- [ ] Expense forms/categories/date/vendor/reference with role restrictions.
-- [ ] CRM customer summary/order history/tags/safe notes.
-- [ ] Review eligibility, deduplication and moderation.
+- [x] Supplier management and purchase history.
+- [x] Purchase orders with partial/full receipt and idempotent stock increment.
+- [x] Expense forms/categories/date/vendor/reference with role restrictions.
+- [x] CRM customer summary/order history/tags/safe notes.
+- [x] Review eligibility, deduplication and moderation.
 
 **Deliverables:** linked operations/finance/CRM modules. **Exit:** stock and financial records trace to events; duplicate receipt/retry does not double count.
 
 ## Phase 11 — Dashboard, analytics and Excel export
 
-- [ ] Define KPI formulas, timezone, currency and cancellation/refund treatment.
-- [ ] Build live KPI/chart panels, recent orders, low-stock and payment/order pipeline.
-- [ ] Implement weekly/monthly/yearly/custom server report service.
-- [ ] Generate authorized `.xlsx` with filters matching the dashboard.
-- [ ] Add aggregate idempotency/reconciliation if denormalized summaries are needed.
-- [ ] Verify export/chart totals against deterministic fixtures.
+- [x] Define KPI formulas, timezone, currency and cancellation/refund treatment.
+- [x] Build live KPI/chart panels, recent orders, low-stock and payment/order pipeline.
+- [x] Implement weekly/monthly/yearly/custom server report service.
+- [x] Generate authorized `.xlsx` with filters matching the dashboard.
+- [x] Add aggregate idempotency/reconciliation if denormalized summaries are needed.
+- [x] Verify export/chart totals against deterministic fixtures.
 
 **Deliverables:** live admin analytics and Excel reports. **Exit:** metrics reproduce source records; empty data yields zero/empty state, not fake values.
 
 ## Phase 12 — Roles, audit, backup and hardening
 
-- [ ] Finalize role matrix and implement staff invite/grant/suspend/revoke.
-- [ ] Cover every privileged mutation with audit records.
-- [ ] Document Firestore/RTDB/Cloudinary backup/restore procedures.
-- [ ] Scan rules/endpoints/secrets/dependencies and production build output.
-- [ ] Add abuse controls, App Check where compatible, headers/CSP and safe logging.
-- [ ] Configure alerts, monitoring, error tracking, backup schedule and budget thresholds.
+- [x] Finalize role matrix and implement staff invite/grant/suspend/revoke.
+- [x] Cover every privileged mutation with audit records.
+- [x] Document Firestore/RTDB/Cloudinary backup/restore procedures.
+- [x] Scan rules/endpoints/secrets/dependencies and production build output.
+- [x] Add abuse controls, App Check where compatible, headers/CSP and safe logging.
+- [x] Configure alerts, monitoring, error tracking, backup schedule and budget thresholds.
 
 **Deliverables:** access controls, security runbook, restore proof and release checklist. **Exit:** least privilege and staging restore verified; no unresolved critical/high issue.
 
