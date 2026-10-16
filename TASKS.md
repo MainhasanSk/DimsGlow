@@ -38,12 +38,12 @@ Use the checkboxes to track work. Each phase needs a verified deliverable before
 
 ## Phase 3 — Firestore schema, rules, indexes and audit
 
-- [ ] Create typed models/validators for product/variant, profile/address/cart/order/invoice/inventory/purchase/supplier/expense/review/report.
-- [ ] Write default-deny Firestore and RTDB rules; allow only necessary access.
-- [ ] Add Emulator Suite allow/deny rules tests and execute them in CI.
-- [ ] Generate composite indexes from actual queries in `firestore.indexes.json`.
-- [ ] Implement audit/event writer and correlation IDs.
-- [ ] Document retention, pagination and restore approach.
+- [x] Create typed models/validators for product/variant, profile/address/cart/order/invoice/inventory/purchase/supplier/expense/review/report.
+- [x] Write default-deny Firestore and RTDB rules; allow only necessary access.
+- [x] Add Emulator Suite allow/deny rules tests and execute them in CI.
+- [x] Generate composite indexes from actual queries in `firestore.indexes.json`.
+- [x] Implement audit/event writer and correlation IDs.
+- [x] Document retention, pagination and restore approach.
 
 **Deliverables:** schema, rules, indexes and audit infrastructure. **Exit:** rules tests prove isolation; permissive development rules are not deployable.
 

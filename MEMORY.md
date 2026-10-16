@@ -84,7 +84,13 @@ Do not guess legal/tax/shipping/payment/return/staff permissions. Ask the owner 
   - Built server-side staff provisioning & revocation service `lib/auth/staffService.ts`.
   - Created first-owner secure bootstrap script `scripts/bootstrap-owner.ts` and documentation `docs/OWNER_BOOTSTRAP.md`.
   - 15 unit/component/auth tests passing in Vitest; Next.js production build succeeds with 0 errors.
-- **Next Task:** Phase 3 — Firestore schema, rules, indexes and audit (typed Zod models for products/orders/invoices/stock, default-deny rules with isolated customer ownership, and audit logger).
+- **Phase 3 Firestore Schema, Rules, Indexes & Audit (Completed 2026-10-16):**
+  - Created typed Zod schemas and TypeScript models for `Product`, `ProductVariant`, `Order`, `OrderItemSnapshot`, `ShippingAddressSnapshot`, `Invoice`, `StockMovement`, `CartItem`, and `AuditEvent` in `lib/schemas/`.
+  - Configured comprehensive default-deny `firestore.rules` enforcing public read on published catalog only, customer UID isolation for cart/favorites/orders, and strictly server-only writes for privileged state.
+  - Built immutable audit logger `lib/audit/auditLogger.ts` with automatic credential/secret sanitization.
+  - Documented cursor-based pagination and backup/recovery strategies in `docs/DATA_ARCHITECTURE.md`.
+  - 20 unit and schema tests passing in Vitest; production Next.js build succeeds with 0 errors.
+- **Next Task:** Phase 4 — Design system and storefront shell (announcement bar, navigation header with centered logo, mega menu, footer with policies, floating WhatsApp widget, responsive layout matching the reference PDF).
 
 ## Update protocol
 
