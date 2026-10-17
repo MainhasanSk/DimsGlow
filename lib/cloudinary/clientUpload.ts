@@ -19,56 +19,29 @@ export async function uploadToCloudinary(
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'web8vmww';
 
   try {
-    // 1. Request signature from server if auth token is available
-    let signatureData: any = null;
-    if (idToken) {
-      const sigRes = await fetch('/api/media/signature', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({ folder }),
-      });
-
-      if (sigRes.ok) {
-        signatureData = await sigRes.json();
-      }
-    }
-
-    // 2. Perform direct upload to Cloudinary API
+    // 1. Upload via server-side signed Cloudinary API endpoint
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', folder);
 
-    if (signatureData) {
-      formData.append('api_key', signatureData.apiKey);
-      formData.append('timestamp', signatureData.timestamp.toString());
-      formData.append('signature', signatureData.signature);
-    } else {
-      // Unsigned upload fallback preset
-      formData.append('upload_preset', 'dimsglow_unsigned');
-    }
-
-    const uploadRes = await fetch(
-      `https://api.cloudinary.com/v1_1/${signatureData?.cloudName || cloudName}/auto/upload`,
-      {
-        method: 'POST',
-        body: formData,
-      }
-    );
+    const uploadRes = await fetch('/api/media/upload', {
+      method: 'POST',
+      body: formData,
+    });
 
     if (uploadRes.ok) {
       const data = await uploadRes.json();
-      return {
-        secureUrl: data.secure_url,
-        publicId: data.public_id,
-        format: data.format,
-        bytes: data.bytes,
-      };
+      if (data.secureUrl) {
+        return {
+          secureUrl: data.secureUrl,
+          publicId: data.publicId,
+          format: data.format,
+          bytes: data.bytes,
+        };
+      }
     }
   } catch (err) {
-    console.warn('Cloudinary direct upload fallback to local data url:', err);
+    console.error('Cloudinary signed upload error:', err);
   }
 
   // 3. Fallback: Convert to data URL for seamless offline demonstration

@@ -51,6 +51,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 
+import { uploadToCloudinary } from '@/lib/cloudinary/clientUpload';
+
 const GRADIENT_PRESETS = [
   { name: 'Burgundy Luxe', value: 'from-[#2D0B1E] via-[#541235] to-[#141215]' },
   { name: 'Deep Emerald', value: 'from-[#0C2D3E] via-[#104D6B] to-[#0A1A24]' },
@@ -67,22 +69,32 @@ export default function AdminContentPage() {
   const [categoryHeroes, setCategoryHeroes] = useState<Record<string, CategoryHero>>(DEFAULT_CATEGORY_HEROES);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [uploadingMedia, setUploadingMedia] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Helper for manual device file uploads (Images & Videos)
-  const handleDeviceUpload = (
+  // Helper for manual device file uploads (Images & Videos) directly to Cloudinary
+  const handleDeviceUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    onComplete: (dataUrl: string) => void
+    onComplete: (url: string) => void,
+    folder: 'dimsglow/editorial' | 'dimsglow/campaigns' | 'dimsglow/categories' = 'dimsglow/editorial'
   ) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          onComplete(reader.result);
+      setUploadingMedia(true);
+      setSaveMessage({ type: 'success', text: 'Uploading to Cloudinary...' });
+      try {
+        const res = await uploadToCloudinary(file, folder);
+        if (res.secureUrl) {
+          onComplete(res.secureUrl);
+          setSaveMessage({ type: 'success', text: `Uploaded to Cloudinary: ${res.publicId}` });
         }
-      };
-      reader.readAsDataURL(file);
+      } catch (err: any) {
+        console.error('Cloudinary upload error:', err);
+        setSaveMessage({ type: 'error', text: 'Cloudinary upload failed: ' + (err.message || 'Network error') });
+      } finally {
+        setUploadingMedia(false);
+        e.target.value = '';
+      }
     }
   };
 
