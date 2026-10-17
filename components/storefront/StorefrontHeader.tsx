@@ -458,18 +458,8 @@ export function StorefrontHeader() {
               </Link>
             </div>
 
-            {/* Right Utility Icons (Admin Portal, Search, Account, Wishlist, Bag) */}
+            {/* Right Utility Icons (Search, Account, Wishlist, Bag) */}
             <div className="flex items-center gap-3 sm:gap-4">
-              {role && role !== 'customer' && (
-                <Link
-                  href="/admin"
-                  className="px-2.5 py-1 rounded-full bg-[#1F161E] text-[#D4AF37] border border-[#D4AF37]/40 text-[10px] font-bold tracking-wider uppercase hover:bg-[#3B2C3A] transition-colors flex items-center gap-1 shadow-xs"
-                  title="Open Administrative Console"
-                >
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
-                  <span>Admin</span>
-                </Link>
-              )}
 
               <button
                 type="button"

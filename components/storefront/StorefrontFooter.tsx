@@ -212,11 +212,6 @@ export function StorefrontFooter() {
                   Returns & Exchange
                 </Link>
               </li>
-              <li>
-                <Link href="/admin/login" className="hover:text-[#D4AF37] text-white/60 transition-colors">
-                  Staff Operations
-                </Link>
-              </li>
             </ul>
           </div>
 

@@ -36,6 +36,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Modal } from '@/components/ui/modal';
 
+import { uploadToCloudinary } from '@/lib/cloudinary/clientUpload';
+
 interface VariantDraft {
   id: string;
   sku: string;
@@ -58,6 +60,7 @@ export default function AdminProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
   const [notification, setNotification] = useState<string | null>(null);
+  const [uploadingMedia, setUploadingMedia] = useState(false);
 
   // Modal State for Add / Edit
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -127,28 +130,30 @@ export default function AdminProductsPage() {
   const publishedCount = products.filter((p) => p.status === 'published').length;
   const totalVariants = products.reduce((acc, p) => acc + p.variants.length, 0);
 
-  // Handle Multi-file Upload from Device
-  const handleDeviceFilesUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle Multi-file Upload from Device to Cloudinary
+  const handleDeviceFilesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
+    setUploadingMedia(true);
 
-    Array.from(files).forEach((file, index) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          const newMedia: MediaDraft = {
-            publicId: `upload_${Date.now()}_${index}`,
-            secureUrl: reader.result,
-            altText: formName ? `${formName} view` : file.name,
-            isPrimary: mediaList.length === 0 && index === 0,
-          };
-          setMediaList((prev) => [...prev, newMedia]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-
-    e.target.value = '';
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const res = await uploadToCloudinary(file, 'dimsglow/products');
+        const newMedia: MediaDraft = {
+          publicId: res.publicId,
+          secureUrl: res.secureUrl,
+          altText: formName ? `${formName} view ${mediaList.length + i + 1}` : file.name,
+          isPrimary: mediaList.length === 0 && i === 0,
+        };
+        setMediaList((prev) => [...prev, newMedia]);
+      }
+    } catch (err) {
+      console.error('Cloudinary media upload error:', err);
+    } finally {
+      setUploadingMedia(false);
+      e.target.value = '';
+    }
   };
 
   // Add Image by URL
@@ -841,11 +846,12 @@ export default function AdminProductsPage() {
                   <ImageIcon className="w-4 h-4" /> 3. Multi-Image Gallery ({mediaList.length} Images)
                 </h4>
                 <label className="text-xs font-bold text-[#B83B63] bg-[#FBEAF0] hover:bg-[#B83B63] hover:text-white px-3 py-1.5 rounded-md cursor-pointer transition-colors flex items-center gap-1.5">
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>Upload from Device</span>
+                  <Upload className={`w-3.5 h-3.5 ${uploadingMedia ? 'animate-spin' : ''}`} />
+                  <span>{uploadingMedia ? 'Uploading to Cloudinary...' : 'Upload from Device (Cloudinary)'}</span>
                   <input
                     type="file"
                     multiple
+                    disabled={uploadingMedia}
                     accept="image/*"
                     onChange={handleDeviceFilesUpload}
                     className="hidden"

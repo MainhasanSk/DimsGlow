@@ -25,14 +25,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       danger:
         'bg-[#B42318] text-white hover:bg-[#911a12] focus-visible:ring-[#B42318]',
       gold:
-        'bg-gradient-to-r from-[#D4AF37] to-[#AA771C] text-white hover:brightness-105 shadow-md focus-visible:ring-[#D4AF37]',
+        'bg-linear-to-r from-[#D4AF37] to-[#AA771C] text-white hover:brightness-105 shadow-md focus-visible:ring-[#D4AF37]',
     };
 
     const sizes = {
-      sm: 'text-xs px-3 py-1.5 rounded-[5px] h-8 gap-1.5',
-      md: 'text-sm px-4 py-2 rounded-[6px] h-10 gap-2',
-      lg: 'text-base px-6 py-3 rounded-[8px] h-12 gap-2.5 font-semibold',
-      icon: 'h-10 w-10 p-0 rounded-[6px] items-center justify-center',
+      sm: 'text-xs px-3 py-1.5 rounded-sm h-8 gap-1.5',
+      md: 'text-sm px-4 py-2 rounded-md h-10 gap-2',
+      lg: 'text-base px-6 py-3 rounded-lg h-12 gap-2.5 font-semibold',
+      icon: 'h-10 w-10 p-0 rounded-md items-center justify-center',
     };
 
     return (

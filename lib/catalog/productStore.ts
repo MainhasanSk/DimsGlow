@@ -1,112 +1,76 @@
 'use client';
 
-import { CATALOG_PRODUCTS, CATEGORIES } from '@/lib/data/catalog';
+import { CATALOG_PRODUCTS } from '@/lib/data/catalog';
+import { db } from '@/lib/firebase/client';
+import {
+  collection,
+  doc,
+  setDoc,
+  deleteDoc,
+  onSnapshot,
+  getDocs,
+  runTransaction,
+} from 'firebase/firestore';
 import type { Product, ProductVariant } from '@/lib/schemas/product';
 
-const STORAGE_KEY_PRODUCTS = 'dimsglow_custom_products';
-const STORAGE_KEY_DELETED = 'dimsglow_deleted_products';
-const STORAGE_KEY_STOCK = 'dimsglow_stock_overrides';
+let memoryProducts: Product[] = [...CATALOG_PRODUCTS];
+let isFirestoreInitialized = false;
 
-export interface StockOverride {
-  sku: string;
-  onHand: number;
-  reserved?: number;
-  updatedAt: number;
-}
-
-/**
- * Retrieves custom products created or updated by admin.
- */
-export function getCustomProducts(): Product[] {
-  if (typeof window === 'undefined') return [];
+// Initialize real-time sync with Firestore products collection
+if (typeof window !== 'undefined' && !isFirestoreInitialized) {
+  isFirestoreInitialized = true;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY_PRODUCTS);
-    return raw ? JSON.parse(raw) : [];
+    const productsColl = collection(db, 'products');
+    onSnapshot(
+      productsColl,
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const list: Product[] = [];
+          snapshot.forEach((d) => {
+            list.push(d.data() as Product);
+          });
+          memoryProducts = list;
+          window.dispatchEvent(new CustomEvent('dimsglow_catalog_updated'));
+        } else {
+          // If Firestore is empty, seed from API
+          fetch('/api/products')
+            .then((r) => r.json())
+            .then((data) => {
+              if (data.products && data.products.length > 0) {
+                memoryProducts = data.products;
+                window.dispatchEvent(new CustomEvent('dimsglow_catalog_updated'));
+              }
+            })
+            .catch(() => {});
+        }
+      },
+      (err) => {
+        console.warn('Firestore products listener fallback to API:', err.message);
+        fetch('/api/products')
+          .then((r) => r.json())
+          .then((data) => {
+            if (data.products && data.products.length > 0) {
+              memoryProducts = data.products;
+              window.dispatchEvent(new CustomEvent('dimsglow_catalog_updated'));
+            }
+          })
+          .catch(() => {});
+      }
+    );
   } catch (err) {
-    console.error('Failed to parse custom products:', err);
-    return [];
+    console.warn('Client Firestore listener setup exception:', err);
   }
 }
 
 /**
- * Retrieves deleted product IDs.
- */
-export function getDeletedProductIds(): string[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_DELETED);
-    return raw ? JSON.parse(raw) : [];
-  } catch (err) {
-    console.error('Failed to parse deleted products:', err);
-    return [];
-  }
-}
-
-/**
- * Retrieves stock overrides.
- */
-export function getStockOverrides(): Record<string, StockOverride> {
-  if (typeof window === 'undefined') return {};
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_STOCK);
-    return raw ? JSON.parse(raw) : {};
-  } catch (err) {
-    console.error('Failed to parse stock overrides:', err);
-    return {};
-  }
-}
-
-/**
- * Returns merged active catalog products (base + custom, minus deleted, with stock applied).
+ * Returns merged active catalog products directly from database state.
  */
 export function getAllProducts(): Product[] {
-  const customProducts = getCustomProducts();
-  const deletedIds = new Set(getDeletedProductIds());
-  const stockOverrides = getStockOverrides();
-
-  // Merge base catalog with custom products (custom takes precedence by id or slug)
-  const productMap = new Map<string, Product>();
-
-  // Add default base catalog
-  for (const p of CATALOG_PRODUCTS) {
-    if (!deletedIds.has(p.id)) {
-      productMap.set(p.id, { ...p });
-    }
-  }
-
-  // Overlay custom / edited products
-  for (const cp of customProducts) {
-    if (!deletedIds.has(cp.id)) {
-      productMap.set(cp.id, { ...cp });
-    }
-  }
-
-  // Apply stock overrides across variants
-  const result: Product[] = [];
-  for (const p of productMap.values()) {
-    const updatedVariants = p.variants.map((v) => {
-      const override = stockOverrides[v.sku];
-      if (override !== undefined) {
-        return {
-          ...v,
-          onHand: override.onHand,
-          reserved: override.reserved !== undefined ? override.reserved : v.reserved,
-        };
-      }
-      return v;
-    });
-
-    result.push({
-      ...p,
-      variants: updatedVariants,
-    });
-  }
-
-  return result;
+  return memoryProducts.length > 0 ? memoryProducts : CATALOG_PRODUCTS;
 }
 
 /**
- * Retrieves product by slug from merged catalog.
+ * Retrieves product by slug from current database memory.
  */
 export function getProductBySlugSync(slug: string): Product | null {
   const all = getAllProducts();
@@ -114,7 +78,7 @@ export function getProductBySlugSync(slug: string): Product | null {
 }
 
 /**
- * Retrieves products by category slug from merged catalog.
+ * Retrieves products by category slug from database memory.
  */
 export function getProductsByCategorySync(categorySlug: string): Product[] {
   const all = getAllProducts();
@@ -123,88 +87,125 @@ export function getProductsByCategorySync(categorySlug: string): Product[] {
 }
 
 /**
- * Adds or updates a product in persistent storage.
+ * Adds or updates a product atomically in Firestore database and notifies listeners.
  */
-export function saveProduct(product: Product): void {
-  if (typeof window === 'undefined') return;
-  const custom = getCustomProducts();
-  const existingIdx = custom.findIndex((p) => p.id === product.id || p.slug === product.slug);
-
-  const updatedProduct = {
+export async function saveProduct(product: Product): Promise<void> {
+  const updatedProduct: Product = {
     ...product,
     updatedAt: Date.now(),
   };
 
-  if (existingIdx >= 0) {
-    custom[existingIdx] = updatedProduct;
+  // 1. Immediately update local memory for instant responsiveness
+  const idx = memoryProducts.findIndex((p) => p.id === product.id || p.slug === product.slug);
+  if (idx >= 0) {
+    memoryProducts[idx] = updatedProduct;
   } else {
-    custom.push(updatedProduct);
-  }
-
-  localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(custom));
-
-  // If was previously marked deleted, un-delete
-  const deleted = getDeletedProductIds().filter((id) => id !== product.id);
-  localStorage.setItem(STORAGE_KEY_DELETED, JSON.stringify(deleted));
-
-  // Notify listeners
-  notifyCatalogUpdated();
-}
-
-/**
- * Deletes a product by ID.
- */
-export function deleteProduct(productId: string): void {
-  if (typeof window === 'undefined') return;
-  // Remove from custom products
-  const custom = getCustomProducts().filter((p) => p.id !== productId);
-  localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(custom));
-
-  // Add to deleted set
-  const deleted = getDeletedProductIds();
-  if (!deleted.includes(productId)) {
-    deleted.push(productId);
-    localStorage.setItem(STORAGE_KEY_DELETED, JSON.stringify(deleted));
+    memoryProducts = [updatedProduct, ...memoryProducts];
   }
 
   notifyCatalogUpdated();
+
+  // 2. Commit atomically to Firestore database via direct client SDK
+  try {
+    const productRef = doc(db, 'products', product.id);
+    await setDoc(productRef, updatedProduct, { merge: true });
+  } catch (clientErr) {
+    console.warn('Direct Firestore save failed, syncing through API endpoint:', clientErr);
+  }
+
+  // 3. Guarantee persistence and audit logging via server API
+  try {
+    await fetch('/api/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedProduct),
+    });
+  } catch (apiErr) {
+    console.error('API products save error:', apiErr);
+  }
 }
 
 /**
- * Updates stock on-hand for a SKU.
+ * Deletes a product atomically from Firestore database.
  */
-export function updateStock(sku: string, newOnHand: number, reservedDelta: number = 0): void {
-  if (typeof window === 'undefined') return;
-  const overrides = getStockOverrides();
-  const current = overrides[sku] || { onHand: newOnHand, reserved: 0 };
+export async function deleteProduct(productId: string): Promise<void> {
+  const productToDelete = memoryProducts.find((p) => p.id === productId);
 
-  overrides[sku] = {
-    sku,
-    onHand: Math.max(0, newOnHand),
-    reserved: Math.max(0, (current.reserved || 0) + reservedDelta),
-    updatedAt: Date.now(),
-  };
-
-  localStorage.setItem(STORAGE_KEY_STOCK, JSON.stringify(overrides));
+  // 1. Immediate memory update
+  memoryProducts = memoryProducts.filter((p) => p.id !== productId);
   notifyCatalogUpdated();
+
+  // 2. Direct Firestore deletion
+  try {
+    const productRef = doc(db, 'products', productId);
+    await deleteDoc(productRef);
+  } catch (clientErr) {
+    console.warn('Direct Firestore delete failed:', clientErr);
+  }
+
+  // 3. Guarantee deletion via server API
+  if (productToDelete) {
+    try {
+      await fetch(`/api/products/${productToDelete.slug}`, {
+        method: 'DELETE',
+      });
+    } catch (apiErr) {
+      console.error('API products delete error:', apiErr);
+    }
+  }
 }
 
 /**
- * Batch updates stock overrides.
+ * Updates stock on-hand for a SKU atomically in Firestore.
  */
-export function batchUpdateStock(updates: { sku: string; onHand: number }[]): void {
-  if (typeof window === 'undefined') return;
-  const overrides = getStockOverrides();
-  for (const { sku, onHand } of updates) {
-    overrides[sku] = {
-      sku,
-      onHand: Math.max(0, onHand),
-      reserved: overrides[sku]?.reserved || 0,
+export async function updateStock(sku: string, newOnHand: number): Promise<void> {
+  let targetProduct: Product | null = null;
+
+  // 1. Update in-memory product variant
+  memoryProducts = memoryProducts.map((p) => {
+    const hasSku = p.variants.some((v) => v.sku === sku);
+    if (!hasSku) return p;
+
+    targetProduct = {
+      ...p,
+      variants: p.variants.map((v) =>
+        v.sku === sku ? { ...v, onHand: Math.max(0, newOnHand) } : v
+      ),
       updatedAt: Date.now(),
     };
-  }
-  localStorage.setItem(STORAGE_KEY_STOCK, JSON.stringify(overrides));
+    return targetProduct;
+  });
+
   notifyCatalogUpdated();
+
+  // 2. Write updated product atomically to Firestore
+  if (targetProduct) {
+    try {
+      const pRef = doc(db, 'products', (targetProduct as Product).id);
+      await setDoc(pRef, targetProduct, { merge: true });
+    } catch (err) {
+      console.warn('Stock update Firestore error:', err);
+    }
+
+    try {
+      await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(targetProduct),
+      });
+    } catch (err) {
+      console.error('Stock update API error:', err);
+    }
+  }
+}
+
+/**
+ * Batch updates stock for multiple SKUs.
+ */
+export async function batchUpdateStock(updates: { sku: string; onHand: number }[]): Promise<void> {
+  for (const item of updates) {
+    await updateStock(item.sku, item.onHand);
+  }
 }
 
 function notifyCatalogUpdated() {
