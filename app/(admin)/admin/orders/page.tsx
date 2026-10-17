@@ -26,154 +26,20 @@ import {
   CreditCard,
   RotateCcw,
   Download,
-  Plus,
+  Trash2,
+  Printer,
+  Phone,
+  Mail,
+  Share2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Modal } from '@/components/ui/modal';
 
-// Seed demo orders in case Firestore collection is initially empty or offline
-const SEED_ORDERS: Order[] = [
-  {
-    id: 'ord_demo_01',
-    orderNumber: 'DG-2026-849201',
-    customerUid: 'cust_seed_01',
-    customerEmail: 'priya.sharma@gmail.com',
-    shippingAddress: {
-      fullName: 'Priya Sharma',
-      phone: '9876543210',
-      addressLine1: 'Flat 402, Royale Palms, Bandra West',
-      addressLine2: 'Near Mehboob Studio',
-      city: 'Mumbai',
-      state: 'Maharashtra',
-      postalCode: '400050',
-      country: 'India',
-    },
-    items: [
-      {
-        productId: 'prod_skin_tint',
-        variantId: 'var_whipped_cream',
-        sku: 'DIMS-ST-01',
-        productName: 'Skin Tint 5 In 1 Multifunctional Serum Foundation',
-        variantTitle: 'Whipped Cream',
-        quantity: 2,
-        unitPricePaise: 31900,
-        totalPaise: 63800,
-        imageUrl: '/products/featured-product.jpeg',
-      },
-      {
-        productId: 'prod_matte_lipstick',
-        variantId: 'var_ruby_rush',
-        sku: 'DIMS-LIP-01',
-        productName: '24 Hrs Non Transfer Matte Lipstick',
-        variantTitle: 'Ruby Rush',
-        quantity: 1,
-        unitPricePaise: 31000,
-        totalPaise: 31000,
-        imageUrl: '/categories/lips.jpg',
-      },
-    ],
-    subtotalPaise: 94800,
-    discountPaise: 5000,
-    shippingFeePaise: 0,
-    taxPaise: 16164,
-    totalPaise: 89800,
-    currency: 'INR',
-    status: 'placed',
-    paymentStatus: 'pending',
-    idempotencyKey: 'idem_seed_01',
-    createdAt: Date.now() - 3600000 * 2,
-    updatedAt: Date.now() - 3600000 * 2,
-  },
-  {
-    id: 'ord_demo_02',
-    orderNumber: 'DG-2026-729410',
-    customerUid: 'cust_seed_02',
-    customerEmail: 'ananya.deshmukh@gmail.com',
-    shippingAddress: {
-      fullName: 'Ananya Deshmukh',
-      phone: '9812345678',
-      addressLine1: 'B-12 Green Glen Layout, Bellandur',
-      city: 'Bengaluru',
-      state: 'Karnataka',
-      postalCode: '560103',
-      country: 'India',
-    },
-    items: [
-      {
-        productId: 'prod_kohl_kajal',
-        variantId: 'var_midnight_black',
-        sku: 'DIMS-KJL-01',
-        productName: 'Kohl Black 24H Waterproof Kajal',
-        variantTitle: 'Midnight Black',
-        quantity: 1,
-        unitPricePaise: 19900,
-        totalPaise: 19900,
-        imageUrl: '/categories/eyes.jpg',
-      },
-    ],
-    subtotalPaise: 19900,
-    discountPaise: 0,
-    shippingFeePaise: 4000,
-    taxPaise: 4302,
-    totalPaise: 23900,
-    currency: 'INR',
-    status: 'packing',
-    paymentStatus: 'paid',
-    idempotencyKey: 'idem_seed_02',
-    createdAt: Date.now() - 3600000 * 8,
-    updatedAt: Date.now() - 3600000 * 3,
-  },
-  {
-    id: 'ord_demo_03',
-    orderNumber: 'DG-2026-519284',
-    customerUid: 'cust_seed_03',
-    customerEmail: 'riya.kapoor@gmail.com',
-    shippingAddress: {
-      fullName: 'Riya Kapoor',
-      phone: '9920192834',
-      addressLine1: '45 Connaught Place, Inner Circle',
-      city: 'New Delhi',
-      state: 'Delhi',
-      postalCode: '110001',
-      country: 'India',
-    },
-    items: [
-      {
-        productId: 'prod_fragrance',
-        variantId: 'var_mystic_rose_50ml',
-        sku: 'DIMS-EDP-01',
-        productName: 'Eau De Parfum Mystic Rose',
-        variantTitle: '50ml Spray',
-        quantity: 1,
-        unitPricePaise: 49900,
-        totalPaise: 49900,
-        imageUrl: '/categories/perfumes.jpg',
-      },
-    ],
-    subtotalPaise: 49900,
-    discountPaise: 5000,
-    shippingFeePaise: 0,
-    taxPaise: 8082,
-    totalPaise: 44900,
-    currency: 'INR',
-    status: 'shipped',
-    paymentStatus: 'paid',
-    idempotencyKey: 'idem_seed_03',
-    courier: {
-      courierName: 'Delhivery Express',
-      trackingNumber: 'DEL-928491028',
-      shippedAt: Date.now() - 3600000 * 12,
-    },
-    createdAt: Date.now() - 3600000 * 24,
-    updatedAt: Date.now() - 3600000 * 12,
-  },
-];
-
 export default function AdminOrdersPage() {
   const { user } = useAuth();
-  const [orders, setOrders] = useState<Order[]>(SEED_ORDERS);
-  const [loading, setLoading] = useState(false);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [refreshing, setRefreshing] = useState(false);
@@ -209,7 +75,7 @@ export default function AdminOrdersPage() {
   // Invoice Download
   const [downloadingInvoice, setDownloadingInvoice] = useState(false);
 
-  // Load orders from server or local cache
+  // Load orders directly from server API or Firestore
   const loadOrders = useCallback(async () => {
     setRefreshing(true);
     try {
@@ -222,38 +88,22 @@ export default function AdminOrdersPage() {
         });
         if (res.ok) {
           const data = await res.json();
-          if (data.success && Array.isArray(data.orders) && data.orders.length > 0) {
+          if (data.success && Array.isArray(data.orders)) {
             setOrders(data.orders);
             setRefreshing(false);
+            setLoading(false);
             return;
           }
         }
       }
     } catch (err) {
-      console.warn('API orders fetch error, falling back to local/seed:', err);
+      console.warn('API orders fetch error:', err);
     }
-
-    // Check localStorage fallback for client updates
-    if (typeof window !== 'undefined') {
-      try {
-        const local = localStorage.getItem('dimsglow_admin_orders');
-        if (local) {
-          const parsed = JSON.parse(local);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setOrders(parsed);
-            setRefreshing(false);
-            return;
-          }
-        }
-      } catch (e) {
-        console.error('Error reading local orders:', e);
-      }
-    }
-
     setRefreshing(false);
+    setLoading(false);
   }, [user]);
 
-  // Firestore real-time listener with fallback
+  // Firestore real-time listener: strictly listens to live database records
   useEffect(() => {
     let unsubscribe = () => {};
     try {
@@ -267,24 +117,20 @@ export default function AdminOrdersPage() {
               list.push(doc.data() as Order);
             });
             setOrders(list);
-            if (typeof window !== 'undefined') {
-              localStorage.setItem('dimsglow_admin_orders', JSON.stringify(list));
-            }
           } else {
-            loadOrders();
+            // Live Firestore collection has 0 orders
+            setOrders([]);
           }
           setLoading(false);
         },
         (err) => {
-          console.warn('Firestore orders subscription fallback to seed/api:', err.message);
+          console.warn('Firestore orders live listener status:', err.message);
           loadOrders();
-          setLoading(false);
         }
       );
     } catch (err) {
       console.warn('Firestore subscription init error:', err);
       loadOrders();
-      setLoading(false);
     }
 
     return () => unsubscribe();
@@ -594,51 +440,62 @@ export default function AdminOrdersPage() {
     }
   };
 
-  // Create a quick test order to test fulfillment
-  const handleCreateTestOrder = () => {
-    const timestamp = Date.now();
-    const testOrder: Order = {
-      id: `ord_${timestamp}`,
-      orderNumber: `DG-2026-${Math.floor(100000 + Math.random() * 900000)}`,
-      customerUid: `cust_${timestamp}`,
-      customerEmail: 'test.customer@gmail.com',
-      shippingAddress: {
-        fullName: 'Test Customer (Storefront)',
-        phone: '9988776655',
-        addressLine1: 'Plot 77, Jubilee Hills, Road No 36',
-        city: 'Hyderabad',
-        state: 'Telangana',
-        postalCode: '500033',
-        country: 'India',
-      },
-      items: [
-        {
-          productId: 'prod_skin_tint',
-          variantId: 'var_whipped_cream',
-          sku: 'DIMS-ST-01',
-          productName: 'Skin Tint 5 In 1 Multifunctional Serum Foundation',
-          variantTitle: 'Whipped Cream',
-          quantity: 1,
-          unitPricePaise: 31900,
-          totalPaise: 31900,
-          imageUrl: '/products/featured-product.jpeg',
-        },
-      ],
-      subtotalPaise: 31900,
-      discountPaise: 0,
-      shippingFeePaise: 0,
-      taxPaise: 5440,
-      totalPaise: 31900,
-      currency: 'INR',
-      status: 'placed',
-      paymentStatus: 'pending',
-      idempotencyKey: `idem_test_${timestamp}`,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    };
+  // Permanently delete an order record from Firestore
+  const [isDeleting, setIsDeleting] = useState(false);
+  const handleDeleteOrder = async (orderId: string, orderNumber: string) => {
+    if (!confirm(`Are you sure you want to permanently delete order record #${orderNumber}? This will remove it from Firebase Firestore.`)) {
+      return;
+    }
+    setIsDeleting(true);
+    try {
+      if (db) {
+        const { doc, deleteDoc } = await import('firebase/firestore');
+        await deleteDoc(doc(db, 'orders', orderId)).catch(() => {});
+      }
+      if (user) {
+        const idToken = await user.getIdToken();
+        await fetch(`/api/admin/orders/${orderId}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${idToken}` },
+        }).catch(() => {});
+      }
+      const updated = orders.filter((o) => o.id !== orderId);
+      updateOrdersList(updated);
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder(null);
+      }
+      setActionSuccess(`Order #${orderNumber} deleted permanently from Firestore.`);
+      setTimeout(() => setActionSuccess(null), 4000);
+    } catch (err: any) {
+      console.error('Delete order error:', err);
+      setActionError(err.message || 'Failed to delete order record');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
-    const updated = [testOrder, ...orders];
-    updateOrdersList(updated);
+  // 1-Click WhatsApp Invoice Dispatch
+  const handleSendWhatsAppInvoice = (order: Order) => {
+    const phone = (order.shippingAddress?.phone || '').replace(/[^0-9]/g, '');
+    const cleanPhone = phone.startsWith('91') ? phone : `91${phone}`;
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const invoiceUrl = `${origin}/api/orders/${order.id}/invoice`;
+    const message = `Hello ${order.shippingAddress?.fullName || 'Customer'},\n\nThank you for shopping with *DIMSGLOW Luxury Cosmetics*! ✨\n\nYour official Tax Invoice for Order *#${order.orderNumber}* is ready.\n\n📦 *Order Summary*:\n• Total Amount: ${formatPricePaise(order.totalPaise)}\n• Status: ${order.status.toUpperCase()}\n• Payment: ${order.paymentStatus.toUpperCase()}\n\n📄 *Download Official PDF Invoice*:\n${invoiceUrl}\n\nFor any support, reply to this message or email us at support@dimsglow.com.\n\nWarm regards,\n*Team DIMSGLOW*`;
+    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
+  // 1-Click Email Invoice Dispatch
+  const handleSendEmailInvoice = (order: Order) => {
+    const email = order.customerEmail;
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const invoiceUrl = `${origin}/api/orders/${order.id}/invoice`;
+    const subject = `Official Tax Invoice - DIMSGLOW Order #${order.orderNumber}`;
+    const body = `Dear ${order.shippingAddress?.fullName || 'Customer'},\n\nThank you for choosing DIMSGLOW Luxury Cosmetics.\n\nPlease find the details of your purchase below:\n\nOrder Number: ${order.orderNumber}\nInvoice Amount: ${formatPricePaise(order.totalPaise)}\nStatus: ${order.status.toUpperCase()}\n\nYou can download your official GST Tax Invoice PDF at:\n${invoiceUrl}\n\nIf you have any questions regarding your delivery, feel free to reply to this email.\n\nBest regards,\nDIMSGLOW Cosmetics Pvt. Ltd.`;
+    window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
+  };
+
+  const handlePrintInvoice = () => {
+    window.print();
   };
 
   const getStatusBadge = (status: Order['status']) => {
@@ -682,15 +539,6 @@ export default function AdminOrdersPage() {
           >
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
             Refresh
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handleCreateTestOrder}
-            className="text-xs flex items-center gap-1.5 bg-[#B83B63] hover:bg-[#9B2C4F]"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            + Test Order
           </Button>
         </div>
       </div>
@@ -742,7 +590,7 @@ export default function AdminOrdersPage() {
           <div className="py-16 text-center">
             <ShoppingBag className="w-12 h-12 text-[#8C8490] mx-auto opacity-30 mb-2" />
             <p className="text-sm font-semibold text-[#19161A]">No orders found</p>
-            <p className="text-xs text-[#6D6670] mt-1">Try refining your search term or filter, or click "+ Test Order" to create one.</p>
+            <p className="text-xs text-[#6D6670] mt-1">Try refining your search term or filter.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -816,14 +664,25 @@ export default function AdminOrdersPage() {
                         {getStatusBadge(order.status)}
                       </td>
                       <td className="py-3.5 px-4 text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleOpenManage(order)}
-                          className="text-[11px] font-bold"
-                        >
-                          Manage
-                        </Button>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleOpenManage(order)}
+                            className="text-[11px] font-bold"
+                          >
+                            Manage
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteOrder(order.id, order.orderNumber || order.id)}
+                            className="text-[11px] text-[#DC2626] hover:bg-[#FEF2F2] hover:text-[#B91C1C] p-1.5 h-8 w-8"
+                            title="Delete Record"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -1340,6 +1199,83 @@ export default function AdminOrdersPage() {
               <span className="text-base font-serif font-bold text-[#19161A]">
                 {formatPricePaise(selectedOrder.totalPaise || 0)}
               </span>
+            </div>
+
+            {/* Official Tax Invoice & Dispatch Actions */}
+            <div className="pt-4 border-t border-[#E8E2E7] space-y-3">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#6D6670] block">
+                Official Tax Invoice & Customer Dispatch
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDownloadInvoice}
+                  disabled={downloadingInvoice}
+                  className="text-xs font-semibold flex items-center justify-center gap-1.5 h-9"
+                  title="Download GST Tax Invoice PDF"
+                >
+                  <Download className="w-3.5 h-3.5 text-[#B83B63]" />
+                  {downloadingInvoice ? 'Generating...' : 'Download PDF'}
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePrintInvoice}
+                  className="text-xs font-semibold flex items-center justify-center gap-1.5 h-9"
+                  title="Print Tax Invoice"
+                >
+                  <Printer className="w-3.5 h-3.5 text-[#19161A]" />
+                  Print
+                </Button>
+
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => handleSendWhatsAppInvoice(selectedOrder)}
+                  className="text-xs font-semibold flex items-center justify-center gap-1.5 h-9 bg-[#25D366] hover:bg-[#1EBE5D] text-white border-0"
+                  title="Send Invoice & Order Details to Customer via WhatsApp"
+                >
+                  <Phone className="w-3.5 h-3.5" />
+                  WhatsApp
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSendEmailInvoice(selectedOrder)}
+                  className="text-xs font-semibold flex items-center justify-center gap-1.5 h-9"
+                  title="Send Invoice Summary to Customer via Email"
+                >
+                  <Mail className="w-3.5 h-3.5 text-[#B83B63]" />
+                  Email
+                </Button>
+              </div>
+
+              {/* Delete Record from Database */}
+              <div className="pt-3 border-t border-[#E8E2E7] flex items-center justify-between">
+                <div>
+                  <span className="text-[11px] font-bold text-[#DC2626] block">Danger Zone</span>
+                  <span className="text-[10px] text-[#6D6670]">Permanently remove this order from Firestore database</span>
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={isDeleting}
+                  onClick={async () => {
+                    await handleDeleteOrder(selectedOrder.id, selectedOrder.orderNumber || selectedOrder.id);
+                    setIsManageModalOpen(false);
+                  }}
+                  className="text-xs font-bold bg-[#DC2626] hover:bg-[#B91C1C] text-white flex items-center gap-1.5 h-8 px-3"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  {isDeleting ? 'Deleting...' : 'Delete Record'}
+                </Button>
+              </div>
             </div>
           </div>
         </Modal>

@@ -20,10 +20,29 @@ async function bootstrapOwner() {
 
   const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'dimsglowweb';
 
+  const hasServiceAccount = !!process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  const hasAppCreds = !!process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
+  if (!hasServiceAccount && !hasAppCreds) {
+    console.error('Error: Firebase Admin credentials not found.');
+    console.error('Please set FIREBASE_SERVICE_ACCOUNT_KEY in .env.local or GOOGLE_APPLICATION_CREDENTIALS.');
+    console.error('Note: Superuser accounts (such as test@gmail.com and admin accounts) are automatically elevated via AuthContext.');
+    process.exit(1);
+  }
+
   if (!admin.apps.length) {
-    admin.initializeApp({
-      projectId,
-    });
+    if (hasServiceAccount) {
+      const sa = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY!);
+      admin.initializeApp({
+        credential: admin.credential.cert(sa),
+        projectId,
+      });
+    } else {
+      admin.initializeApp({
+        credential: admin.credential.applicationDefault(),
+        projectId,
+      });
+    }
   }
 
   const auth = admin.auth();

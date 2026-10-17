@@ -13,6 +13,7 @@ import {
   Sparkles,
   HelpCircle,
   ExternalLink,
+  Download,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -90,14 +91,37 @@ export function OrderSuccessClient() {
 
           {/* Action CTAs */}
           <div className="pt-6 border-t border-[#E8E2E7] flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a
+              href={`/api/orders/${orderId}/invoice`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto"
+            >
+              <Button
+                variant="primary"
+                size="lg"
+                className="w-full sm:w-auto text-xs font-bold uppercase tracking-wider py-3 px-6 flex items-center justify-center gap-2 bg-[#B83B63] hover:bg-[#9B2C4F]"
+              >
+                <Download className="w-4 h-4" /> Download Tax Invoice (PDF)
+              </Button>
+            </a>
+
             <Link href="/account/orders" className="w-full sm:w-auto">
-              <Button variant="primary" size="lg" className="w-full sm:w-auto text-xs font-bold uppercase tracking-wider py-3 px-6 flex items-center justify-center gap-2">
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full sm:w-auto text-xs font-bold uppercase tracking-wider py-3 px-6 flex items-center justify-center gap-2"
+              >
                 <ShoppingBag className="w-4 h-4" /> View in Dashboard
               </Button>
             </Link>
 
             <Link href="/collections/all" className="w-full sm:w-auto">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto text-xs font-bold uppercase tracking-wider py-3 px-6">
+              <Button
+                variant="ghost"
+                size="lg"
+                className="w-full sm:w-auto text-xs font-bold uppercase tracking-wider py-3 px-6 text-[#6D6670] hover:text-[#19161A]"
+              >
                 Continue Shopping
               </Button>
             </Link>
