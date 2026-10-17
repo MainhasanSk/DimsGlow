@@ -3,9 +3,10 @@ import { CATALOG_PRODUCTS } from '@/lib/data/catalog';
 import type { Order, OrderItemSnapshot, ShippingAddressSnapshot } from '@/lib/schemas/order';
 import type { CartLineItem } from '@/lib/cart/CartContext';
 import { FieldValue } from 'firebase-admin/firestore';
+import type { SiteStoreSettings } from '@/lib/schemas/settings';
 
-const FREE_SHIPPING_THRESHOLD_PAISE = 39900; // ₹399
-const STANDARD_SHIPPING_FEE_PAISE = 4900; // ₹49
+const DEFAULT_FREE_SHIPPING_THRESHOLD_PAISE = 39900; // ₹399
+const DEFAULT_STANDARD_SHIPPING_FEE_PAISE = 4900; // ₹49
 const GIFT_WRAP_FEE_PAISE = 9900; // ₹99
 
 const VALID_COUPONS: Record<string, { discountPercent?: number; freeShipping?: boolean; minOrderPaise?: number }> = {
@@ -43,7 +44,10 @@ export interface CheckoutCalculationResult {
  * Validates prices against the canonical catalog server-side.
  * Never trust client prices!
  */
-export function calculateOrderTotals(input: CalculateCheckoutInput): CheckoutCalculationResult {
+export function calculateOrderTotals(
+  input: CalculateCheckoutInput,
+  storeSettings?: Partial<SiteStoreSettings>
+): CheckoutCalculationResult {
   if (!input.items || input.items.length === 0) {
     throw new Error('Cannot calculate totals for an empty cart');
   }
@@ -103,9 +107,17 @@ export function calculateOrderTotals(input: CalculateCheckoutInput): CheckoutCal
     }
   }
 
+  // Dynamic Shipping threshold and fees from Firestore settings
+  const freeShippingThresholdPaise = (storeSettings?.freeDeliveryThresholdRupees != null
+    ? storeSettings.freeDeliveryThresholdRupees * 100
+    : DEFAULT_FREE_SHIPPING_THRESHOLD_PAISE);
+  const standardShippingFeePaise = (storeSettings?.standardShippingFeeRupees != null
+    ? storeSettings.standardShippingFeeRupees * 100
+    : DEFAULT_STANDARD_SHIPPING_FEE_PAISE);
+
   // Shipping calculation
-  const isFreeShipping = subtotalPaise >= FREE_SHIPPING_THRESHOLD_PAISE || hasFreeShippingCoupon;
-  const shippingFeePaise = isFreeShipping ? 0 : STANDARD_SHIPPING_FEE_PAISE;
+  const isFreeShipping = subtotalPaise >= freeShippingThresholdPaise || hasFreeShippingCoupon;
+  const shippingFeePaise = isFreeShipping ? 0 : standardShippingFeePaise;
   const giftWrapFeePaise = input.includeGiftWrap ? GIFT_WRAP_FEE_PAISE : 0;
   const taxPaise = 0; // Tax is inclusive in all DIMSGLOW prices per Indian e-commerce standards
 
@@ -162,12 +174,23 @@ export async function placeOrderTransaction(input: PlaceOrderInput): Promise<Ord
     return existingDoc.data() as Order;
   }
 
-  // 2. Calculate authoritative server-side totals
+  // 2. Fetch fresh store settings from Firestore for ACID calculation
+  let freshSettings: Partial<SiteStoreSettings> | undefined;
+  try {
+    const settingsDoc = await adminDb.collection('siteSettings').doc('general').get();
+    if (settingsDoc.exists) {
+      freshSettings = settingsDoc.data() as Partial<SiteStoreSettings>;
+    }
+  } catch {
+    // fallback to defaults
+  }
+
+  // 3. Calculate authoritative server-side totals
   const calc = calculateOrderTotals({
     items: input.items,
     couponCode: input.couponCode,
     includeGiftWrap: input.includeGiftWrap,
-  });
+  }, freshSettings);
 
   const timestamp = Date.now();
   const orderNumber = `DG-2026-${Math.floor(100000 + Math.random() * 900000)}`;

@@ -61,6 +61,11 @@ service cloud.firestore {
       allow write: if isStaffOrOwner();
     }
 
+    match /siteSettings/{settingId} {
+      allow read: if true;
+      allow write: if isStaffOrOwner();
+    }
+
     // 5. Persistent Carts, Favorites, and Addresses (Strictly isolated to owning UID)
     match /carts/{userId}/{allPaths=**} {
       allow read, write: if isOwner(userId);

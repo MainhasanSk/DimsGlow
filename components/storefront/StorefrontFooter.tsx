@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { useStoreSettings } from '@/lib/settings/settingsService';
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -40,6 +41,7 @@ function YoutubeIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export function StorefrontFooter() {
+  const { settings } = useStoreSettings();
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
 
@@ -50,6 +52,8 @@ export function StorefrontFooter() {
     }
   };
 
+  const whatsappCleanNumber = (settings.supportWhatsapp || '').replace(/[^0-9]/g, '');
+
   return (
     <footer className="bg-[#141215] text-[#D1CBD3] text-xs">
       {/* Newsletter Strip */}
@@ -57,10 +61,10 @@ export function StorefrontFooter() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="text-center md:text-left space-y-1">
             <h3 className="text-xl sm:text-2xl font-bold font-serif-brand text-white tracking-tight">
-              Subscribe to our newsletter
+              {settings.newsletterHeading || 'Subscribe to our newsletter'}
             </h3>
             <p className="text-xs text-[#9A939E]">
-              Be the first to receive exclusive beauty releases, skincare tips, and private VIP offers.
+              {settings.newsletterSubheading || 'Be the first to receive exclusive beauty releases, skincare tips, and private VIP offers.'}
             </p>
           </div>
 
@@ -109,15 +113,15 @@ export function StorefrontFooter() {
                 />
               </div>
               <span className="text-xl font-bold font-serif-brand text-white tracking-[0.16em]">
-                DIMSGLOW
+                {settings.brandName || 'DIMSGLOW'}
               </span>
             </div>
             <p className="text-xs text-[#9A939E] leading-relaxed">
-              DIMSGLOW is a luxury beauty and skincare brand dedicated to safe, empowering, dermatologically-tested formulations tailored for all skin tones.
+              {settings.brandStory || 'DIMSGLOW is a luxury beauty and skincare brand dedicated to safe, empowering, dermatologically-tested formulations tailored for all skin tones.'}
             </p>
             <div className="flex items-center gap-3 pt-2 text-white/80">
               <a
-                href="https://instagram.com"
+                href={settings.socialInstagram || 'https://instagram.com'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-white/5 hover:bg-[#B83B63] hover:text-white transition-colors"
@@ -126,7 +130,7 @@ export function StorefrontFooter() {
                 <InstagramIcon className="w-4 h-4" />
               </a>
               <a
-                href="https://facebook.com"
+                href={settings.socialFacebook || 'https://facebook.com'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-white/5 hover:bg-[#B83B63] hover:text-white transition-colors"
@@ -135,7 +139,7 @@ export function StorefrontFooter() {
                 <FacebookIcon className="w-4 h-4" />
               </a>
               <a
-                href="https://youtube.com"
+                href={settings.socialYoutube || 'https://youtube.com'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-white/5 hover:bg-[#B83B63] hover:text-white transition-colors"
@@ -242,33 +246,40 @@ export function StorefrontFooter() {
             </ul>
           </div>
 
-          {/* Contact Us */}
+          {/* Contact Us & Corporate Office */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Contact Us</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Contact & Support</h4>
             <p className="text-[11px] text-[#9A939E] leading-relaxed">
-              Questions? We're here for you Monday – Friday (10AM – 6PM IST).
+              Questions? We're here for you {settings.supportHours || 'Monday – Friday (10AM – 6PM IST)'}.
             </p>
             <div className="space-y-2 pt-1 text-xs">
               <a
-                href="https://wa.me/913614556830"
+                href={`https://wa.me/${whatsappCleanNumber || '913614556830'}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 hover:text-[#D4AF37] transition-colors"
               >
-                <Phone className="w-3.5 h-3.5 text-[#25D366]" />
-                <span>+91 361 455 6830</span>
+                <Phone className="w-3.5 h-3.5 text-[#25D366] shrink-0" />
+                <span>{settings.supportWhatsapp || settings.supportPhone || '+91 361 455 6830'}</span>
               </a>
               <a
-                href="mailto:support@dimsglow.com"
+                href={`mailto:${settings.supportEmail || 'support@dimsglow.com'}`}
                 className="flex items-center gap-2 hover:text-white transition-colors"
               >
-                <Mail className="w-3.5 h-3.5 text-[#B83B63]" />
-                <span>support@dimsglow.com</span>
+                <Mail className="w-3.5 h-3.5 text-[#B83B63] shrink-0" />
+                <span>{settings.supportEmail || 'support@dimsglow.com'}</span>
               </a>
               <div className="flex items-center gap-2 text-[#9A939E]">
-                <Clock className="w-3.5 h-3.5" />
-                <span>Mon – Fri: 10AM – 6PM IST</span>
+                <Clock className="w-3.5 h-3.5 shrink-0" />
+                <span>{settings.supportHours || 'Mon – Fri: 10AM – 6PM IST'}</span>
               </div>
+              {settings.registeredAddress && (
+                <div className="text-[10px] text-[#8C8590] pt-1.5 border-t border-white/5 space-y-0.5">
+                  <p className="font-semibold text-white/80">Registered Office:</p>
+                  <p className="leading-tight">{settings.registeredAddress}</p>
+                  {settings.gstin && <p className="font-mono text-[#D4AF37]">GSTIN: {settings.gstin}</p>}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -276,7 +287,7 @@ export function StorefrontFooter() {
         {/* Bottom Bar: Copyright & Payment Badges */}
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-[11px] text-[#6D6670] text-center md:text-left">
-            Copyright © 2026, DIMSGLOW. All rights reserved.
+            {settings.copyrightNotice || 'Copyright © 2026, DIMSGLOW. All rights reserved.'}
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-2">

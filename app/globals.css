@@ -67,3 +67,24 @@
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
+/* Infinite continuous marquee moving left to right (for mobile testimonials ticker) */
+@keyframes marquee-ltr {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-marquee-ltr {
+  display: flex;
+  width: max-content;
+  animation: marquee-ltr 30s linear infinite;
+}
+
+.animate-marquee-ltr:hover,
+.animate-marquee-ltr:active {
+  animation-play-state: paused;
+}

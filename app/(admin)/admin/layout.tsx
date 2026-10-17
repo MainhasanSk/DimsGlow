@@ -26,11 +26,13 @@ import {
   Star,
   UserCheck,
   Palette,
+  Settings,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 const ADMIN_NAV = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard },
+  { label: 'Store Settings', href: '/admin/settings', icon: Settings },
   { label: 'Site Content & CMS', href: '/admin/content', icon: Palette },
   { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
   { label: 'Products', href: '/admin/products', icon: Package },

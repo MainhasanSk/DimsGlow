@@ -7,8 +7,7 @@ import { useCart } from '@/lib/cart/CartContext';
 import { formatPricePaise } from '@/lib/utils';
 import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, Sparkles, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-const FREE_SHIPPING_THRESHOLD_PAISE = 39900; // ₹399.00
+import { useStoreSettings } from '@/lib/settings/settingsService';
 
 export function CartDrawer() {
   const {
@@ -20,6 +19,9 @@ export function CartDrawer() {
     updateQuantity,
     removeItem,
   } = useCart();
+  const { settings } = useStoreSettings();
+
+  const freeThresholdPaise = (settings.freeDeliveryThresholdRupees || 399) * 100;
 
   // Prevent background scroll when drawer is open
   useEffect(() => {
@@ -35,10 +37,10 @@ export function CartDrawer() {
 
   if (!isCartDrawerOpen) return null;
 
-  const remainingForFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD_PAISE - subtotalPaise);
+  const remainingForFreeShipping = Math.max(0, freeThresholdPaise - subtotalPaise);
   const freeShippingProgress = Math.min(
     100,
-    Math.round((subtotalPaise / FREE_SHIPPING_THRESHOLD_PAISE) * 100)
+    Math.round((subtotalPaise / freeThresholdPaise) * 100)
   );
 
   return (

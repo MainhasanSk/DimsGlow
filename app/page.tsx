@@ -716,7 +716,8 @@ export default function HomePage() {
               <p className="text-xs text-[#6D6670]">Real reviews from verified DIMSGLOW customers</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Desktop / Tablet Grid View */}
+            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {(content.testimonials || []).map((rev) => (
                 <div
                   key={rev.id || rev.author}
@@ -734,7 +735,7 @@ export default function HomePage() {
                         ))}
                       </div>
                     </div>
-                    <p className="text-xs text-[#6D6670] leading-relaxed italic">"{rev.review}"</p>
+                    <p className="text-xs text-[#6D6670] leading-relaxed italic">&ldquo;{rev.review}&rdquo;</p>
                   </div>
 
                   <div className="pt-2 border-t border-[#E8E2E7] flex items-center justify-between">
@@ -747,6 +748,45 @@ export default function HomePage() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* Mobile View: Single Row Continuous Loop (Moving Left to Right) */}
+            <div className="block md:hidden relative w-full overflow-hidden">
+              <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-white to-transparent z-10" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-linear-to-l from-white to-transparent z-10" />
+
+              <div className="animate-marquee-ltr flex items-stretch gap-4 py-1">
+                {[...(content.testimonials || []), ...(content.testimonials || [])].map((rev, idx) => (
+                  <div
+                    key={`${rev.id || rev.author}-${idx}`}
+                    className="w-[280px] shrink-0 whitespace-normal p-5 rounded-[10px] bg-[#FAF8FA] border border-[#E8E2E7] flex flex-col justify-between space-y-3 shadow-xs"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="text-xs font-bold text-[#19161A]">{rev.author}</h4>
+                          <span className="text-[10px] text-[#18794E] font-medium">✓ Verified buyer</span>
+                        </div>
+                        <div className="flex text-[#D4AF37]">
+                          {[...Array(rev.rating || 5)].map((_, i) => (
+                            <Star key={i} className="w-3.5 h-3.5 fill-current" />
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-xs text-[#6D6670] leading-relaxed italic">&ldquo;{rev.review}&rdquo;</p>
+                    </div>
+
+                    <div className="pt-2 border-t border-[#E8E2E7] flex items-center justify-between">
+                      <span className="text-[11px] font-semibold text-[#19161A] truncate max-w-36">
+                        {rev.productName}
+                      </span>
+                      <Link href={rev.productLink} className="text-[10px] font-bold text-[#B83B63] hover:underline">
+                        View product →
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>

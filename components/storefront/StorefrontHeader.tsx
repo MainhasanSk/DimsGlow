@@ -23,10 +23,12 @@ import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/lib/cart/CartContext';
+import { useStoreSettings } from '@/lib/settings/settingsService';
 
 export function StorefrontHeader() {
   const { user, profile, role } = useAuth();
   const { totalItemCount, setIsCartDrawerOpen, favoritesCount } = useCart();
+  const { settings } = useStoreSettings();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -36,19 +38,21 @@ export function StorefrontHeader() {
   return (
     <>
       {/* 1. Top Announcement Strip */}
-      <div className="bg-linear-to-r from-[#FF7E9C] via-[#FF8EA3] to-[#FFA7A6] text-white text-center py-2 px-4 text-xs font-bold tracking-wider flex items-center justify-center gap-4">
-        <span className="flex items-center gap-1.5">
-          <Truck className="w-3.5 h-3.5" /> FREE SHIPPING ON ORDERS ABOVE ₹399
-        </span>
-        <span className="hidden sm:inline-block opacity-60">•</span>
-        <span className="hidden sm:flex items-center gap-1.5">
-          <Percent className="w-3.5 h-3.5" /> EXTRA 5% OFF ON PREPAID ORDERS
-        </span>
-        <span className="hidden md:inline-block opacity-60">•</span>
-        <span className="hidden md:flex items-center gap-1.5 text-black">
-          <Gift className="w-3.5 h-3.5" /> FREE GIFT WITH CODE: <span className="bg-black text-white px-2 py-0.5 rounded text-[10px]">GLOW10</span>
-        </span>
-      </div>
+      {settings.announcementEnabled !== false && (
+        <div className="bg-linear-to-r from-[#FF7E9C] via-[#FF8EA3] to-[#FFA7A6] text-white text-center py-2 px-4 text-xs font-bold tracking-wider flex items-center justify-center gap-4">
+          <span className="flex items-center gap-1.5">
+            <Truck className="w-3.5 h-3.5" /> FREE SHIPPING ON ORDERS ABOVE ₹{settings.freeDeliveryThresholdRupees || 399}
+          </span>
+          <span className="hidden sm:inline-block opacity-60">•</span>
+          <span className="hidden sm:flex items-center gap-1.5">
+            <Percent className="w-3.5 h-3.5" /> EXTRA 5% OFF ON PREPAID ORDERS
+          </span>
+          <span className="hidden md:inline-block opacity-60">•</span>
+          <span className="hidden md:flex items-center gap-1.5 text-black">
+            <Gift className="w-3.5 h-3.5" /> FREE GIFT WITH CODE: <span className="bg-black text-white px-2 py-0.5 rounded text-[10px]">{settings.newsletterDiscountCode || 'GLOW10'}</span>
+          </span>
+        </div>
+      )}
 
       {/* 2. Top Department Tabs (From Reference Site Screenshots 3, 4, 5) */}
       <div className="bg-[#FAF8FA] border-b border-[#E8E2E7] hidden md:block">
