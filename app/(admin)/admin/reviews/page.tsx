@@ -103,7 +103,7 @@ export default function AdminReviewsPage() {
         <button
           onClick={fetchReviews}
           disabled={isLoading}
-          className="p-2 border border-black/10 rounded-[6px] hover:bg-white text-[#5D4E60] transition-colors cursor-pointer self-start sm:self-auto"
+          className="p-2 border border-black/10 rounded-md hover:bg-white text-[#5D4E60] transition-colors cursor-pointer self-start sm:self-auto"
           title="Refresh"
         >
           <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -113,7 +113,7 @@ export default function AdminReviewsPage() {
       {/* Feedback banner */}
       {feedbackMessage && (
         <div
-          className={`p-3.5 rounded-[8px] text-xs font-medium flex items-center justify-between ${
+          className={`p-3.5 rounded-lg text-xs font-medium flex items-center justify-between ${
             feedbackMessage.type === 'success'
               ? 'bg-[#EBF7EE] text-[#1E7E34] border border-[#C3E6CB]'
               : 'bg-[#FDF0ED] text-[#D9381E] border border-[#F5C6CB]'
@@ -223,7 +223,7 @@ export default function AdminReviewsPage() {
                   Submitted by: <strong className="text-[#1F161E]">{rev.customerName}</strong>
                 </p>
                 {rev.moderationReason && (
-                  <p className="text-[11px] text-[#EF4444] bg-[#FDF0ED] p-2 rounded-[4px] mt-2">
+                  <p className="text-[11px] text-[#EF4444] bg-[#FDF0ED] p-2 rounded-sm mt-2">
                     Rejection note: {rev.moderationReason}
                   </p>
                 )}

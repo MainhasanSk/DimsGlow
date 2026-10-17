@@ -163,7 +163,7 @@ export default function AdminCrmPage() {
         <button
           onClick={fetchCustomers}
           disabled={isLoading}
-          className="p-2 border border-black/10 rounded-[6px] hover:bg-white text-[#5D4E60] transition-colors cursor-pointer self-start sm:self-auto"
+          className="p-2 border border-black/10 rounded-md hover:bg-white text-[#5D4E60] transition-colors cursor-pointer self-start sm:self-auto"
           title="Refresh"
         >
           <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -196,7 +196,7 @@ export default function AdminCrmPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by name, email, phone..."
-              className="w-full pl-8 pr-3 py-1.5 border border-black/20 rounded-[6px] text-xs bg-[#FAF8F5] focus:bg-white transition-colors"
+              className="w-full pl-8 pr-3 py-1.5 border border-black/20 rounded-md text-xs bg-[#FAF8F5] focus:bg-white transition-colors"
             />
           </div>
           <Button type="submit" size="sm" className="bg-[#B83B63] text-white text-xs cursor-pointer h-8">
@@ -236,7 +236,7 @@ export default function AdminCrmPage() {
                     <tr
                       key={cust.uid}
                       onClick={() => openCustomerDrawer(cust)}
-                      className="hover:bg-black/[0.02] transition-colors cursor-pointer"
+                      className="hover:bg-black/2 transition-colors cursor-pointer"
                     >
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-2">
@@ -324,19 +324,19 @@ export default function AdminCrmPage() {
             <div className="p-5 space-y-6 flex-1">
               {/* Financial Snapshot */}
               <div className="grid grid-cols-3 gap-2">
-                <div className="bg-[#FAF8F5] p-3 rounded-[8px] border border-black/10 text-center">
+                <div className="bg-[#FAF8F5] p-3 rounded-lg border border-black/10 text-center">
                   <span className="text-[10px] text-[#5D4E60] uppercase block font-bold">LTV</span>
                   <span className="text-sm font-black text-[#1F161E] block mt-0.5">
                     ₹{(selectedCustomer.lifetimeValuePaise / 100).toLocaleString('en-IN')}
                   </span>
                 </div>
-                <div className="bg-[#FAF8F5] p-3 rounded-[8px] border border-black/10 text-center">
+                <div className="bg-[#FAF8F5] p-3 rounded-lg border border-black/10 text-center">
                   <span className="text-[10px] text-[#5D4E60] uppercase block font-bold">Orders</span>
                   <span className="text-sm font-black text-[#1F161E] block mt-0.5">
                     {selectedCustomer.totalOrders}
                   </span>
                 </div>
-                <div className="bg-[#FAF8F5] p-3 rounded-[8px] border border-black/10 text-center">
+                <div className="bg-[#FAF8F5] p-3 rounded-lg border border-black/10 text-center">
                   <span className="text-[10px] text-[#5D4E60] uppercase block font-bold">AOV</span>
                   <span className="text-sm font-black text-[#1F161E] block mt-0.5">
                     ₹{(selectedCustomer.averageOrderValuePaise / 100).toLocaleString('en-IN')}
@@ -389,7 +389,7 @@ export default function AdminCrmPage() {
                     value={newNoteText}
                     onChange={(e) => setNewNoteText(e.target.value)}
                     placeholder="Record notes on delivery preferences, custom shade requests, or gifting instructions..."
-                    className="w-full px-3 py-2 border border-black/20 rounded-[6px] text-xs bg-white"
+                    className="w-full px-3 py-2 border border-black/20 rounded-md text-xs bg-white"
                   />
                   <div className="flex justify-end">
                     <Button
@@ -408,14 +408,14 @@ export default function AdminCrmPage() {
                   {isLoadingNotes ? (
                     <p className="text-xs text-[#5D4E60]">Loading staff notes...</p>
                   ) : notes.length === 0 ? (
-                    <div className="p-4 bg-[#FAF8F5] rounded-[8px] text-center text-xs text-[#5D4E60]">
+                    <div className="p-4 bg-[#FAF8F5] rounded-lg text-center text-xs text-[#5D4E60]">
                       No staff notes recorded yet for this client.
                     </div>
                   ) : (
                     notes.map((note) => (
                       <div
                         key={note.id}
-                        className="p-3 bg-[#FAF8F5] rounded-[8px] border border-black/5 space-y-1 text-xs"
+                        className="p-3 bg-[#FAF8F5] rounded-lg border border-black/5 space-y-1 text-xs"
                       >
                         <p className="text-[#1F161E] font-medium">{note.text}</p>
                         <div className="flex justify-between text-[10px] text-[#5D4E60] pt-1">

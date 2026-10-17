@@ -113,7 +113,7 @@ export default function AdminReportsPage() {
           <button
             onClick={fetchAnalytics}
             disabled={isLoading}
-            className="p-2 border border-black/10 rounded-[6px] hover:bg-white text-[#5D4E60] transition-colors cursor-pointer"
+            className="p-2 border border-black/10 rounded-md hover:bg-white text-[#5D4E60] transition-colors cursor-pointer"
             title="Refresh"
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -152,7 +152,7 @@ export default function AdminReportsPage() {
       </div>
 
       {errorMessage && (
-        <div className="p-3.5 bg-[#FDF0ED] border border-[#F5C6CB] text-[#D9381E] rounded-[8px] text-xs font-medium">
+        <div className="p-3.5 bg-[#FDF0ED] border border-[#F5C6CB] text-[#D9381E] rounded-lg text-xs font-medium">
           {errorMessage}
         </div>
       )}
@@ -237,7 +237,7 @@ export default function AdminReportsPage() {
       {/* Visual Chart & Order Status Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Daily Revenue Bar Trend */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-[12px] border border-black/10 shadow-xs space-y-4">
+        <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-black/10 shadow-xs space-y-4">
           <div className="flex justify-between items-center pb-3 border-b border-black/5">
             <div>
               <h3 className="font-bold text-[#1F161E] text-sm font-serif-brand">
@@ -278,17 +278,17 @@ export default function AdminReportsPage() {
                         {/* Revenue Bar */}
                         <div
                           style={{ height: `${revHeightPct}%` }}
-                          className="w-full max-w-[14px] bg-[#B83B63] rounded-t-[3px] group-hover:bg-[#9B2C4F] transition-all relative"
+                          className="w-full max-w-3.5 bg-[#B83B63] rounded-t-[3px] group-hover:bg-[#9B2C4F] transition-all relative"
                           title={`${day.dateLabel}: Revenue ₹${(day.revenuePaise / 100).toLocaleString('en-IN')}`}
                         />
                         {/* Expense Bar */}
                         <div
                           style={{ height: `${expHeightPct}%` }}
-                          className="w-full max-w-[14px] bg-black/20 rounded-t-[3px] group-hover:bg-black/40 transition-all relative"
+                          className="w-full max-w-3.5 bg-black/20 rounded-t-[3px] group-hover:bg-black/40 transition-all relative"
                           title={`${day.dateLabel}: Expense ₹${(day.expensePaise / 100).toLocaleString('en-IN')}`}
                         />
                       </div>
-                      <span className="text-[9px] text-[#5D4E60] font-mono truncate max-w-[36px]">
+                      <span className="text-[9px] text-[#5D4E60] font-mono truncate max-w-9">
                         {day.dateLabel}
                       </span>
                     </div>
@@ -300,7 +300,7 @@ export default function AdminReportsPage() {
         </div>
 
         {/* Status Distribution */}
-        <div className="bg-white p-6 rounded-[12px] border border-black/10 shadow-xs space-y-4 flex flex-col justify-between">
+        <div className="bg-white p-6 rounded-xl border border-black/10 shadow-xs space-y-4 flex flex-col justify-between">
           <div>
             <h3 className="font-bold text-[#1F161E] text-sm font-serif-brand pb-3 border-b border-black/5">
               Order Pipeline Distribution
@@ -380,7 +380,7 @@ export default function AdminReportsPage() {
                 </tr>
               ) : (
                 analytics.topProducts.map((p, idx) => (
-                  <tr key={p.sku} className="hover:bg-black/[0.015] transition-colors">
+                  <tr key={p.sku} className="hover:bg-black/1.5 transition-colors">
                     <td className="py-3 px-4 font-mono font-bold text-[#B83B63]">
                       #{idx + 1}
                     </td>

@@ -242,7 +242,7 @@ export default function AddressesPage() {
           <div className="w-6 h-6 border-2 border-[#B83B63] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : addresses.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-[12px] border border-[#E8E2E7] p-8">
+        <div className="text-center py-12 bg-white rounded-xl border border-[#E8E2E7] p-8">
           <MapPin className="w-12 h-12 text-[#8C8490] mx-auto opacity-30 mb-3" />
           <h3 className="text-base font-serif font-bold text-[#19161A]">No addresses saved yet</h3>
           <p className="text-xs text-[#6D6670] max-w-sm mx-auto mt-1 mb-5">
@@ -257,7 +257,7 @@ export default function AddressesPage() {
           {addresses.map((addr) => (
             <div
               key={addr.id}
-              className={`p-5 rounded-[12px] border bg-white flex flex-col justify-between transition-all ${
+              className={`p-5 rounded-xl border bg-white flex flex-col justify-between transition-all ${
                 addr.isDefault
                   ? 'border-[#B83B63] ring-1 ring-[#B83B63] shadow-xs'
                   : 'border-[#E8E2E7] hover:border-[#B83B63]/40'
@@ -269,7 +269,7 @@ export default function AddressesPage() {
                     {addr.fullName}
                   </span>
                   {addr.isDefault && (
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#B83B63] bg-[#FBEAF0] px-2 py-0.5 rounded-[4px] shrink-0">
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#B83B63] bg-[#FBEAF0] px-2 py-0.5 rounded-sm shrink-0">
                       Default
                     </span>
                   )}
@@ -330,7 +330,7 @@ export default function AddressesPage() {
       >
         <form onSubmit={handleSaveAddress} className="space-y-4 pt-2">
           {formError && (
-            <div className="p-3 bg-[#FEF2F2] border border-[#EF4444]/30 rounded-[6px] text-xs text-[#EF4444]">
+            <div className="p-3 bg-[#FEF2F2] border border-[#EF4444]/30 rounded-md text-xs text-[#EF4444]">
               {formError}
             </div>
           )}
@@ -405,7 +405,7 @@ export default function AddressesPage() {
               <select
                 value={state}
                 onChange={(e) => setState(e.target.value)}
-                className="w-full h-10 px-3 border border-[#E8E2E7] rounded-[6px] text-xs font-medium text-[#19161A] bg-white focus:outline-none focus:border-[#B83B63]"
+                className="w-full h-10 px-3 border border-[#E8E2E7] rounded-md text-xs font-medium text-[#19161A] bg-white focus:outline-none focus:border-[#B83B63]"
               >
                 {INDIAN_STATES.map((s) => (
                   <option key={s} value={s}>{s}</option>

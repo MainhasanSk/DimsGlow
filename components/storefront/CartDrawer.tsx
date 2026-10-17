@@ -119,7 +119,7 @@ export function CartDrawer() {
                   <Link
                     href={`/products/${item.slug}`}
                     onClick={() => setIsCartDrawerOpen(false)}
-                    className="relative w-18 h-18 rounded-[8px] bg-[#FAF8FA] border border-[#E8E2E7] overflow-hidden shrink-0"
+                    className="relative w-18 h-18 rounded-lg bg-[#FAF8FA] border border-[#E8E2E7] overflow-hidden shrink-0"
                   >
                     <Image
                       src={item.imageUrl || '/brand/dimsglow-logo.jpg'}
@@ -170,7 +170,7 @@ export function CartDrawer() {
 
                     {/* Stepper */}
                     <div className="flex items-center gap-2 mt-2">
-                      <div className="flex items-center border border-[#E8E2E7] rounded-[6px] overflow-hidden bg-white">
+                      <div className="flex items-center border border-[#E8E2E7] rounded-md overflow-hidden bg-white">
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}

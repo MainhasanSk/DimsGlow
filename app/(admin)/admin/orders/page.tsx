@@ -323,7 +323,7 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-[12px] border border-[#E8E2E7] shadow-xs flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+      <div className="bg-white p-4 rounded-xl border border-[#E8E2E7] shadow-xs flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 text-[#8C8490] absolute left-3 top-1/2 -translate-y-1/2" />
           <Input
@@ -347,7 +347,7 @@ export default function AdminOrdersPage() {
             <button
               key={tab.id}
               onClick={() => setStatusFilter(tab.id)}
-              className={`px-3 py-1.5 rounded-[6px] text-xs font-semibold transition-colors cursor-pointer ${
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
                 statusFilter === tab.id
                   ? 'bg-[#B83B63] text-white shadow-xs'
                   : 'bg-[#FAF8FA] text-[#6D6670] hover:text-[#19161A] hover:bg-[#F2EFF2]'
@@ -360,7 +360,7 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white rounded-[12px] border border-[#E8E2E7] shadow-xs overflow-hidden">
+      <div className="bg-white rounded-xl border border-[#E8E2E7] shadow-xs overflow-hidden">
         {loading ? (
           <div className="py-20 flex justify-center">
             <div className="w-8 h-8 border-2 border-[#B83B63] border-t-transparent rounded-full animate-spin" />
@@ -403,7 +403,7 @@ export default function AdminOrdersPage() {
                       <span className="font-semibold text-[#19161A] block">
                         {order.shippingAddress.fullName}
                       </span>
-                      <span className="text-[11px] text-[#6D6670] block truncate max-w-[180px]">
+                      <span className="text-[11px] text-[#6D6670] block truncate max-w-45">
                         {order.customerEmail}
                       </span>
                     </td>
@@ -411,7 +411,7 @@ export default function AdminOrdersPage() {
                       <span className="font-medium text-[#19161A]">
                         {order.items.reduce((s, i) => s + i.quantity, 0)} units
                       </span>
-                      <span className="text-[11px] text-[#6D6670] block truncate max-w-[150px]">
+                      <span className="text-[11px] text-[#6D6670] block truncate max-w-37.5">
                         {order.items[0]?.productName}
                       </span>
                     </td>
@@ -458,7 +458,7 @@ export default function AdminOrdersPage() {
         >
           <div className="space-y-6 pt-2">
             {actionError && (
-              <div className="p-3 bg-[#FEF2F2] border border-[#EF4444]/30 rounded-[6px] text-xs text-[#EF4444] flex items-center gap-2">
+              <div className="p-3 bg-[#FEF2F2] border border-[#EF4444]/30 rounded-md text-xs text-[#EF4444] flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{actionError}</span>
               </div>
@@ -851,7 +851,7 @@ export default function AdminOrdersPage() {
 
             {/* Courier Tracking Info if already Shipped */}
             {selectedOrder.courier && (
-              <div className="p-3 bg-[#F0FDF4] border border-[#BBF7D0] rounded-[8px] text-xs space-y-1">
+              <div className="p-3 bg-[#F0FDF4] border border-[#BBF7D0] rounded-lg text-xs space-y-1">
                 <span className="font-bold text-[#15803D] flex items-center gap-1.5">
                   <Truck className="w-4 h-4" /> Dispatched via {selectedOrder.courier.courierName}
                 </span>
@@ -867,7 +867,7 @@ export default function AdminOrdersPage() {
 
             {/* Cancellation Reason if Cancelled */}
             {selectedOrder.cancellationReason && (
-              <div className="p-3 bg-[#FEF2F2] border border-[#FECACA] rounded-[8px] text-xs">
+              <div className="p-3 bg-[#FEF2F2] border border-[#FECACA] rounded-lg text-xs">
                 <strong className="text-[#DC2626]">Cancellation Reason: </strong>
                 <span>{selectedOrder.cancellationReason}</span>
               </div>
@@ -875,7 +875,7 @@ export default function AdminOrdersPage() {
 
             {/* Customer & Shipping Address Details */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-[8px] border border-[#E8E2E7] bg-[#FAF8FA]">
+              <div className="p-4 rounded-lg border border-[#E8E2E7] bg-[#FAF8FA]">
                 <h4 className="font-bold text-[#19161A] mb-1.5 uppercase tracking-wider text-[10px]">
                   Customer Contact
                 </h4>
@@ -884,7 +884,7 @@ export default function AdminOrdersPage() {
                 <p className="text-[#19161A] mt-1 font-mono">Mobile: +91 {selectedOrder.shippingAddress.phone}</p>
               </div>
 
-              <div className="p-4 rounded-[8px] border border-[#E8E2E7] bg-[#FAF8FA]">
+              <div className="p-4 rounded-lg border border-[#E8E2E7] bg-[#FAF8FA]">
                 <h4 className="font-bold text-[#19161A] mb-1.5 uppercase tracking-wider text-[10px]">
                   Shipping Destination
                 </h4>
@@ -903,11 +903,11 @@ export default function AdminOrdersPage() {
               <h4 className="text-xs font-bold uppercase tracking-wider text-[#19161A] mb-2.5">
                 Itemized Order Contents ({selectedOrder.items.length})
               </h4>
-              <div className="border border-[#E8E2E7] rounded-[8px] overflow-hidden divide-y divide-[#E8E2E7] text-xs">
+              <div className="border border-[#E8E2E7] rounded-lg overflow-hidden divide-y divide-[#E8E2E7] text-xs">
                 {selectedOrder.items.map((item, idx) => (
                   <div key={idx} className="p-3 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="relative w-10 h-10 rounded-[6px] overflow-hidden bg-[#FAF8FA] border border-[#E8E2E7] shrink-0">
+                      <div className="relative w-10 h-10 rounded-md overflow-hidden bg-[#FAF8FA] border border-[#E8E2E7] shrink-0">
                         <Image
                           src={item.imageUrl || '/brand/dimsglow-logo.jpg'}
                           alt={item.productName}

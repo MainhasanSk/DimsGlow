@@ -72,7 +72,7 @@ export default function AccountOverviewPage() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-[#541235] via-[#751B47] to-[#B83B63] rounded-[12px] p-6 sm:p-8 text-white relative overflow-hidden shadow-md">
+      <div className="bg-linear-to-r from-[#541235] via-[#751B47] to-[#B83B63] rounded-xl p-6 sm:p-8 text-white relative overflow-hidden shadow-md">
         <div className="relative z-10 max-w-xl">
           <span className="text-[10px] font-extrabold uppercase tracking-[0.25em] text-[#D4AF37] block mb-1">
             DIMSGLOW PRIVILEGE MEMBER
@@ -155,7 +155,7 @@ export default function AccountOverviewPage() {
       </div>
 
       {/* Recent Order Card */}
-      <div className="bg-white rounded-[12px] border border-[#E8E2E7] p-6 shadow-xs space-y-4">
+      <div className="bg-white rounded-xl border border-[#E8E2E7] p-6 shadow-xs space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-[#E8E2E7]">
           <div>
             <h3 className="text-base font-serif font-bold text-[#19161A]">
@@ -212,9 +212,9 @@ export default function AccountOverviewPage() {
               {recentOrder.items.map((item, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-3 p-2 rounded-[8px] bg-[#FAF8FA] border border-[#E8E2E7]"
+                  className="flex items-center gap-3 p-2 rounded-lg bg-[#FAF8FA] border border-[#E8E2E7]"
                 >
-                  <div className="relative w-12 h-12 rounded-[6px] overflow-hidden bg-white border border-[#E8E2E7] shrink-0">
+                  <div className="relative w-12 h-12 rounded-md overflow-hidden bg-white border border-[#E8E2E7] shrink-0">
                     <Image
                       src={item.imageUrl || '/brand/dimsglow-logo.jpg'}
                       alt={item.productName}
@@ -223,7 +223,7 @@ export default function AccountOverviewPage() {
                     />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-[#19161A] line-clamp-1 max-w-[150px]">
+                    <h4 className="text-xs font-bold text-[#19161A] line-clamp-1 max-w-37.5">
                       {item.productName}
                     </h4>
                     <p className="text-[10px] text-[#6D6670]">

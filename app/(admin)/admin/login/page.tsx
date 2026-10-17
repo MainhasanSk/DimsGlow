@@ -221,7 +221,7 @@ function AdminLoginForm() {
           type="submit"
           variant="primary"
           size="lg"
-          className="w-full mt-4 bg-gradient-to-r from-[#5B132B] to-[#781838] hover:from-[#781838] hover:to-[#932048] text-white border border-[#D4AF37]/30 font-bold tracking-wider text-xs uppercase shadow-lg"
+          className="w-full mt-4 bg-linear-to-r from-[#5B132B] to-[#781838] hover:from-[#781838] hover:to-[#932048] text-white border border-[#D4AF37]/30 font-bold tracking-wider text-xs uppercase shadow-lg"
           isLoading={isLoading}
         >
           <Lock className="w-3.5 h-3.5 mr-2" />

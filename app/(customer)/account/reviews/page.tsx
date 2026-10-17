@@ -21,7 +21,7 @@ export default function CustomerReviewsPage() {
         </p>
       </div>
 
-      <div className="text-center py-16 bg-white rounded-[12px] border border-[#E8E2E7] p-8">
+      <div className="text-center py-16 bg-white rounded-xl border border-[#E8E2E7] p-8">
         <div className="w-16 h-16 rounded-full bg-[#FAF4F7] text-[#B83B63] flex items-center justify-center mx-auto mb-4">
           <Star className="w-8 h-8 opacity-40 fill-current" />
         </div>

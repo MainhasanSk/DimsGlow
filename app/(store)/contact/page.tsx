@@ -28,7 +28,7 @@ export default function ContactPage() {
                 href="https://wa.me/913614556830"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-start gap-3.5 p-4 rounded-[8px] bg-[#F7F5F7] hover:bg-[#FBEAF0] border border-[#E8E2E7] transition-colors"
+                className="flex items-start gap-3.5 p-4 rounded-lg bg-[#F7F5F7] hover:bg-[#FBEAF0] border border-[#E8E2E7] transition-colors"
               >
                 <div className="p-2 rounded-full bg-[#25D366] text-white">
                   <MessageCircle className="w-5 h-5" />
@@ -40,7 +40,7 @@ export default function ContactPage() {
                 </div>
               </a>
 
-              <div className="flex items-start gap-3.5 p-4 rounded-[8px] bg-[#F7F5F7] border border-[#E8E2E7]">
+              <div className="flex items-start gap-3.5 p-4 rounded-lg bg-[#F7F5F7] border border-[#E8E2E7]">
                 <div className="p-2 rounded-full bg-[#B83B63] text-white">
                   <Mail className="w-5 h-5" />
                 </div>
@@ -51,7 +51,7 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3.5 p-4 rounded-[8px] bg-[#F7F5F7] border border-[#E8E2E7]">
+              <div className="flex items-start gap-3.5 p-4 rounded-lg bg-[#F7F5F7] border border-[#E8E2E7]">
                 <div className="p-2 rounded-full bg-[#19161A] text-white">
                   <Clock className="w-5 h-5" />
                 </div>
@@ -65,7 +65,7 @@ export default function ContactPage() {
           </div>
 
           {/* Quick Message Form */}
-          <div className="bg-white p-6 sm:p-8 rounded-[12px] border border-[#E8E2E7] shadow-sm space-y-4">
+          <div className="bg-white p-6 sm:p-8 rounded-xl border border-[#E8E2E7] shadow-sm space-y-4">
             <h3 className="text-base font-bold text-[#19161A]">Send Us a Message</h3>
             <form className="space-y-3.5">
               <Input label="Your Name" placeholder="e.g. Meera Sen" required />
@@ -77,7 +77,7 @@ export default function ContactPage() {
                   rows={4}
                   placeholder="How can our beauty specialists help you today?"
                   required
-                  className="w-full px-3.5 py-2.5 text-sm rounded-[6px] border border-[#E8E2E7] bg-white text-[#19161A] placeholder:text-[#9A939E] focus:outline-none focus:border-[#B83B63] focus:ring-1 focus:ring-[#B83B63]"
+                  className="w-full px-3.5 py-2.5 text-sm rounded-md border border-[#E8E2E7] bg-white text-[#19161A] placeholder:text-[#9A939E] focus:outline-none focus:border-[#B83B63] focus:ring-1 focus:ring-[#B83B63]"
                 />
               </div>
               <Button type="button" variant="primary" size="lg" className="w-full">

@@ -50,7 +50,7 @@ function SignInForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="p-3.5 rounded-[6px] bg-[#FCE8E6] border border-[#B42318]/20 flex items-start gap-2.5 text-[#B42318] text-xs leading-relaxed animate-in fade-in duration-200">
+        <div className="p-3.5 rounded-md bg-[#FCE8E6] border border-[#B42318]/20 flex items-start gap-2.5 text-[#B42318] text-xs leading-relaxed animate-in fade-in duration-200">
           <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>

@@ -239,7 +239,7 @@ export default function AdminContentPage() {
   return (
     <div className="space-y-6 pb-20">
       {/* Top Banner & Actions */}
-      <div className="bg-white p-6 rounded-[12px] border border-[#E8E2E7] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white p-6 rounded-xl border border-[#E8E2E7] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="p-1.5 rounded-md bg-[#5B132B]/10 text-[#5B132B]">
@@ -397,7 +397,7 @@ export default function AdminContentPage() {
               <Card key={slide.id || idx} className="border-[#E8E2E7] overflow-hidden shadow-xs">
                 {/* Header row with gradient preview and order controls */}
                 <div
-                  className={`px-5 py-3.5 bg-gradient-to-r ${slide.bgGradient} text-white flex items-center justify-between`}
+                  className={`px-5 py-3.5 bg-linear-to-r ${slide.bgGradient} text-white flex items-center justify-between`}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-white/20 uppercase tracking-widest text-[#D4AF37]">
@@ -549,7 +549,7 @@ export default function AdminContentPage() {
                           key={preset.name}
                           type="button"
                           onClick={() => handleUpdateSlide(idx, { bgGradient: preset.value })}
-                          className={`h-7 px-3 rounded-full text-[10px] font-bold text-white bg-gradient-to-r ${preset.value} border transition-all ${
+                          className={`h-7 px-3 rounded-full text-[10px] font-bold text-white bg-linear-to-r ${preset.value} border transition-all ${
                             slide.bgGradient === preset.value
                               ? 'border-[#D4AF37] ring-2 ring-[#D4AF37]/50 scale-105'
                               : 'border-transparent opacity-80 hover:opacity-100'
@@ -582,7 +582,7 @@ export default function AdminContentPage() {
               <Card key={key} className="border-[#E8E2E7] overflow-hidden shadow-xs">
                 {/* Banner Header Preview */}
                 <div
-                  className={`p-4 bg-gradient-to-r ${cat.bannerBg} text-white flex items-center justify-between`}
+                  className={`p-4 bg-linear-to-r ${cat.bannerBg} text-white flex items-center justify-between`}
                 >
                   <div>
                     <span className="text-[10px] font-bold tracking-widest text-[#D4AF37] uppercase">
@@ -678,7 +678,7 @@ export default function AdminContentPage() {
                           key={preset.name}
                           type="button"
                           onClick={() => handleUpdateCategory(key, { bannerBg: preset.value })}
-                          className={`h-6 px-2.5 rounded text-[9px] font-bold text-white bg-gradient-to-r ${preset.value} border ${
+                          className={`h-6 px-2.5 rounded text-[9px] font-bold text-white bg-linear-to-r ${preset.value} border ${
                             cat.bannerBg === preset.value
                               ? 'border-[#D4AF37] ring-2 ring-[#D4AF37]/50'
                               : 'border-transparent opacity-80 hover:opacity-100'

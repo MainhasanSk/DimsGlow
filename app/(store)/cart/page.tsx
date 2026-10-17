@@ -131,7 +131,7 @@ export default function CartPage() {
         </p>
 
         {items.length === 0 ? (
-          <div className="text-center py-16 bg-[#FAF8FA] rounded-[12px] border border-[#E8E2E7] max-w-2xl mx-auto">
+          <div className="text-center py-16 bg-[#FAF8FA] rounded-xl border border-[#E8E2E7] max-w-2xl mx-auto">
             <div className="w-20 h-20 rounded-full bg-white border border-[#E8E2E7] flex items-center justify-center mx-auto mb-4 text-[#B83B63] shadow-xs">
               <ShoppingBag className="w-10 h-10 opacity-30" />
             </div>
@@ -174,13 +174,13 @@ export default function CartPage() {
               </div>
 
               {/* Items Card */}
-              <div className="bg-white rounded-[12px] border border-[#E8E2E7] overflow-hidden divide-y divide-[#E8E2E7]">
+              <div className="bg-white rounded-xl border border-[#E8E2E7] overflow-hidden divide-y divide-[#E8E2E7]">
                 {items.map((item) => (
                   <div key={item.id} className="p-4 sm:p-5 flex gap-4 sm:gap-6 items-center">
                     {/* Thumbnail */}
                     <Link
                       href={`/products/${item.slug}`}
-                      className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-[8px] bg-[#FAF8FA] border border-[#E8E2E7] overflow-hidden shrink-0 group"
+                      className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg bg-[#FAF8FA] border border-[#E8E2E7] overflow-hidden shrink-0 group"
                     >
                       <Image
                         src={item.imageUrl || '/brand/dimsglow-logo.jpg'}
@@ -231,7 +231,7 @@ export default function CartPage() {
 
                       {/* Stepper & Line Item Subtotal */}
                       <div className="flex items-center justify-between gap-4 mt-3 pt-2 border-t border-[#F2EFF2]">
-                        <div className="flex items-center border border-[#E8E2E7] rounded-[6px] overflow-hidden bg-white">
+                        <div className="flex items-center border border-[#E8E2E7] rounded-md overflow-hidden bg-white">
                           <button
                             type="button"
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
@@ -300,7 +300,7 @@ export default function CartPage() {
                   value={orderNote}
                   onChange={(e) => setOrderNote(e.target.value)}
                   placeholder="Special instructions for delivery, landmark, or gate code..."
-                  className="w-full text-xs p-3 border border-[#E8E2E7] rounded-[6px] focus:outline-none focus:border-[#B83B63] resize-none"
+                  className="w-full text-xs p-3 border border-[#E8E2E7] rounded-md focus:outline-none focus:border-[#B83B63] resize-none"
                 />
               </div>
 
@@ -324,7 +324,7 @@ export default function CartPage() {
 
             {/* Right 4 cols: Order Summary */}
             <div className="lg:col-span-4 space-y-4 sticky top-24">
-              <div className="bg-white rounded-[12px] border border-[#E8E2E7] p-5 sm:p-6 shadow-xs space-y-4">
+              <div className="bg-white rounded-xl border border-[#E8E2E7] p-5 sm:p-6 shadow-xs space-y-4">
                 <h3 className="text-base font-serif font-bold text-[#19161A] pb-3 border-b border-[#E8E2E7]">
                   Order Summary
                 </h3>
@@ -352,7 +352,7 @@ export default function CartPage() {
                   )}
 
                   {appliedCoupon && (
-                    <div className="mt-2.5 p-2.5 bg-[#FAF4F7] border border-[#B83B63]/30 rounded-[6px] flex items-center justify-between">
+                    <div className="mt-2.5 p-2.5 bg-[#FAF4F7] border border-[#B83B63]/30 rounded-md flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-[#B83B63]" />
                         <div>

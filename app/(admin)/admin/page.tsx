@@ -60,7 +60,7 @@ export default function AdminOverviewDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-[#281D27] via-[#481E34] to-[#7B1F4A] rounded-[14px] p-6 sm:p-8 text-white relative overflow-hidden shadow-md">
+      <div className="bg-linear-to-r from-[#281D27] via-[#481E34] to-[#7B1F4A] rounded-[14px] p-6 sm:p-8 text-white relative overflow-hidden shadow-md">
         <div className="relative z-10 max-w-2xl">
           <span className="text-[10px] font-extrabold uppercase tracking-[0.25em] text-[#D4AF37] block mb-1">
             EXECUTIVE OPERATIONS CONSOLE
@@ -166,7 +166,7 @@ export default function AdminOverviewDashboard() {
       </div>
 
       {/* Recent Orders Queue Card */}
-      <div className="bg-white rounded-[12px] border border-[#E8E2E7] shadow-xs overflow-hidden">
+      <div className="bg-white rounded-xl border border-[#E8E2E7] shadow-xs overflow-hidden">
         <div className="p-5 border-b border-[#E8E2E7] flex items-center justify-between">
           <div>
             <h3 className="text-base font-serif font-bold text-[#19161A]">
@@ -212,7 +212,7 @@ export default function AdminOverviewDashboard() {
                       <span className="font-semibold text-[#19161A] block">
                         {order.shippingAddress.fullName}
                       </span>
-                      <span className="text-[11px] text-[#6D6670] block truncate max-w-[160px]">
+                      <span className="text-[11px] text-[#6D6670] block truncate max-w-40">
                         {order.customerEmail}
                       </span>
                     </td>

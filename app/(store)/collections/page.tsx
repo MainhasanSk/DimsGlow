@@ -36,9 +36,9 @@ export default function CollectionListPage() {
             <Link
               key={col.id}
               href={`/collections/${col.slug}`}
-              className="group relative rounded-[12px] overflow-hidden border border-[#E8E2E7] bg-white shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
+              className="group relative rounded-xl overflow-hidden border border-[#E8E2E7] bg-white shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
             >
-              <div className={`h-40 w-full bg-gradient-to-r ${col.bannerBg} p-6 flex flex-col justify-end text-white relative overflow-hidden`}>
+              <div className={`h-40 w-full bg-linear-to-r ${col.bannerBg} p-6 flex flex-col justify-end text-white relative overflow-hidden`}>
                 <div className="absolute top-4 right-4 w-12 h-12 rounded-full overflow-hidden border border-white/20 opacity-80 group-hover:scale-110 transition-transform">
                   <Image
                     src="/brand/dimsglow-logo.jpg"

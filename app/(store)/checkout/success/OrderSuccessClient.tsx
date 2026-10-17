@@ -24,7 +24,7 @@ export function OrderSuccessClient() {
   return (
     <StorefrontShell>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        <div className="bg-white rounded-[16px] border border-[#E8E2E7] shadow-lg p-6 sm:p-10 text-center space-y-6">
+        <div className="bg-white rounded-2xl border border-[#E8E2E7] shadow-lg p-6 sm:p-10 text-center space-y-6">
           {/* Animated celebration icon */}
           <div className="w-20 h-20 rounded-full bg-[#E6F4EA] text-[#18794E] flex items-center justify-center mx-auto shadow-sm">
             <CheckCircle2 className="w-10 h-10" />

@@ -126,7 +126,7 @@ export default function HomePage() {
           onMouseLeave={() => setIsPaused(false)}
         >
           <div
-            className={`w-full min-h-[460px] sm:min-h-[520px] lg:min-h-[580px] bg-gradient-to-r ${curSlideData.bgGradient} text-white flex items-center transition-all duration-700 ease-in-out`}
+            className={`w-full min-h-115 sm:min-h-130 lg:min-h-145 bg-linear-to-r ${curSlideData.bgGradient} text-white flex items-center transition-all duration-700 ease-in-out`}
           >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full grid grid-cols-1 md:grid-cols-2 items-center gap-10">
               <div className="space-y-4 max-w-xl text-center md:text-left">
@@ -355,7 +355,7 @@ export default function HomePage() {
 
       {/* 4. Routine Combos & "Buy 3 for ₹699" Value Spotlight (From Reference PDF) */}
       {visibility.combosBox && (
-        <section className="py-14 bg-gradient-to-r from-[#200B15] via-[#4A0E2A] to-[#14060E] text-white">
+        <section className="py-14 bg-linear-to-r from-[#200B15] via-[#4A0E2A] to-[#14060E] text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-10">
               <div className="space-y-4">
@@ -392,7 +392,7 @@ export default function HomePage() {
                 ].map((set) => (
                   <div
                     key={set.title}
-                    className="p-5 rounded-[12px] bg-white/10 border border-white/20 backdrop-blur-xs space-y-2 hover:bg-white/15 transition-all"
+                    className="p-5 rounded-xl bg-white/10 border border-white/20 backdrop-blur-xs space-y-2 hover:bg-white/15 transition-all"
                   >
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#D4AF37] text-black uppercase">
                       {set.save}
@@ -418,7 +418,7 @@ export default function HomePage() {
 
       {/* Campaign Video Player Section (Screenshot 2: "WE'VE GOT EVERYTHING COVERED") */}
       {visibility.campaignVideo !== false && (
-        <section className="relative overflow-hidden bg-gradient-to-r from-[#200B15] via-[#4A0E2A] to-[#14060E] text-white py-14 lg:py-20 border-b border-[#3B2C3A]">
+        <section className="relative overflow-hidden bg-linear-to-r from-[#200B15] via-[#4A0E2A] to-[#14060E] text-white py-14 lg:py-20 border-b border-[#3B2C3A]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
               <div className="lg:col-span-5 space-y-4 text-center lg:text-left">
@@ -461,7 +461,7 @@ export default function HomePage() {
                   />
 
                   {/* Gradient Overlay for Cinematic Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
 
                   {/* Floating Video Controls */}
                   <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 z-20">
@@ -528,7 +528,7 @@ export default function HomePage() {
               </div>
 
               <div className="flex justify-center">
-                <div className="relative w-72 h-72 sm:w-88 sm:h-88 rounded-[16px] bg-white border border-[#E8E2E7] shadow-lg p-6 flex flex-col justify-center items-center text-center space-y-4">
+                <div className="relative w-72 h-72 sm:w-88 sm:h-88 rounded-2xl bg-white border border-[#E8E2E7] shadow-lg p-6 flex flex-col justify-center items-center text-center space-y-4">
                   <div className="w-24 h-24 rounded-full overflow-hidden border border-[#D4AF37]/50 shadow-sm relative">
                     <Image
                       src={content.promoClinical.imageUrl || '/brand/dimsglow-logo.jpg'}
@@ -572,7 +572,7 @@ export default function HomePage() {
             </div>
 
             <div className="max-w-xl mx-auto space-y-4">
-              <div className="relative h-72 sm:h-80 rounded-[16px] overflow-hidden border border-[#E8E2E7] shadow-lg bg-[#FAF8FA]">
+              <div className="relative h-72 sm:h-80 rounded-2xl overflow-hidden border border-[#E8E2E7] shadow-lg bg-[#FAF8FA]">
                 {/* Before Image Background */}
                 <div className="absolute inset-0 bg-[#EFE9EB] flex items-center justify-center">
                   <div className="text-center space-y-2 p-6">
@@ -587,7 +587,7 @@ export default function HomePage() {
 
                 {/* After Image Overlay with dynamic clip path */}
                 <div
-                  className="absolute inset-0 bg-gradient-to-br from-[#FAF0F3] to-[#F5D8E4] flex items-center justify-center transition-all"
+                  className="absolute inset-0 bg-linear-to-br from-[#FAF0F3] to-[#F5D8E4] flex items-center justify-center transition-all"
                   style={{ clipPath: `polygon(0 0, ${sliderPosition}% 0, ${sliderPosition}% 100%, 0 100%)` }}
                 >
                   <div className="text-center space-y-2 p-6">
@@ -648,9 +648,9 @@ export default function HomePage() {
                 <Link
                   key={look.id || look.title}
                   href={look.href}
-                  className="group relative rounded-[10px] overflow-hidden aspect-[3/4] bg-[#F7F5F7] border border-[#E8E2E7] flex flex-col justify-end p-4 transition-all duration-300 hover:shadow-lg"
+                  className="group relative rounded-[10px] overflow-hidden aspect-3/4 bg-[#F7F5F7] border border-[#E8E2E7] flex flex-col justify-end p-4 transition-all duration-300 hover:shadow-lg"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent z-10" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent z-10" />
                   <div className="relative z-20 space-y-1 text-white">
                     <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#D4AF37] text-black uppercase tracking-wider inline-block">
                       {look.badge || 'ROUTINE'}
@@ -738,7 +738,7 @@ export default function HomePage() {
                   </div>
 
                   <div className="pt-2 border-t border-[#E8E2E7] flex items-center justify-between">
-                    <span className="text-[11px] font-semibold text-[#19161A] truncate max-w-[150px]">
+                    <span className="text-[11px] font-semibold text-[#19161A] truncate max-w-37.5">
                       {rev.productName}
                     </span>
                     <Link href={rev.productLink} className="text-[10px] font-bold text-[#B83B63] hover:underline">

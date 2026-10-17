@@ -57,7 +57,7 @@ export function FAQAccordion() {
         return (
           <div
             key={faq.question}
-            className="border border-[#E8E2E7] rounded-[8px] bg-white overflow-hidden transition-all duration-200"
+            className="border border-[#E8E2E7] rounded-lg bg-white overflow-hidden transition-all duration-200"
           >
             <button
               type="button"

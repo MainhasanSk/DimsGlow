@@ -264,7 +264,7 @@ export default function AdminPurchasesPage() {
           <button
             onClick={fetchData}
             disabled={isLoading}
-            className="p-2 border border-black/10 rounded-[6px] hover:bg-white text-[#5D4E60] transition-colors cursor-pointer"
+            className="p-2 border border-black/10 rounded-md hover:bg-white text-[#5D4E60] transition-colors cursor-pointer"
             title="Refresh"
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -275,7 +275,7 @@ export default function AdminPurchasesPage() {
       {/* Feedback banner */}
       {feedbackMessage && (
         <div
-          className={`p-3.5 rounded-[8px] text-xs font-medium flex items-center justify-between ${
+          className={`p-3.5 rounded-lg text-xs font-medium flex items-center justify-between ${
             feedbackMessage.type === 'success'
               ? 'bg-[#EBF7EE] text-[#1E7E34] border border-[#C3E6CB]'
               : 'bg-[#FDF0ED] text-[#D9381E] border border-[#F5C6CB]'
@@ -319,7 +319,7 @@ export default function AdminPurchasesPage() {
       {activeTab === 'pos' && (
         <div className="space-y-4">
           {/* Filters Bar */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-between items-center bg-white p-3.5 rounded-[8px] border border-black/10 shadow-xs">
+          <div className="flex flex-col sm:flex-row gap-3 justify-between items-center bg-white p-3.5 rounded-lg border border-black/10 shadow-xs">
             <div className="flex items-center gap-2 w-full sm:w-auto">
               {['all', 'ordered', 'received', 'cancelled'].map((status) => (
                 <button
@@ -373,7 +373,7 @@ export default function AdminPurchasesPage() {
                       const receivedUnits = po.items.reduce((s, i) => s + (i.receivedQuantity || 0), 0);
 
                       return (
-                        <tr key={po.id} className="hover:bg-black/[0.015] transition-colors">
+                        <tr key={po.id} className="hover:bg-black/1.5 transition-colors">
                           <td className="py-3.5 px-4 font-mono font-bold text-[#1F161E]">
                             {po.poNumber}
                           </td>
@@ -507,7 +507,7 @@ export default function AdminPurchasesPage() {
       {/* MODAL: CREATE PURCHASE ORDER */}
       {isCreatePoOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white rounded-[12px] p-6 max-w-xl w-full shadow-2xl border border-black/10 space-y-4 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-xl p-6 max-w-xl w-full shadow-2xl border border-black/10 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-3 border-b border-black/10">
               <h2 className="text-lg font-bold text-[#1F161E] font-serif-brand">
                 Create Luxury Procurement Order
@@ -527,7 +527,7 @@ export default function AdminPurchasesPage() {
                   value={selectedSupplierId}
                   onChange={(e) => setSelectedSupplierId(e.target.value)}
                   required
-                  className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                  className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                 >
                   {suppliers.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -563,7 +563,7 @@ export default function AdminPurchasesPage() {
                 </div>
 
                 {poItems.map((item, idx) => (
-                  <div key={idx} className="p-3 bg-[#FAF8F5] rounded-[8px] border border-black/10 space-y-2">
+                  <div key={idx} className="p-3 bg-[#FAF8F5] rounded-lg border border-black/10 space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="font-semibold text-[#1F161E]">Item #{idx + 1}</span>
                       {poItems.length > 1 && (
@@ -595,7 +595,7 @@ export default function AdminPurchasesPage() {
                               setPoItems(updated);
                             }
                           }}
-                          className="w-full px-2 py-1.5 border border-black/20 rounded-[4px] bg-white text-xs"
+                          className="w-full px-2 py-1.5 border border-black/20 rounded-sm bg-white text-xs"
                         >
                           {CATALOG_PRODUCTS.map((p) => (
                             <option key={p.id} value={p.id}>
@@ -616,7 +616,7 @@ export default function AdminPurchasesPage() {
                             updated[idx].orderedQuantity = parseInt(e.target.value, 10) || 1;
                             setPoItems(updated);
                           }}
-                          className="w-full px-2 py-1.5 border border-black/20 rounded-[4px] bg-white text-xs"
+                          className="w-full px-2 py-1.5 border border-black/20 rounded-sm bg-white text-xs"
                         />
                       </div>
 
@@ -631,13 +631,13 @@ export default function AdminPurchasesPage() {
                             updated[idx].unitCostRupees = parseFloat(e.target.value) || 0;
                             setPoItems(updated);
                           }}
-                          className="w-full px-2 py-1.5 border border-black/20 rounded-[4px] bg-white text-xs"
+                          className="w-full px-2 py-1.5 border border-black/20 rounded-sm bg-white text-xs"
                         />
                       </div>
 
                       <div>
                         <label className="text-[10px] text-[#5D4E60] block mb-0.5">Line Total</label>
-                        <div className="px-2 py-1.5 bg-black/5 rounded-[4px] font-bold text-[#1F161E]">
+                        <div className="px-2 py-1.5 bg-black/5 rounded-sm font-bold text-[#1F161E]">
                           ₹{(item.orderedQuantity * item.unitCostRupees).toLocaleString('en-IN')}
                         </div>
                       </div>
@@ -653,7 +653,7 @@ export default function AdminPurchasesPage() {
                   value={poNotes}
                   onChange={(e) => setPoNotes(e.target.value)}
                   placeholder="e.g. Expected delivery by Friday, batch expiry 2028."
-                  className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                  className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                 />
               </div>
 
@@ -691,7 +691,7 @@ export default function AdminPurchasesPage() {
       {/* MODAL: RECEIVE PO & RESTOCK */}
       {receiveTargetPo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white rounded-[12px] p-6 max-w-md w-full shadow-2xl border border-black/10 space-y-4">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl border border-black/10 space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/10">
               <h2 className="text-base font-bold text-[#1F161E] font-serif-brand">
                 Confirm Inventory Restock
@@ -711,7 +711,7 @@ export default function AdminPurchasesPage() {
                 <strong className="text-[#1E7E34]">RECEIVED</strong>.
               </p>
 
-              <div className="bg-[#FAF8F5] p-3 rounded-[8px] border border-black/10 space-y-1.5">
+              <div className="bg-[#FAF8F5] p-3 rounded-lg border border-black/10 space-y-1.5">
                 <p className="font-bold text-[#1F161E] text-[11px] uppercase tracking-wide">
                   Items to restock into ledger:
                 </p>
@@ -723,7 +723,7 @@ export default function AdminPurchasesPage() {
                 ))}
               </div>
 
-              <div className="p-2.5 bg-[#FFF8E7] border border-[#FFEBAA] rounded-[6px] text-[11px] text-[#856404] flex items-center gap-2">
+              <div className="p-2.5 bg-[#FFF8E7] border border-[#FFEBAA] rounded-md text-[11px] text-[#856404] flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 shrink-0" />
                 <span>
                   This executes an atomic transaction that idempotently appends to `stockMovements` and prevents double counting.
@@ -754,7 +754,7 @@ export default function AdminPurchasesPage() {
       {/* MODAL: ADD SUPPLIER */}
       {isAddSupplierOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white rounded-[12px] p-6 max-w-lg w-full shadow-2xl border border-black/10 space-y-4">
+          <div className="bg-white rounded-xl p-6 max-w-lg w-full shadow-2xl border border-black/10 space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/10">
               <h2 className="text-base font-bold text-[#1F161E] font-serif-brand">
                 Register New Supplier / Vendor
@@ -777,7 +777,7 @@ export default function AdminPurchasesPage() {
                     value={newSupplier.name}
                     onChange={(e) => setNewSupplier({ ...newSupplier, name: e.target.value })}
                     placeholder="e.g. Aura Fragrances & Packaging Ltd"
-                    className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                    className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                   />
                 </div>
 
@@ -789,7 +789,7 @@ export default function AdminPurchasesPage() {
                     value={newSupplier.contactPerson}
                     onChange={(e) => setNewSupplier({ ...newSupplier, contactPerson: e.target.value })}
                     placeholder="e.g. Rajesh Sharma"
-                    className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                    className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                   />
                 </div>
 
@@ -801,7 +801,7 @@ export default function AdminPurchasesPage() {
                     value={newSupplier.email}
                     onChange={(e) => setNewSupplier({ ...newSupplier, email: e.target.value })}
                     placeholder="vendor@aurapack.in"
-                    className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                    className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                   />
                 </div>
 
@@ -813,7 +813,7 @@ export default function AdminPurchasesPage() {
                     value={newSupplier.phone}
                     onChange={(e) => setNewSupplier({ ...newSupplier, phone: e.target.value })}
                     placeholder="+91 98765 43210"
-                    className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                    className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                   />
                 </div>
 
@@ -824,7 +824,7 @@ export default function AdminPurchasesPage() {
                     value={newSupplier.gstin}
                     onChange={(e) => setNewSupplier({ ...newSupplier, gstin: e.target.value.toUpperCase() })}
                     placeholder="18AAAAA0000A1Z5"
-                    className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs font-mono"
+                    className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs font-mono"
                   />
                 </div>
 
@@ -836,7 +836,7 @@ export default function AdminPurchasesPage() {
                     value={newSupplier.address}
                     onChange={(e) => setNewSupplier({ ...newSupplier, address: e.target.value })}
                     placeholder="Industrial Area, Phase 2, Guwahati, Assam"
-                    className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                    className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                   />
                 </div>
               </div>

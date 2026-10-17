@@ -225,13 +225,13 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
           {/* Left Column: Product Gallery */}
           <div className="lg:col-span-6 space-y-4">
-            <div className="relative aspect-square w-full rounded-[12px] bg-[#FAF8FA] border border-[#E8E2E7] overflow-hidden flex items-center justify-center p-8 group">
+            <div className="relative aspect-square w-full rounded-xl bg-[#FAF8FA] border border-[#E8E2E7] overflow-hidden flex items-center justify-center p-8 group">
               {/* Trust & Gift Badges */}
               <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-                <span className="text-[10px] font-extrabold tracking-wider uppercase text-white bg-[#B83B63] px-2.5 py-1 rounded-[4px] shadow-sm">
+                <span className="text-[10px] font-extrabold tracking-wider uppercase text-white bg-[#B83B63] px-2.5 py-1 rounded-sm shadow-sm">
                   1 MIRACLE FORMULA SPF 20
                 </span>
-                <span className="text-[10px] font-extrabold tracking-wider uppercase text-[#B83B63] bg-[#FBEAF0] px-2.5 py-1 rounded-[4px] shadow-xs border border-[#B83B63]/20">
+                <span className="text-[10px] font-extrabold tracking-wider uppercase text-[#B83B63] bg-[#FBEAF0] px-2.5 py-1 rounded-sm shadow-xs border border-[#B83B63]/20">
                   UNLOCK FREE GIFT
                 </span>
               </div>
@@ -264,7 +264,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
                   key={idx}
                   type="button"
                   onClick={() => setActiveMediaIndex(0)}
-                  className={`relative w-18 h-18 rounded-[8px] border-2 bg-[#FAF8FA] overflow-hidden transition-all duration-200 cursor-pointer shrink-0 ${
+                  className={`relative w-18 h-18 rounded-lg border-2 bg-[#FAF8FA] overflow-hidden transition-all duration-200 cursor-pointer shrink-0 ${
                     activeMediaIndex === 0 && idx === 0
                       ? 'border-[#B83B63] shadow-xs scale-105'
                       : 'border-[#E8E2E7] hover:border-[#6D6670]'
@@ -331,7 +331,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
                 {activeProduct.trustBadges.map((badge) => (
                   <span
                     key={badge}
-                    className="text-[11px] font-bold px-2.5 py-1 rounded-[4px] bg-[#E6F4EA] text-[#18794E] border border-[#18794E]/20"
+                    className="text-[11px] font-bold px-2.5 py-1 rounded-sm bg-[#E6F4EA] text-[#18794E] border border-[#18794E]/20"
                   >
                     ✓ {badge}
                   </span>
@@ -389,7 +389,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
                 {exclusiveCoupons.map((coupon) => (
                   <div
                     key={coupon.code}
-                    className="p-3 rounded-[8px] bg-[#FAF8FA] border border-[#E8E2E7] hover:border-[#B83B63]/40 flex flex-col justify-between space-y-2 transition-colors"
+                    className="p-3 rounded-lg bg-[#FAF8FA] border border-[#E8E2E7] hover:border-[#B83B63]/40 flex flex-col justify-between space-y-2 transition-colors"
                   >
                     <div>
                       <span className="text-[10px] font-extrabold text-[#B83B63] tracking-wider uppercase block">
@@ -403,7 +403,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
                     <button
                       type="button"
                       onClick={() => handleCopyCode(coupon.code)}
-                      className="text-[10px] font-bold text-[#19161A] bg-white border border-[#E8E2E7] hover:bg-[#FBEAF0] hover:text-[#B83B63] px-2 py-1 rounded-[4px] transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                      className="text-[10px] font-bold text-[#19161A] bg-white border border-[#E8E2E7] hover:bg-[#FBEAF0] hover:text-[#B83B63] px-2 py-1 rounded-sm transition-colors flex items-center justify-center gap-1 cursor-pointer"
                     >
                       {copiedCoupon === coupon.code ? (
                         <>
@@ -483,7 +483,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
         {/* Rich Below-the-fold Sections (Matching Pages 34 to 45 of PDF) */}
         <div className="mt-20 space-y-16">
           {/* Section 1: "More Than Just Coverage" */}
-          <section className="p-8 sm:p-12 rounded-[16px] bg-[#FAF8FA] border border-[#E8E2E7] text-center space-y-6">
+          <section className="p-8 sm:p-12 rounded-2xl bg-[#FAF8FA] border border-[#E8E2E7] text-center space-y-6">
             <span className="text-xs font-bold uppercase tracking-widest text-[#B83B63]">
               SKIN-FIRST PHILOSOPHY
             </span>
@@ -526,7 +526,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
               </p>
             </div>
 
-            <div className="max-w-2xl mx-auto relative aspect-[4/3] rounded-[16px] overflow-hidden border border-[#E8E2E7] shadow-lg select-none">
+            <div className="max-w-2xl mx-auto relative aspect-4/3 rounded-2xl overflow-hidden border border-[#E8E2E7] shadow-lg select-none">
               {/* After Layer (Background) */}
               <div className="absolute inset-0 bg-[#E8D0BA] flex items-center justify-center text-[#19161A] p-6 text-center">
                 <div className="space-y-2">
@@ -578,7 +578,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
           </section>
 
           {/* Section 3: Ingredients Callout (Rice Water + Niacinamide) */}
-          <section className="p-8 sm:p-12 rounded-[16px] bg-[#FBEAF0] border border-[#F5D8E4] grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <section className="p-8 sm:p-12 rounded-2xl bg-[#FBEAF0] border border-[#F5D8E4] grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div className="space-y-4">
               <span className="text-xs font-bold uppercase tracking-widest text-[#B83B63]">
                 PURE ACTIVE BOTANICALS
@@ -615,7 +615,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
           </section>
 
           {/* Section 4: Tabbed Product Description & FAQ */}
-          <section className="border border-[#E8E2E7] rounded-[12px] bg-white p-6 sm:p-10 space-y-6">
+          <section className="border border-[#E8E2E7] rounded-xl bg-white p-6 sm:p-10 space-y-6">
             <div className="flex items-center gap-6 border-b border-[#E8E2E7] text-xs sm:text-sm font-bold tracking-wider">
               <button
                 type="button"
@@ -742,7 +742,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
 
           {/* Section 6: Frequently Paired Together (Combo Routine) */}
           {pairedProduct && (
-            <section className="p-6 sm:p-8 rounded-[16px] bg-[#FAF8FA] border border-[#E8E2E7] space-y-6">
+            <section className="p-6 sm:p-8 rounded-2xl bg-[#FAF8FA] border border-[#E8E2E7] space-y-6">
               <div>
                 <span className="text-xs font-bold uppercase tracking-widest text-[#B83B63]">
                   FREQUENTLY PAIRED TOGETHER
@@ -755,11 +755,11 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
                 </p>
               </div>
 
-              <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white p-5 rounded-[12px] border border-[#E8E2E7]">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white p-5 rounded-xl border border-[#E8E2E7]">
                 <div className="flex flex-wrap items-center gap-4 sm:gap-6 justify-center md:justify-start">
                   {/* Item 1: Current Product */}
                   <div className="flex items-center gap-3">
-                    <div className="w-16 h-16 rounded-[8px] border border-[#E8E2E7] bg-[#FAF8FA] relative overflow-hidden shrink-0">
+                    <div className="w-16 h-16 rounded-lg border border-[#E8E2E7] bg-[#FAF8FA] relative overflow-hidden shrink-0">
                       <Image
                         src={activeProduct.media[0]?.secureUrl || '/brand/dimsglow-logo.jpg'}
                         alt={activeProduct.name}
@@ -768,7 +768,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
                       />
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-[#19161A] line-clamp-1 max-w-[150px]">
+                      <h4 className="text-xs font-bold text-[#19161A] line-clamp-1 max-w-37.5">
                         {activeProduct.name}
                       </h4>
                       <p className="text-xs font-bold text-[#B83B63]">{formatPricePaise(currentPrice)}</p>
@@ -781,7 +781,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
 
                   {/* Item 2: Paired Product */}
                   <div className="flex items-center gap-3">
-                    <div className="w-16 h-16 rounded-[8px] border border-[#E8E2E7] bg-[#FAF8FA] relative overflow-hidden shrink-0">
+                    <div className="w-16 h-16 rounded-lg border border-[#E8E2E7] bg-[#FAF8FA] relative overflow-hidden shrink-0">
                       <Image
                         src={pairedProduct.media[0]?.secureUrl || '/brand/dimsglow-logo.jpg'}
                         alt={pairedProduct.name}
@@ -790,7 +790,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
                       />
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-[#19161A] line-clamp-1 max-w-[150px]">
+                      <h4 className="text-xs font-bold text-[#19161A] line-clamp-1 max-w-37.5">
                         {pairedProduct.name}
                       </h4>
                       <p className="text-xs font-bold text-[#B83B63]">
@@ -893,7 +893,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
         <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[#E8E2E7] shadow-xl p-3 sm:p-4 animate-in slide-in-from-bottom-4 duration-200">
           <div className="max-w-7xl mx-auto px-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-[6px] overflow-hidden border border-[#E8E2E7] relative shrink-0">
+              <div className="w-10 h-10 rounded-md overflow-hidden border border-[#E8E2E7] relative shrink-0">
                 <Image
                   src={activeProduct.media[0]?.secureUrl || '/brand/dimsglow-logo.jpg'}
                   alt={activeProduct.name}
@@ -931,7 +931,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
       {/* Interactive Review Submission Modal */}
       {isReviewModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white rounded-[12px] p-6 max-w-md w-full shadow-2xl border border-black/10 space-y-4 animate-in fade-in zoom-in-95">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl border border-black/10 space-y-4 animate-in fade-in zoom-in-95">
             <div className="flex justify-between items-center pb-2 border-b border-black/10">
               <h3 className="text-base font-bold text-[#19161A] font-serif-brand">
                 Review {activeProduct.name}
@@ -946,7 +946,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
 
             {reviewAlert && (
               <div
-                className={`p-3 rounded-[6px] text-xs font-medium ${
+                className={`p-3 rounded-md text-xs font-medium ${
                   reviewAlert.type === 'success'
                     ? 'bg-[#EBF7EE] text-[#1E7E34] border border-[#C3E6CB]'
                     : 'bg-[#FDF0ED] text-[#D9381E] border border-[#F5C6CB]'
@@ -1027,7 +1027,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
                   value={newReviewTitle}
                   onChange={(e) => setNewReviewTitle(e.target.value)}
                   placeholder="e.g. Gorgeous coverage that stays all day!"
-                  className="w-full px-3 py-2 border border-black/20 rounded-[6px] text-xs bg-white"
+                  className="w-full px-3 py-2 border border-black/20 rounded-md text-xs bg-white"
                 />
               </div>
 
@@ -1039,7 +1039,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
                   value={newReviewComment}
                   onChange={(e) => setNewReviewComment(e.target.value)}
                   placeholder="Tell other beauty lovers about shade match, longevity, formula texture, and finish..."
-                  className="w-full px-3 py-2 border border-black/20 rounded-[6px] text-xs bg-white"
+                  className="w-full px-3 py-2 border border-black/20 rounded-md text-xs bg-white"
                 />
               </div>
 

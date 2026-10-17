@@ -107,7 +107,7 @@ export default function SignUpPage() {
           <CardContent className="p-6 pt-6">
             <form onSubmit={handleSubmit} className="space-y-3.5">
               {error && (
-                <div className="p-3 rounded-[6px] bg-[#FCE8E6] border border-[#B42318]/20 flex items-start gap-2 text-[#B42318] text-xs leading-relaxed animate-in fade-in duration-200">
+                <div className="p-3 rounded-md bg-[#FCE8E6] border border-[#B42318]/20 flex items-start gap-2 text-[#B42318] text-xs leading-relaxed animate-in fade-in duration-200">
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{error}</span>
                 </div>

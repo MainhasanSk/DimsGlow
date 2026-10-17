@@ -62,7 +62,7 @@ export function Modal({
       <div
         ref={modalRef}
         className={cn(
-          'relative w-full bg-white rounded-[12px] shadow-2xl border border-[#E8E2E7] overflow-hidden flex flex-col max-h-[90vh]',
+          'relative w-full bg-white rounded-xl shadow-2xl border border-[#E8E2E7] overflow-hidden flex flex-col max-h-[90vh]',
           maxWidths[maxWidth],
           className
         )}

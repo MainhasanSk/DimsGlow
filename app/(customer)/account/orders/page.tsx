@@ -164,7 +164,7 @@ export default function CustomerOrdersPage() {
           <div className="w-6 h-6 border-2 border-[#B83B63] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : filteredOrders.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-[12px] border border-[#E8E2E7] p-8">
+        <div className="text-center py-16 bg-white rounded-xl border border-[#E8E2E7] p-8">
           <PackageCheck className="w-14 h-14 text-[#8C8490] mx-auto opacity-30 mb-3" />
           <h3 className="text-base font-serif font-bold text-[#19161A]">
             No {statusFilter !== 'all' ? statusFilter : ''} orders found
@@ -183,7 +183,7 @@ export default function CustomerOrdersPage() {
           {filteredOrders.map((order) => (
             <div
               key={order.id}
-              className="bg-white rounded-[12px] border border-[#E8E2E7] overflow-hidden shadow-xs divide-y divide-[#E8E2E7]"
+              className="bg-white rounded-xl border border-[#E8E2E7] overflow-hidden shadow-xs divide-y divide-[#E8E2E7]"
             >
               {/* Order Card Top Bar */}
               <div className="p-4 sm:p-5 bg-[#FAF8FA] flex flex-wrap items-center justify-between gap-4 text-xs">
@@ -227,7 +227,7 @@ export default function CustomerOrdersPage() {
               <div className="p-4 sm:p-5 space-y-4">
                 {order.items.map((item, idx) => (
                   <div key={idx} className="flex gap-4 items-center">
-                    <div className="relative w-16 h-16 rounded-[8px] bg-[#FAF8FA] border border-[#E8E2E7] overflow-hidden shrink-0">
+                    <div className="relative w-16 h-16 rounded-lg bg-[#FAF8FA] border border-[#E8E2E7] overflow-hidden shrink-0">
                       <Image
                         src={item.imageUrl || '/brand/dimsglow-logo.jpg'}
                         alt={item.productName}

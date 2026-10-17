@@ -165,7 +165,7 @@ export default function AdminExpensesPage() {
           <button
             onClick={fetchExpenses}
             disabled={isLoading}
-            className="p-2 border border-black/10 rounded-[6px] hover:bg-white text-[#5D4E60] transition-colors cursor-pointer"
+            className="p-2 border border-black/10 rounded-md hover:bg-white text-[#5D4E60] transition-colors cursor-pointer"
             title="Refresh"
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -176,7 +176,7 @@ export default function AdminExpensesPage() {
       {/* Feedback banner */}
       {feedbackMessage && (
         <div
-          className={`p-3.5 rounded-[8px] text-xs font-medium flex items-center justify-between ${
+          className={`p-3.5 rounded-lg text-xs font-medium flex items-center justify-between ${
             feedbackMessage.type === 'success'
               ? 'bg-[#EBF7EE] text-[#1E7E34] border border-[#C3E6CB]'
               : 'bg-[#FDF0ED] text-[#D9381E] border border-[#F5C6CB]'
@@ -237,7 +237,7 @@ export default function AdminExpensesPage() {
       </div>
 
       {/* Category Pills Filter */}
-      <div className="flex flex-wrap items-center gap-2 bg-white p-3 rounded-[8px] border border-black/10 shadow-xs">
+      <div className="flex flex-wrap items-center gap-2 bg-white p-3 rounded-lg border border-black/10 shadow-xs">
         <button
           onClick={() => setCategoryFilter('all')}
           className={`text-xs px-3 py-1.5 rounded-full font-semibold transition-colors cursor-pointer ${
@@ -291,7 +291,7 @@ export default function AdminExpensesPage() {
                 </tr>
               ) : (
                 expenses.map((exp) => (
-                  <tr key={exp.id} className="hover:bg-black/[0.015] transition-colors">
+                  <tr key={exp.id} className="hover:bg-black/1.5 transition-colors">
                     <td className="py-3.5 px-4 font-mono font-bold text-[#1F161E]">
                       {exp.expenseNumber}
                     </td>
@@ -335,7 +335,7 @@ export default function AdminExpensesPage() {
       {/* MODAL: RECORD EXPENSE */}
       {isRecordExpenseOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white rounded-[12px] p-6 max-w-lg w-full shadow-2xl border border-black/10 space-y-4">
+          <div className="bg-white rounded-xl p-6 max-w-lg w-full shadow-2xl border border-black/10 space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/10">
               <h2 className="text-base font-bold text-[#1F161E] font-serif-brand">
                 Record Operational Expenditure
@@ -357,7 +357,7 @@ export default function AdminExpensesPage() {
                   value={newExpense.title}
                   onChange={(e) => setNewExpense({ ...newExpense, title: e.target.value })}
                   placeholder="e.g. 5,000 Luxury Embossed Courier Boxes"
-                  className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                  className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                 />
               </div>
 
@@ -367,7 +367,7 @@ export default function AdminExpensesPage() {
                   <select
                     value={newExpense.category}
                     onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value as ExpenseCategory })}
-                    className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                    className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                   >
                     {EXPENSE_CATEGORIES.map((cat) => (
                       <option key={cat.key} value={cat.key}>
@@ -387,7 +387,7 @@ export default function AdminExpensesPage() {
                     value={newExpense.amountRupees}
                     onChange={(e) => setNewExpense({ ...newExpense, amountRupees: e.target.value })}
                     placeholder="e.g. 15000"
-                    className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                    className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                   />
                 </div>
 
@@ -396,7 +396,7 @@ export default function AdminExpensesPage() {
                   <select
                     value={newExpense.paymentMode}
                     onChange={(e) => setNewExpense({ ...newExpense, paymentMode: e.target.value as PaymentMode })}
-                    className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                    className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                   >
                     <option value="upi">UPI / QR Code</option>
                     <option value="bank_transfer">NEFT / RTGS / IMPS</option>
@@ -412,7 +412,7 @@ export default function AdminExpensesPage() {
                     required
                     value={newExpense.date}
                     onChange={(e) => setNewExpense({ ...newExpense, date: e.target.value })}
-                    className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                    className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                   />
                 </div>
 
@@ -424,7 +424,7 @@ export default function AdminExpensesPage() {
                     value={newExpense.vendorName}
                     onChange={(e) => setNewExpense({ ...newExpense, vendorName: e.target.value })}
                     placeholder="e.g. Blue Dart Express Ltd"
-                    className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                    className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                   />
                 </div>
 
@@ -436,7 +436,7 @@ export default function AdminExpensesPage() {
                     value={newExpense.referenceNumber}
                     onChange={(e) => setNewExpense({ ...newExpense, referenceNumber: e.target.value })}
                     placeholder="e.g. UTR198273641 or INV-789"
-                    className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                    className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                   />
                 </div>
               </div>
@@ -448,7 +448,7 @@ export default function AdminExpensesPage() {
                   value={newExpense.notes}
                   onChange={(e) => setNewExpense({ ...newExpense, notes: e.target.value })}
                   placeholder="Optional notes regarding approval, invoice link, or accounting ledger code"
-                  className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                  className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                 />
               </div>
 

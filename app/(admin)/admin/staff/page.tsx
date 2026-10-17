@@ -155,7 +155,7 @@ export default function AdminStaffPage() {
           <button
             onClick={fetchStaff}
             disabled={isLoading}
-            className="p-2 border border-black/10 rounded-[6px] hover:bg-white text-[#5D4E60] transition-colors cursor-pointer"
+            className="p-2 border border-black/10 rounded-md hover:bg-white text-[#5D4E60] transition-colors cursor-pointer"
             title="Refresh"
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -166,7 +166,7 @@ export default function AdminStaffPage() {
       {/* Feedback banner */}
       {feedbackMessage && (
         <div
-          className={`p-3.5 rounded-[8px] text-xs font-medium flex items-center justify-between ${
+          className={`p-3.5 rounded-lg text-xs font-medium flex items-center justify-between ${
             feedbackMessage.type === 'success'
               ? 'bg-[#EBF7EE] text-[#1E7E34] border border-[#C3E6CB]'
               : 'bg-[#FDF0ED] text-[#D9381E] border border-[#F5C6CB]'
@@ -215,7 +215,7 @@ export default function AdminStaffPage() {
                 </tr>
               ) : (
                 staffList.map((st) => (
-                  <tr key={st.uid} className="hover:bg-black/[0.015] transition-colors">
+                  <tr key={st.uid} className="hover:bg-black/1.5 transition-colors">
                     <td className="py-3.5 px-4">
                       <span className="font-bold text-[#1F161E] block">
                         {st.displayName || st.email?.split('@')[0]}
@@ -280,14 +280,14 @@ export default function AdminStaffPage() {
       </div>
 
       {/* Role Matrix Reference Card */}
-      <div className="bg-[#FAF8F5] p-5 rounded-[12px] border border-black/10 space-y-3">
+      <div className="bg-[#FAF8F5] p-5 rounded-xl border border-black/10 space-y-3">
         <h4 className="font-bold text-xs uppercase tracking-wider text-[#1F161E] flex items-center gap-1.5">
           <ShieldCheck className="w-4 h-4 text-[#B83B63]" />
           <span>Role Privilege Reference Guide</span>
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {STAFF_ROLES.map((r) => (
-            <div key={r.role} className="bg-white p-3 rounded-[8px] border border-black/5 text-xs space-y-1">
+            <div key={r.role} className="bg-white p-3 rounded-lg border border-black/5 text-xs space-y-1">
               <span className="font-bold text-[#1F161E] block">{r.label}</span>
               <p className="text-[11px] text-[#5D4E60] leading-relaxed">{r.description}</p>
             </div>
@@ -298,7 +298,7 @@ export default function AdminStaffPage() {
       {/* MODAL: PROVISION STAFF MEMBER */}
       {isInviteOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white rounded-[12px] p-6 max-w-md w-full shadow-2xl border border-black/10 space-y-4">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl border border-black/10 space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/10">
               <h2 className="text-base font-bold text-[#1F161E] font-serif-brand">
                 Provision Operational Staff Member
@@ -320,7 +320,7 @@ export default function AdminStaffPage() {
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   placeholder="employee@dimsglow.com"
-                  className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                  className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                 />
                 <p className="text-[10px] text-[#5D4E60] mt-1">
                   The staff member must register a baseline DIMSGLOW account first.
@@ -332,7 +332,7 @@ export default function AdminStaffPage() {
                 <select
                   value={selectedRole}
                   onChange={(e) => setSelectedRole(e.target.value as StaffRole)}
-                  className="w-full px-3 py-2 border border-black/20 rounded-[6px] bg-white text-xs"
+                  className="w-full px-3 py-2 border border-black/20 rounded-md bg-white text-xs"
                 >
                   {STAFF_ROLES.map((r) => (
                     <option key={r.role} value={r.role}>
@@ -342,7 +342,7 @@ export default function AdminStaffPage() {
                 </select>
               </div>
 
-              <div className="p-3 bg-[#FAF8F5] rounded-[6px] border border-black/10 text-[11px] text-[#5D4E60] space-y-1">
+              <div className="p-3 bg-[#FAF8F5] rounded-md border border-black/10 text-[11px] text-[#5D4E60] space-y-1">
                 <span className="font-bold text-[#1F161E] block">Permissions that will be granted:</span>
                 <p className="text-[10px] font-mono leading-relaxed">
                   {ROLE_DEFAULT_PERMISSIONS[selectedRole]?.join(', ') || 'No write permissions'}

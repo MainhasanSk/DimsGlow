@@ -198,7 +198,7 @@ export function CollectionClient({ slug }: CollectionClientProps) {
   return (
     <StorefrontShell>
       {/* Category Hero Banner matching PDF pages 15-20 */}
-      <section className={`w-full bg-gradient-to-r ${categoryMeta.bannerBg} text-white py-12 md:py-16 px-4`}>
+      <section className={`w-full bg-linear-to-r ${categoryMeta.bannerBg} text-white py-12 md:py-16 px-4`}>
         <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
           <span className="text-[11px] font-bold tracking-[0.25em] uppercase text-[#D4AF37] mb-2">
             {categoryMeta.accentBadge || 'DIMSGLOW EXCLUSIVE COLLECTION'}
@@ -275,7 +275,7 @@ export function CollectionClient({ slug }: CollectionClientProps) {
             {/* Filter Toggle Button */}
             <button
               onClick={() => setIsFilterModalOpen(true)}
-              className="inline-flex items-center gap-2 px-3.5 py-2 border border-[#E8E2E7] rounded-[6px] text-xs font-semibold text-[#2A1810] bg-white hover:border-[#D4AF37] transition"
+              className="inline-flex items-center gap-2 px-3.5 py-2 border border-[#E8E2E7] rounded-md text-xs font-semibold text-[#2A1810] bg-white hover:border-[#D4AF37] transition"
             >
               <SlidersHorizontal className="w-3.5 h-3.5 text-[#541235]" />
               Filters
@@ -293,7 +293,7 @@ export function CollectionClient({ slug }: CollectionClientProps) {
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
                 aria-label="Sort products"
-                className="pl-8 pr-8 py-2 bg-white border border-[#E8E2E7] rounded-[6px] text-xs font-medium text-[#2A1810] focus:outline-none focus:border-[#541235] cursor-pointer"
+                className="pl-8 pr-8 py-2 bg-white border border-[#E8E2E7] rounded-md text-xs font-medium text-[#2A1810] focus:outline-none focus:border-[#541235] cursor-pointer"
               >
                 <option value="featured">Featured / Best Match</option>
                 <option value="rating">Highest Rated</option>
@@ -306,7 +306,7 @@ export function CollectionClient({ slug }: CollectionClientProps) {
 
         {/* 4-Column Product Grid */}
         {filteredProducts.length === 0 ? (
-          <div className="text-center py-16 bg-[#FDFBF7] rounded-[12px] border border-[#E8E2E7]">
+          <div className="text-center py-16 bg-[#FDFBF7] rounded-xl border border-[#E8E2E7]">
             <p className="text-base font-serif font-bold text-[#2A1810]">No products found</p>
             <p className="text-xs text-[#705335] mt-1">Try resetting your active filters to see all available items.</p>
             <Button
@@ -416,7 +416,7 @@ export function CollectionClient({ slug }: CollectionClientProps) {
         >
           <div className="flex flex-col md:flex-row gap-6 pt-2">
             {/* Thumbnail */}
-            <div className="relative w-full md:w-48 aspect-square rounded-[8px] overflow-hidden bg-[#F4F0EB] flex-shrink-0">
+            <div className="relative w-full md:w-48 aspect-square rounded-lg overflow-hidden bg-[#F4F0EB] shrink-0">
               <Image
                 src={quickViewSelectedVariant?.imageUrl || quickViewProduct.media[0]?.secureUrl || '/brand/dimsglow-logo.jpg'}
                 alt={quickViewProduct.name}
@@ -460,7 +460,7 @@ export function CollectionClient({ slug }: CollectionClientProps) {
                           <button
                             key={variant.id}
                             onClick={() => setQuickViewSelectedVariant(variant)}
-                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-[6px] border text-xs transition ${
+                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border text-xs transition ${
                               isSelected
                                 ? 'border-[#541235] bg-[#541235]/5 font-semibold text-[#541235]'
                                 : 'border-[#E8E2E7] bg-white text-[#2A1810] hover:border-[#D4AF37]'
@@ -468,7 +468,7 @@ export function CollectionClient({ slug }: CollectionClientProps) {
                           >
                             {swatchColor && (
                               <span
-                                className="w-3.5 h-3.5 rounded-full border border-black/15 flex-shrink-0"
+                                className="w-3.5 h-3.5 rounded-full border border-black/15 shrink-0"
                                 style={{ backgroundColor: swatchColor }}
                               />
                             )}
@@ -494,7 +494,7 @@ export function CollectionClient({ slug }: CollectionClientProps) {
                 </Button>
                 <Link
                   href={`/products/${quickViewProduct.slug}`}
-                  className="px-4 py-2.5 border border-[#E8E2E7] rounded-[6px] text-xs font-semibold text-[#2A1810] hover:border-[#D4AF37] transition text-center"
+                  className="px-4 py-2.5 border border-[#E8E2E7] rounded-md text-xs font-semibold text-[#2A1810] hover:border-[#D4AF37] transition text-center"
                 >
                   View Details
                 </Link>

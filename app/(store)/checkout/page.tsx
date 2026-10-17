@@ -271,7 +271,7 @@ export default function CheckoutPage() {
           {/* Left Column (7 cols): Checkout Steps */}
           <div className="lg:col-span-7 space-y-6">
             {/* Step 1: Delivery Address */}
-            <div className="bg-white rounded-[12px] border border-[#E8E2E7] p-6 shadow-xs space-y-4">
+            <div className="bg-white rounded-xl border border-[#E8E2E7] p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-[#E8E2E7] pb-3">
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 rounded-full bg-[#B83B63] text-white text-xs font-bold flex items-center justify-center">
@@ -388,7 +388,7 @@ export default function CheckoutPage() {
                         <select
                           value={state}
                           onChange={(e) => setState(e.target.value)}
-                          className="w-full h-10 px-3 border border-[#E8E2E7] rounded-[6px] text-xs font-medium text-[#19161A] bg-white focus:outline-none focus:border-[#B83B63]"
+                          className="w-full h-10 px-3 border border-[#E8E2E7] rounded-md text-xs font-medium text-[#19161A] bg-white focus:outline-none focus:border-[#B83B63]"
                         >
                           <option value="Delhi">Delhi</option>
                           <option value="Assam">Assam</option>
@@ -431,7 +431,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* Step 2: Shipping Method */}
-            <div className="bg-white rounded-[12px] border border-[#E8E2E7] p-6 shadow-xs space-y-4">
+            <div className="bg-white rounded-xl border border-[#E8E2E7] p-6 shadow-xs space-y-4">
               <div className="flex items-center gap-2 border-b border-[#E8E2E7] pb-3">
                 <div className="w-6 h-6 rounded-full bg-[#B83B63] text-white text-xs font-bold flex items-center justify-center">
                   2
@@ -462,7 +462,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* Step 3: Payment Method */}
-            <div className="bg-white rounded-[12px] border border-[#E8E2E7] p-6 shadow-xs space-y-4">
+            <div className="bg-white rounded-xl border border-[#E8E2E7] p-6 shadow-xs space-y-4">
               <div className="flex items-center gap-2 border-b border-[#E8E2E7] pb-3">
                 <div className="w-6 h-6 rounded-full bg-[#B83B63] text-white text-xs font-bold flex items-center justify-center">
                   3
@@ -509,7 +509,7 @@ export default function CheckoutPage() {
                   value={orderNote}
                   onChange={(e) => setOrderNote(e.target.value)}
                   placeholder="e.g. Leave with security guard, call before delivery"
-                  className="w-full text-xs p-3 border border-[#E8E2E7] rounded-[6px] focus:outline-none focus:border-[#B83B63] resize-none"
+                  className="w-full text-xs p-3 border border-[#E8E2E7] rounded-md focus:outline-none focus:border-[#B83B63] resize-none"
                 />
               </div>
             </div>
@@ -517,7 +517,7 @@ export default function CheckoutPage() {
 
           {/* Right Column (5 cols): Order Summary */}
           <div className="lg:col-span-5 space-y-4 sticky top-24">
-            <div className="bg-white rounded-[12px] border border-[#E8E2E7] p-5 sm:p-6 shadow-xs space-y-4">
+            <div className="bg-white rounded-xl border border-[#E8E2E7] p-5 sm:p-6 shadow-xs space-y-4">
               <h3 className="text-base font-serif font-bold text-[#19161A] pb-3 border-b border-[#E8E2E7]">
                 Order Summary ({totalItemCount})
               </h3>
@@ -526,7 +526,7 @@ export default function CheckoutPage() {
               <div className="max-h-60 overflow-y-auto divide-y divide-[#F2EFF2] pr-1">
                 {items.map((item) => (
                   <div key={item.id} className="py-2.5 flex items-center gap-3">
-                    <div className="relative w-12 h-12 rounded-[6px] bg-[#FAF8FA] border border-[#E8E2E7] overflow-hidden shrink-0">
+                    <div className="relative w-12 h-12 rounded-md bg-[#FAF8FA] border border-[#E8E2E7] overflow-hidden shrink-0">
                       <Image
                         src={item.imageUrl || '/brand/dimsglow-logo.jpg'}
                         alt={item.productName}
@@ -597,7 +597,7 @@ export default function CheckoutPage() {
               </div>
 
               {orderError && (
-                <div className="p-3 bg-[#FEF2F2] border border-[#EF4444]/30 rounded-[6px] text-xs text-[#EF4444] flex items-center gap-2">
+                <div className="p-3 bg-[#FEF2F2] border border-[#EF4444]/30 rounded-md text-xs text-[#EF4444] flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{orderError}</span>
                 </div>

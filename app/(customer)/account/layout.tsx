@@ -62,9 +62,9 @@ export default function AccountLayout({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Sidebar (4 cols) */}
-            <aside className="lg:col-span-4 bg-white rounded-[12px] border border-[#E8E2E7] overflow-hidden shadow-xs sticky top-24">
+            <aside className="lg:col-span-4 bg-white rounded-xl border border-[#E8E2E7] overflow-hidden shadow-xs sticky top-24">
               {/* User Header Profile */}
-              <div className="p-6 bg-gradient-to-br from-[#FAF4F7] to-[#FAF8FA] border-b border-[#E8E2E7] flex items-center gap-4">
+              <div className="p-6 bg-linear-to-br from-[#FAF4F7] to-[#FAF8FA] border-b border-[#E8E2E7] flex items-center gap-4">
                 <div className="w-14 h-14 rounded-full bg-[#B83B63] text-white flex items-center justify-center font-serif text-2xl font-bold shadow-xs">
                   {initial}
                 </div>
@@ -88,7 +88,7 @@ export default function AccountLayout({
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`flex items-center justify-between px-4 py-3 rounded-[8px] text-xs font-semibold transition-colors ${
+                      className={`flex items-center justify-between px-4 py-3 rounded-lg text-xs font-semibold transition-colors ${
                         isActive
                           ? 'bg-[#B83B63] text-white shadow-xs'
                           : 'text-[#19161A] hover:bg-[#FAF8FA] hover:text-[#B83B63]'
@@ -116,7 +116,7 @@ export default function AccountLayout({
                   <button
                     type="button"
                     onClick={() => signOut()}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-[8px] text-xs font-semibold text-[#EF4444] hover:bg-[#FEF2F2] transition-colors cursor-pointer"
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-semibold text-[#EF4444] hover:bg-[#FEF2F2] transition-colors cursor-pointer"
                   >
                     <LogOut className="w-4 h-4 text-[#EF4444]" />
                     <span>Sign Out</span>
@@ -126,7 +126,7 @@ export default function AccountLayout({
             </aside>
 
             {/* Main Content Area (8 cols) */}
-            <main className="lg:col-span-8 min-h-[500px]">
+            <main className="lg:col-span-8 min-h-125">
               {children}
             </main>
           </div>

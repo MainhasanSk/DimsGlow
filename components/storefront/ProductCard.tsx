@@ -74,7 +74,7 @@ export function ProductCard({ product, onQuickView, onAddToCart }: ProductCardPr
         {/* Unlock Free Gift Badge */}
         {product.unlockFreeGift && (
           <div className="absolute top-2.5 right-2.5 z-10">
-            <span className="text-[10px] font-extrabold tracking-wider uppercase text-[#B83B63] bg-[#FBEAF0] px-2 py-0.5 rounded-[4px] shadow-xs border border-[#B83B63]/20">
+            <span className="text-[10px] font-extrabold tracking-wider uppercase text-[#B83B63] bg-[#FBEAF0] px-2 py-0.5 rounded-sm shadow-xs border border-[#B83B63]/20">
               UNLOCK FREE GIFT
             </span>
           </div>

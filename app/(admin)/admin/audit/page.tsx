@@ -65,7 +65,7 @@ export default function AdminAuditPage() {
         <button
           onClick={fetchAuditEvents}
           disabled={isLoading}
-          className="p-2 border border-black/10 rounded-[6px] hover:bg-white text-[#5D4E60] transition-colors cursor-pointer self-start sm:self-auto"
+          className="p-2 border border-black/10 rounded-md hover:bg-white text-[#5D4E60] transition-colors cursor-pointer self-start sm:self-auto"
           title="Refresh"
         >
           <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -120,7 +120,7 @@ export default function AdminAuditPage() {
                   <tr
                     key={ev.id}
                     onClick={() => setSelectedEvent(ev)}
-                    className="hover:bg-black/[0.015] transition-colors cursor-pointer"
+                    className="hover:bg-black/1.5 transition-colors cursor-pointer"
                   >
                     <td className="py-3.5 px-4 text-[#5D4E60] whitespace-nowrap font-mono text-[11px]">
                       {new Date(ev.timestamp).toLocaleString('en-IN', {
@@ -146,7 +146,7 @@ export default function AdminAuditPage() {
                       <Badge variant="outline" className="uppercase text-[9px] font-bold">
                         {ev.actorRole}
                       </Badge>
-                      <span className="text-[10px] text-[#5D4E60] font-mono block truncate max-w-[120px]">
+                      <span className="text-[10px] text-[#5D4E60] font-mono block truncate max-w-30">
                         {ev.actorUid}
                       </span>
                     </td>
@@ -173,7 +173,7 @@ export default function AdminAuditPage() {
       {/* EVENT DETAIL MODAL */}
       {selectedEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white rounded-[12px] p-6 max-w-2xl w-full shadow-2xl border border-black/10 space-y-4 max-h-[85vh] overflow-y-auto">
+          <div className="bg-white rounded-xl p-6 max-w-2xl w-full shadow-2xl border border-black/10 space-y-4 max-h-[85vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-2 border-b border-black/10">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-[#B83B63]" />
@@ -189,7 +189,7 @@ export default function AdminAuditPage() {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 text-xs bg-[#FAF8F5] p-3 rounded-[8px] border border-black/5">
+            <div className="grid grid-cols-2 gap-3 text-xs bg-[#FAF8F5] p-3 rounded-lg border border-black/5">
               <div>
                 <span className="text-[#5D4E60] block text-[10px] uppercase font-bold">Event ID:</span>
                 <span className="font-mono text-[#1F161E] font-bold">{selectedEvent.id}</span>
@@ -213,7 +213,7 @@ export default function AdminAuditPage() {
               <label className="font-bold text-xs text-[#1F161E] block">
                 Recorded Event Payload (Before & After Snapshots)
               </label>
-              <pre className="p-4 bg-[#1F161E] text-[#D4AF37] rounded-[8px] text-[11px] font-mono overflow-x-auto max-h-72">
+              <pre className="p-4 bg-[#1F161E] text-[#D4AF37] rounded-lg text-[11px] font-mono overflow-x-auto max-h-72">
                 {JSON.stringify(
                   {
                     action: selectedEvent.action,

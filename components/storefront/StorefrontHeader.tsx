@@ -36,7 +36,7 @@ export function StorefrontHeader() {
   return (
     <>
       {/* 1. Top Announcement Strip */}
-      <div className="bg-gradient-to-r from-[#FF7E9C] via-[#FF8EA3] to-[#FFA7A6] text-white text-center py-2 px-4 text-xs font-bold tracking-wider flex items-center justify-center gap-4">
+      <div className="bg-linear-to-r from-[#FF7E9C] via-[#FF8EA3] to-[#FFA7A6] text-white text-center py-2 px-4 text-xs font-bold tracking-wider flex items-center justify-center gap-4">
         <span className="flex items-center gap-1.5">
           <Truck className="w-3.5 h-3.5" /> FREE SHIPPING ON ORDERS ABOVE ₹399
         </span>
@@ -215,7 +215,7 @@ export function StorefrontHeader() {
                             href="/products/skin-tint-5-in-1"
                             className="group/card rounded-lg overflow-hidden border border-[#E8E2E7] bg-[#FAF8FA] p-2 flex flex-col justify-between hover:shadow-md transition-shadow"
                           >
-                            <div className="relative aspect-[3/4] w-full bg-white rounded overflow-hidden">
+                            <div className="relative aspect-3/4 w-full bg-white rounded overflow-hidden">
                               <Image
                                 src="/products/featured-product.jpeg"
                                 alt="5-in-1 Skin Tint Foundation"
@@ -236,7 +236,7 @@ export function StorefrontHeader() {
                             href="/collections/eyes"
                             className="group/card rounded-lg overflow-hidden border border-[#E8E2E7] bg-[#FAF8FA] p-2 flex flex-col justify-between hover:shadow-md transition-shadow"
                           >
-                            <div className="relative aspect-[3/4] w-full bg-white rounded overflow-hidden">
+                            <div className="relative aspect-3/4 w-full bg-white rounded overflow-hidden">
                               <Image
                                 src="/categories/eyes.jpg"
                                 alt="Winged Eyes Eyeshadow Palette"
@@ -257,7 +257,7 @@ export function StorefrontHeader() {
                             href="/products/24hrs-non-transfer-matte-lipstick"
                             className="group/card rounded-lg overflow-hidden border border-[#E8E2E7] bg-[#FAF8FA] p-2 flex flex-col justify-between hover:shadow-md transition-shadow"
                           >
-                            <div className="relative aspect-[3/4] w-full bg-white rounded overflow-hidden">
+                            <div className="relative aspect-3/4 w-full bg-white rounded overflow-hidden">
                               <Image
                                 src="/categories/lips.jpg"
                                 alt="Super Stay 24HR Matte Lipstick"
@@ -328,7 +328,7 @@ export function StorefrontHeader() {
                         <div className="col-span-7">
                           <Link
                             href="/collections/combos"
-                            className="block relative h-48 w-full rounded-[12px] overflow-hidden bg-gradient-to-r from-[#200B15] to-[#4A0E2A] text-white p-6 shadow-md"
+                            className="block relative h-48 w-full rounded-xl overflow-hidden bg-linear-to-r from-[#200B15] to-[#4A0E2A] text-white p-6 shadow-md"
                           >
                             <span className="text-[10px] font-bold px-2.5 py-1 rounded bg-[#D4AF37] text-black uppercase">
                               SAVE UP TO 35%

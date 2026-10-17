@@ -84,7 +84,7 @@ export function AdminRouteGuard({ children, requiredPermission }: AdminRouteGuar
 
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#0D0B0E] text-center">
-        <div className="max-w-md w-full bg-[#18141B] p-8 rounded-[16px] border border-white/10 shadow-2xl space-y-5 text-white">
+        <div className="max-w-md w-full bg-[#18141B] p-8 rounded-2xl border border-white/10 shadow-2xl space-y-5 text-white">
           <div className="w-14 h-14 mx-auto rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
             <ShieldAlert className="w-7 h-7" />
           </div>
