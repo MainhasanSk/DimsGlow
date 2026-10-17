@@ -259,20 +259,23 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
 
             {/* Thumbnail Row */}
             <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none">
-              {[0, 1, 2, 3, 4].map((idx) => (
+              {(activeProduct.media && activeProduct.media.length > 0
+                ? activeProduct.media
+                : [{ publicId: 'def', secureUrl: '/products/featured-product.jpeg', altText: activeProduct.name, isPrimary: true }]
+              ).map((med, idx) => (
                 <button
                   key={idx}
                   type="button"
-                  onClick={() => setActiveMediaIndex(0)}
+                  onClick={() => setActiveMediaIndex(idx)}
                   className={`relative w-18 h-18 rounded-lg border-2 bg-[#FAF8FA] overflow-hidden transition-all duration-200 cursor-pointer shrink-0 ${
-                    activeMediaIndex === 0 && idx === 0
+                    activeMediaIndex === idx
                       ? 'border-[#B83B63] shadow-xs scale-105'
                       : 'border-[#E8E2E7] hover:border-[#6D6670]'
                   }`}
                 >
                   <Image
-                    src="/brand/dimsglow-logo.jpg"
-                    alt={`Thumbnail ${idx + 1}`}
+                    src={med.secureUrl || '/brand/dimsglow-logo.jpg'}
+                    alt={med.altText || `View ${idx + 1}`}
                     fill
                     className="object-cover p-1"
                   />

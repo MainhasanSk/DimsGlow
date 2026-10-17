@@ -76,13 +76,13 @@ service cloud.firestore {
 
     // 6. Orders & Timeline Events
     match /orders/{orderId} {
-      // Customers can only read their own orders; mutations strictly server-only
-      allow read: if isAuthenticated() && resource.data.customerUid == request.auth.uid;
-      allow write: if false;
+      // Customers can only read their own orders; staff/admin have operational access
+      allow read: if isAuthenticated() && (resource.data.customerUid == request.auth.uid || isStaffOrOwner());
+      allow write: if isStaffOrOwner();
 
       match /events/{eventId} {
         allow read: if isAuthenticated();
-        allow write: if false;
+        allow write: if isStaffOrOwner();
       }
     }
 

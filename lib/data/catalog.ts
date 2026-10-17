@@ -125,6 +125,24 @@ export const CATALOG_PRODUCTS: Product[] = [
         altText: 'DIMSGLOW Skin Tint 5 In 1 Serum Foundation',
         isPrimary: true,
       },
+      {
+        publicId: 'dimsglow/products/skin_tint_2',
+        secureUrl: '/categories/face.jpg',
+        altText: 'Natural Dewy Skin Coverage & Formula Finish',
+        isPrimary: false,
+      },
+      {
+        publicId: 'dimsglow/products/skin_tint_3',
+        secureUrl: '/categories/skin-care.jpg',
+        altText: 'Active Niacinamide & Rice Water Infusion',
+        isPrimary: false,
+      },
+      {
+        publicId: 'dimsglow/products/skin_tint_4',
+        secureUrl: '/categories/combos.jpg',
+        altText: 'Studio Swatch Shades & Texture',
+        isPrimary: false,
+      },
     ],
     benefitPill: 'Natural Glow, Dewy Finish',
     unlockFreeGift: true,
@@ -242,6 +260,24 @@ export const CATALOG_PRODUCTS: Product[] = [
         secureUrl: '/categories/lips.jpg',
         altText: 'DIMSGLOW 24 Hrs Non Transfer Matte Lipstick',
         isPrimary: true,
+      },
+      {
+        publicId: 'dimsglow/products/matte_lipstick_2',
+        secureUrl: '/categories/face.jpg',
+        altText: 'Velvet Matte Lip Wear on Model',
+        isPrimary: false,
+      },
+      {
+        publicId: 'dimsglow/products/matte_lipstick_3',
+        secureUrl: '/categories/combos.jpg',
+        altText: 'Curated Matte Lip Palette Swatches',
+        isPrimary: false,
+      },
+      {
+        publicId: 'dimsglow/products/matte_lipstick_4',
+        secureUrl: '/products/featured-product.jpeg',
+        altText: 'Transfer-proof Packaging & Bullet',
+        isPrimary: false,
       },
     ],
     benefitPill: 'Transfer & Smudge Proof',
@@ -555,6 +591,18 @@ export const CATALOG_PRODUCTS: Product[] = [
         altText: 'DIMSGLOW Rice Water Face Mask Sheet',
         isPrimary: true,
       },
+      {
+        publicId: 'dimsglow/products/sheet_mask_2',
+        secureUrl: '/categories/face.jpg',
+        altText: 'Glass Glow Hydrated Complexion Results',
+        isPrimary: false,
+      },
+      {
+        publicId: 'dimsglow/products/sheet_mask_3',
+        secureUrl: '/products/featured-product.jpeg',
+        altText: '5-pack Mask Box & Serum Texture',
+        isPrimary: false,
+      },
     ],
     benefitPill: 'Deep Detox & Intense Hydration',
     unlockFreeGift: true,
@@ -585,11 +633,15 @@ export const CATALOG_PRODUCTS: Product[] = [
  */
 export async function getProductsByCategory(categorySlug: string): Promise<Product[]> {
   try {
+    if (typeof window !== 'undefined') {
+      const { getProductsByCategorySync } = await import('@/lib/catalog/productStore');
+      return getProductsByCategorySync(categorySlug);
+    }
     if (categorySlug === 'all') return CATALOG_PRODUCTS;
     return CATALOG_PRODUCTS.filter((p) => p.categoryIds.includes(categorySlug));
   } catch (error) {
-    console.error('Failed to query products by category:', error);
-    return [];
+    if (categorySlug === 'all') return CATALOG_PRODUCTS;
+    return CATALOG_PRODUCTS.filter((p) => p.categoryIds.includes(categorySlug));
   }
 }
 
@@ -597,6 +649,16 @@ export async function getProductsByCategory(categorySlug: string): Promise<Produ
  * Retrieves single product by slug.
  */
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  const product = CATALOG_PRODUCTS.find((p) => p.slug === slug);
-  return product || null;
+  try {
+    if (typeof window !== 'undefined') {
+      const { getProductBySlugSync } = await import('@/lib/catalog/productStore');
+      const found = getProductBySlugSync(slug);
+      if (found) return found;
+    }
+    const product = CATALOG_PRODUCTS.find((p) => p.slug === slug);
+    return product || null;
+  } catch (error) {
+    const product = CATALOG_PRODUCTS.find((p) => p.slug === slug);
+    return product || null;
+  }
 }

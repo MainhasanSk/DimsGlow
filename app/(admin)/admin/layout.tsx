@@ -33,7 +33,7 @@ const ADMIN_NAV = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard },
   { label: 'Site Content & CMS', href: '/admin/content', icon: Palette },
   { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
-  { label: 'Catalog', href: '/admin/catalog', icon: Package },
+  { label: 'Products', href: '/admin/products', icon: Package },
   { label: 'Inventory', href: '/admin/inventory', icon: Layers },
   { label: 'Invoices & Tax', href: '/admin/invoices', icon: FileText },
   { label: 'Purchases & Vendors', href: '/admin/purchases', icon: Building },
