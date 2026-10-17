@@ -7,6 +7,9 @@ export function generateStaticParams() {
     { slug: 'all' },
     { slug: 'bestsellers' },
     { slug: 'bestseller' },
+    { slug: 'new-arrivals' },
+    { slug: 'offers' },
+    { slug: 'professional' },
     ...Object.keys(CATEGORIES).map((key) => ({ slug: key })),
   ];
 }

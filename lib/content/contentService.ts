@@ -198,8 +198,20 @@ export const DEFAULT_FAQS: FaqItem[] = [
   },
 ];
 
+export const DEFAULT_CAMPAIGN_VIDEO = {
+  title: "WE'VE GOT EVERYTHING COVERED",
+  subtitle: 'High-performance, weightless luxury formulations designed to move with you all day long.',
+  videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-young-woman-applying-makeup-with-a-brush-41484-large.mp4',
+  posterUrl: '/brand/dimsglow-logo.jpg',
+  tagline: 'THE GO-TO GLAM ROUTINE',
+  ctaText: 'EXPLORE FULL CAMPAIGN',
+  ctaLink: '/collections/all',
+  active: true,
+};
+
 export const DEFAULT_HOMEPAGE_CONTENT: HomepageContent = {
   heroSlides: DEFAULT_HERO_SLIDES,
+  campaignVideo: DEFAULT_CAMPAIGN_VIDEO,
   promoClinical: DEFAULT_PROMO_CLINICAL,
   routineLooks: DEFAULT_ROUTINE_LOOKS,
   testimonials: DEFAULT_TESTIMONIALS,
@@ -208,6 +220,8 @@ export const DEFAULT_HOMEPAGE_CONTENT: HomepageContent = {
     heroCarousel: true,
     categoryCircles: true,
     bestsellers: true,
+    newArrivals: true,
+    campaignVideo: true,
     promoClinical: true,
     routineLooks: true,
     combosBox: true,
@@ -231,7 +245,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerTitle: 'Explore Complete DIMSGLOW Collection',
     bannerSubtitle: 'High-performance, toxic-free formulations designed for everyday luxury',
     bannerBg: 'from-[#2D0B1E] via-[#541235] to-[#141215]',
-    bannerImageUrl: '/brand/dimsglow-logo.jpg',
+    bannerImageUrl: '/products/featured-product.jpeg',
     accentBadge: 'ALL CREATIONS',
   },
   bestsellers: {
@@ -243,7 +257,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerTitle: 'DIMSGLOW BEST SELLERS',
     bannerSubtitle: 'Our most awarded, viral formulas for effortless daily radiance',
     bannerBg: 'from-[#4A0E17] via-[#8B1E3F] to-[#24050D]',
-    bannerImageUrl: '/brand/dimsglow-logo.jpg',
+    bannerImageUrl: '/categories/lips.jpg',
     accentBadge: 'TOP RATED',
   },
   face: {
@@ -256,7 +270,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerTitle: 'Explore CLASSIC FACE ESSENTIALS',
     bannerSubtitle: 'That always deliver flawless coverage and second-skin natural glow',
     bannerBg: 'from-[#3B1F2B] via-[#632742] to-[#200B15]',
-    bannerImageUrl: '/brand/dimsglow-logo.jpg',
+    bannerImageUrl: '/categories/face.jpg',
     accentBadge: 'FLAWLESS BASE',
   },
   eyes: {
@@ -269,7 +283,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerTitle: 'EXPLORE LASTING EYE MAKEUP',
     bannerSubtitle: 'Essentials for your next restock run and all-day smudge resistance',
     bannerBg: 'from-[#1E293B] via-[#334155] to-[#0F172A]',
-    bannerImageUrl: '/brand/dimsglow-logo.jpg',
+    bannerImageUrl: '/categories/eyes.jpg',
     accentBadge: 'SMUDGE PROOF',
   },
   lips: {
@@ -282,7 +296,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerTitle: 'LONG LASTING LIP LUXURY',
     bannerSubtitle: "Must-try formulas for your everyday glam and non-drying all-day wear",
     bannerBg: 'from-[#4C0519] via-[#881337] to-[#2E020E]',
-    bannerImageUrl: '/brand/dimsglow-logo.jpg',
+    bannerImageUrl: '/categories/lips.jpg',
     accentBadge: 'HIGH PIGMENT',
   },
   nails: {
@@ -295,7 +309,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerTitle: 'BOLD NAILS, BIG ENERGY',
     bannerSubtitle: 'Grab your favourite safe, chip-resistant nail colors now',
     bannerBg: 'from-[#701A75] via-[#A21CAF] to-[#4A044E]',
-    bannerImageUrl: '/brand/dimsglow-logo.jpg',
+    bannerImageUrl: '/categories/nails.jpg',
     accentBadge: 'TOXIC FREE',
   },
   'skin-care': {
@@ -309,7 +323,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerSubtitle:
       'Powered by active Niacinamide, Rice Water & Hyaluronic Acid for a better you',
     bannerBg: 'from-[#064E3B] via-[#047857] to-[#022C22]',
-    bannerImageUrl: '/brand/dimsglow-logo.jpg',
+    bannerImageUrl: '/categories/skin-care.jpg',
     accentBadge: 'CLINICAL GRADE',
   },
   perfumes: {
@@ -322,7 +336,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerTitle: 'Everyday Fragrances',
     bannerSubtitle: 'That stay all day long with captivating floral, amber, and woody notes',
     bannerBg: 'from-[#3B0764] via-[#6B21A8] to-[#1E0338]',
-    bannerImageUrl: '/brand/dimsglow-logo.jpg',
+    bannerImageUrl: '/categories/perfumes.jpg',
     accentBadge: '18HR LASTING',
   },
   combos: {
@@ -335,7 +349,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerTitle: 'Your Everyday ESSENTIALS',
     bannerSubtitle: 'Perfectlys BUNDLED for maximum savings and complete routine harmony',
     bannerBg: 'from-[#831843] via-[#BE185D] to-[#500724]',
-    bannerImageUrl: '/brand/dimsglow-logo.jpg',
+    bannerImageUrl: '/categories/combos.jpg',
     accentBadge: 'SAVE UP TO 35%',
   },
 };

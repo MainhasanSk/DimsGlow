@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { StorefrontShell } from '@/components/storefront/StorefrontShell';
@@ -29,6 +29,10 @@ import {
   Minus,
   Mail,
   SlidersHorizontal,
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -42,6 +46,28 @@ export default function HomePage() {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
+
+  // Campaign Video Player State
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
+  const [isVideoMuted, setIsVideoMuted] = useState(true);
+
+  const togglePlayPause = () => {
+    if (!videoRef.current) return;
+    if (videoRef.current.paused) {
+      videoRef.current.play();
+      setIsVideoPlaying(true);
+    } else {
+      videoRef.current.pause();
+      setIsVideoPlaying(false);
+    }
+  };
+
+  const toggleMute = () => {
+    if (!videoRef.current) return;
+    videoRef.current.muted = !videoRef.current.muted;
+    setIsVideoMuted(videoRef.current.muted);
+  };
 
   // Fetch dynamic content from Firestore
   useEffect(() => {
@@ -185,37 +211,36 @@ export default function HomePage() {
 
       {/* 2. Category Quick Browse Circles */}
       {visibility.categoryCircles && (
-        <section className="py-10 border-b border-[#E8E2E7] bg-white">
+        <section className="py-12 border-b border-[#E8E2E7] bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 text-center">
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 sm:gap-6 text-center">
               {[
-                { name: 'Face', href: '/collections/face', tag: 'Base & Primers' },
-                { name: 'Eyes', href: '/collections/eyes', tag: 'Kajal & Mascara' },
-                { name: 'Lips', href: '/collections/lips', tag: 'Matte & Gloss' },
-                { name: 'Nails', href: '/collections/nails', tag: 'Toxic-Free Color' },
-                { name: 'Skin Care', href: '/collections/skin-care', tag: 'Active Serums' },
-                { name: 'Perfumes', href: '/collections/perfumes', tag: 'Eau De Parfum' },
+                { name: 'Face', href: '/collections/face', tag: 'Base & Primers', image: '/categories/face.jpg' },
+                { name: 'Eyes', href: '/collections/eyes', tag: 'Kajal & Mascara', image: '/categories/eyes.jpg' },
+                { name: 'Lips', href: '/collections/lips', tag: 'Matte & Gloss', image: '/categories/lips.jpg' },
+                { name: 'Nails', href: '/collections/nails', tag: 'Toxic-Free Color', image: '/categories/nails.jpg' },
+                { name: 'Skin Care', href: '/collections/skin-care', tag: 'Active Serums', image: '/categories/skin-care.jpg' },
+                { name: 'Perfumes', href: '/collections/perfumes', tag: 'Eau De Parfum', image: '/categories/perfumes.jpg' },
               ].map((cat) => (
                 <Link
                   key={cat.name}
                   href={cat.href}
-                  className="group flex flex-col items-center space-y-2 p-2 transition-transform hover:-translate-y-1"
+                  className="group flex flex-col items-center space-y-2.5 p-2 transition-transform hover:-translate-y-1.5"
                 >
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#FAF8FA] border-2 border-[#E8E2E7] group-hover:border-[#B83B63] overflow-hidden flex items-center justify-center transition-colors shadow-xs">
-                    <div className="relative w-10 h-10">
-                      <Image
-                        src="/brand/dimsglow-logo.jpg"
-                        alt={cat.name}
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-[#E8E2E7] group-hover:border-[#B83B63] overflow-hidden transition-all shadow-sm group-hover:shadow-md bg-[#FAF8FA]">
+                    <Image
+                      src={cat.image}
+                      alt={cat.name}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      sizes="(max-width: 640px) 80px, 96px"
+                    />
                   </div>
                   <div>
                     <h4 className="text-xs sm:text-sm font-bold text-[#19161A] group-hover:text-[#B83B63] transition-colors">
                       {cat.name}
                     </h4>
-                    <p className="text-[10px] text-[#6D6670] hidden sm:block">{cat.tag}</p>
+                    <p className="text-[10px] text-[#6D6670] hidden sm:block font-medium">{cat.tag}</p>
                   </div>
                 </Link>
               ))}
@@ -293,6 +318,41 @@ export default function HomePage() {
         </section>
       )}
 
+      {/* NEW ARRIVALS Section */}
+      {visibility.newArrivals !== false && (
+        <section className="py-14 bg-[#FAF8FA] border-b border-[#E8E2E7]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#E8E2E7] pb-4">
+              <div>
+                <span className="text-xs font-bold tracking-widest uppercase text-[#B83B63] flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> JUST DROPPED
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-bold font-serif-brand text-[#19161A]">
+                  NEW ARRIVALS
+                </h2>
+                <p className="text-xs text-[#6D6670] mt-0.5">
+                  The latest trending additions to your makeup & skincare vanity
+                </p>
+              </div>
+
+              <Link
+                href="/collections/new-arrivals"
+                className="text-xs font-bold text-[#B83B63] hover:text-[#982D50] flex items-center gap-1 group whitespace-nowrap"
+              >
+                VIEW ALL NEW ARRIVALS{' '}
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+              {CATALOG_PRODUCTS.slice(0, 4).map((product) => (
+                <ProductCard key={`new_${product.id}`} product={product} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* 4. Routine Combos & "Buy 3 for ₹699" Value Spotlight (From Reference PDF) */}
       {visibility.combosBox && (
         <section className="py-14 bg-gradient-to-r from-[#200B15] via-[#4A0E2A] to-[#14060E] text-white">
@@ -350,6 +410,82 @@ export default function HomePage() {
                     </Link>
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Campaign Video Player Section (Screenshot 2: "WE'VE GOT EVERYTHING COVERED") */}
+      {visibility.campaignVideo !== false && (
+        <section className="relative overflow-hidden bg-gradient-to-r from-[#200B15] via-[#4A0E2A] to-[#14060E] text-white py-14 lg:py-20 border-b border-[#3B2C3A]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              <div className="lg:col-span-5 space-y-4 text-center lg:text-left">
+                <span className="inline-block text-[11px] sm:text-xs font-bold tracking-[0.25em] text-[#D4AF37] uppercase">
+                  {content.campaignVideo?.tagline || 'THE GO-TO GLAM ROUTINE'}
+                </span>
+                <h2 className="text-3xl sm:text-5xl font-black font-serif-brand leading-tight">
+                  {content.campaignVideo?.title || "WE'VE GOT EVERYTHING COVERED"}
+                </h2>
+                <p className="text-xs sm:text-sm text-white/80 leading-relaxed font-light">
+                  {content.campaignVideo?.subtitle ||
+                    'High-performing, weightless luxury formulations designed to move with you all day long.'}
+                </p>
+                <div className="pt-2 flex flex-wrap gap-3 justify-center lg:justify-start">
+                  <Link href={content.campaignVideo?.ctaLink || '/collections/all'}>
+                    <Button variant="primary" size="lg" className="bg-[#D4AF37] hover:bg-[#c29d2b] text-black font-bold">
+                      {content.campaignVideo?.ctaText || 'EXPLORE FULL CAMPAIGN'} <ArrowRight className="w-4 h-4 ml-1.5" />
+                    </Button>
+                  </Link>
+                  <Link href="/collections/bestsellers">
+                    <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10">
+                      BEST SELLERS
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Video Player Box with Controls */}
+              <div className="lg:col-span-7">
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-[#D4AF37]/30 aspect-video bg-black/60 group/video">
+                  <video
+                    src={content.campaignVideo?.videoUrl || 'https://assets.mixkit.co/videos/preview/mixkit-young-woman-applying-makeup-with-a-brush-41484-large.mp4'}
+                    poster={content.campaignVideo?.posterUrl || '/categories/face.jpg'}
+                    autoPlay
+                    loop
+                    muted={isVideoMuted}
+                    playsInline
+                    className="w-full h-full object-cover"
+                    ref={videoRef}
+                  />
+
+                  {/* Gradient Overlay for Cinematic Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+
+                  {/* Floating Video Controls */}
+                  <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 z-20">
+                    <button
+                      type="button"
+                      onClick={togglePlayPause}
+                      className="p-1 text-white/90 hover:text-white transition-colors cursor-pointer"
+                      title={isVideoPlaying ? 'Pause' : 'Play'}
+                      aria-label={isVideoPlaying ? 'Pause video' : 'Play video'}
+                    >
+                      {isVideoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-current" />}
+                    </button>
+                    <span className="w-px h-3 bg-white/20" />
+                    <button
+                      type="button"
+                      onClick={toggleMute}
+                      className="p-1 text-white/90 hover:text-white transition-colors cursor-pointer"
+                      title={isVideoMuted ? 'Unmute' : 'Mute'}
+                      aria-label={isVideoMuted ? 'Unmute video' : 'Mute video'}
+                    >
+                      {isVideoMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -616,6 +752,38 @@ export default function HomePage() {
         </section>
       )}
 
+      {/* Infinite Moving Trust Marquee Ticker: 'Better standards, because you deserve the best.' */}
+      {visibility.trustMarquee && (
+        <section className="bg-[#141215] text-white py-5 overflow-hidden border-y border-[#3B2C3A]">
+          <div className="text-center mb-2.5">
+            <p className="text-[11px] sm:text-xs font-bold tracking-[0.25em] text-[#D4AF37] uppercase">
+              Better standards, because you deserve the best.
+            </p>
+          </div>
+          <div className="relative w-full overflow-hidden whitespace-nowrap">
+            <div className="animate-marquee flex items-center gap-10 text-xs text-white/80 font-bold tracking-wider uppercase">
+              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> DERMATOLOGICALLY TESTED</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> 100% VEGAN & CLEAN</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> PETA CERTIFIED CRUELTY FREE</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> PARABEN & TOXIC FREE</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> SAFE-CERT VERIFIED</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> CASH ON DELIVERY AVAILABLE</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> 7-DAY HASSLE-FREE RETURNS</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> PROUDLY MADE IN INDIA</span>
+              {/* Seamless repeating loop elements */}
+              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> DERMATOLOGICALLY TESTED</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> 100% VEGAN & CLEAN</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> PETA CERTIFIED CRUELTY FREE</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> PARABEN & TOXIC FREE</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> SAFE-CERT VERIFIED</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> CASH ON DELIVERY AVAILABLE</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> 7-DAY HASSLE-FREE RETURNS</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> PROUDLY MADE IN INDIA</span>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* 10. Storefront FAQ Section */}
       {visibility.faqs && (content.faqs || []).length > 0 && (
         <section className="py-14 bg-[#FAF8FA] border-t border-[#E8E2E7]">
@@ -711,26 +879,6 @@ export default function HomePage() {
           )}
         </div>
       </section>
-
-      {/* 12. Trust Banner Marquee */}
-      {visibility.trustMarquee && (
-        <section className="bg-[#141215] text-white py-6 border-y border-white/10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-4">
-              <p className="text-xs font-bold tracking-[0.2em] text-[#D4AF37] uppercase">
-                Better standards, because you deserve the best.
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-12 text-xs text-white/80 font-semibold tracking-wider uppercase">
-              <span className="flex items-center gap-1.5">✓ DERMATOLOGICALLY TESTED</span>
-              <span className="flex items-center gap-1.5">✓ 100% CLEAN INGREDIENTS</span>
-              <span className="flex items-center gap-1.5">✓ PETA CERTIFIED CRUELTY FREE</span>
-              <span className="flex items-center gap-1.5">✓ CASH ON DELIVERY AVAILABLE</span>
-              <span className="flex items-center gap-1.5">✓ MADE IN INDIA</span>
-            </div>
-          </div>
-        </section>
-      )}
     </StorefrontShell>
   );
 }

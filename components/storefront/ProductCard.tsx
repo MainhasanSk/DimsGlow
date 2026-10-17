@@ -8,6 +8,7 @@ import { formatPricePaise } from '@/lib/utils';
 import { Star, ChevronDown, Check, ShoppingBag, Heart } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Modal } from '@/components/ui/modal';
 import { useCart } from '@/lib/cart/CartContext';
 
 export interface ProductCardProps {
@@ -19,6 +20,7 @@ export interface ProductCardProps {
 export function ProductCard({ product, onQuickView, onAddToCart }: ProductCardProps) {
   const { addToCart, toggleFavorite, isFavorite } = useCart();
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
+  const [isShadeModalOpen, setIsShadeModalOpen] = useState(false);
   const currentVariant = product.variants[selectedVariantIndex] || product.variants[0];
   const isFav = isFavorite(product.id);
 
@@ -170,8 +172,8 @@ export function ProductCard({ product, onQuickView, onAddToCart }: ProductCardPr
             <Button
               variant="primary"
               size="sm"
-              onClick={() => onQuickView ? onQuickView(product, currentVariant) : null}
-              className="w-full text-xs font-bold"
+              onClick={() => (onQuickView ? onQuickView(product, currentVariant) : setIsShadeModalOpen(true))}
+              className="w-full text-xs font-bold bg-[#5B132B] hover:bg-[#781838]"
             >
               SELECT SHADE <ChevronDown className="w-3.5 h-3.5 ml-1" />
             </Button>
@@ -180,13 +182,111 @@ export function ProductCard({ product, onQuickView, onAddToCart }: ProductCardPr
               variant="primary"
               size="sm"
               onClick={handleAddToCart}
-              className="w-full text-xs font-bold"
+              className="w-full text-xs font-bold bg-[#5B132B] hover:bg-[#781838]"
             >
               <ShoppingBag className="w-3.5 h-3.5 mr-1" /> ADD TO CART
             </Button>
           )}
         </div>
       </div>
+
+      {/* Built-in Shade Selector Modal */}
+      <Modal
+        isOpen={isShadeModalOpen}
+        onClose={() => setIsShadeModalOpen(false)}
+        title={`Select Shade: ${product.name}`}
+      >
+        <div className="space-y-4 pt-2">
+          <div className="flex gap-4 items-center p-3 rounded-lg bg-[#FAF8FA] border border-[#E8E2E7]">
+            <div className="relative w-16 h-16 shrink-0 rounded-md overflow-hidden bg-white border border-[#E8E2E7]">
+              <Image
+                src={primaryImage}
+                alt={product.name}
+                fill
+                className="object-contain p-1"
+              />
+            </div>
+            <div>
+              <h4 className="text-xs sm:text-sm font-bold text-[#19161A] line-clamp-1">{product.name}</h4>
+              <p className="text-xs text-[#B83B63] font-bold mt-0.5">
+                {formatPricePaise(pricePaise)}{' '}
+                {compareAtPaise && compareAtPaise > pricePaise && (
+                  <span className="text-[10px] text-[#9A939E] line-through font-normal">
+                    {formatPricePaise(compareAtPaise)}
+                  </span>
+                )}
+              </p>
+              <p className="text-[11px] text-[#6D6670] mt-0.5">
+                Selected: <strong className="text-[#19161A]">{currentVariant?.title}</strong>
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-[#19161A] mb-2 uppercase tracking-wider">
+              Available Shades ({product.variants.length})
+            </label>
+            <div className="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
+              {product.variants.map((v, idx) => {
+                const swatch = v.options.find((o) => o.swatchColor)?.swatchColor || '#E8E2E7';
+                const isSelected = selectedVariantIndex === idx;
+                const isVariantOos = v.onHand <= v.reserved;
+                return (
+                  <button
+                    key={v.id}
+                    type="button"
+                    disabled={isVariantOos}
+                    onClick={() => setSelectedVariantIndex(idx)}
+                    className={`p-2.5 rounded-lg border text-left flex items-center gap-2.5 transition-all cursor-pointer ${
+                      isSelected
+                        ? 'border-[#B83B63] bg-[#FBEAF0] ring-1 ring-[#B83B63]'
+                        : isVariantOos
+                        ? 'border-gray-200 bg-gray-50 opacity-40 cursor-not-allowed'
+                        : 'border-[#E8E2E7] hover:border-[#B83B63]/40 bg-white'
+                    }`}
+                  >
+                    <span
+                      className="w-5 h-5 rounded-full border border-black/20 shrink-0 shadow-xs"
+                      style={{ backgroundColor: swatch }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-[#19161A] truncate">{v.title}</p>
+                      <p className="text-[10px] text-[#6D6670]">
+                        {isVariantOos ? 'Sold Out' : formatPricePaise(v.pricePaise)}
+                      </p>
+                    </div>
+                    {isSelected && <Check className="w-3.5 h-3.5 text-[#B83B63] shrink-0" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="pt-2 flex gap-2">
+            <Button
+              variant="outline"
+              size="md"
+              onClick={() => setIsShadeModalOpen(false)}
+              className="w-1/3 text-xs"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              size="md"
+              disabled={isOutOfStock}
+              onClick={() => {
+                handleAddToCart();
+                setIsShadeModalOpen(false);
+              }}
+              className="w-2/3 text-xs font-bold bg-[#5B132B] hover:bg-[#781838]"
+            >
+              <ShoppingBag className="w-4 h-4 mr-1.5" />
+              {isOutOfStock ? 'Sold Out' : `ADD TO BAG • ${formatPricePaise(pricePaise)}`}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

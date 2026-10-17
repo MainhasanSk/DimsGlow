@@ -23,6 +23,7 @@ interface CollectionClientProps {
 const CATEGORY_TABS = [
   { label: 'All Products', href: '/collections/all', slug: 'all' },
   { label: '★ Best Sellers', href: '/collections/bestsellers', slug: 'bestsellers' },
+  { label: '⚡ New Arrivals', href: '/collections/new-arrivals', slug: 'new-arrivals' },
   { label: 'Face', href: '/collections/face', slug: 'face' },
   { label: 'Eyes', href: '/collections/eyes', slug: 'eyes' },
   { label: 'Lips', href: '/collections/lips', slug: 'lips' },
@@ -30,6 +31,8 @@ const CATEGORY_TABS = [
   { label: 'Skin Care', href: '/collections/skin-care', slug: 'skin-care' },
   { label: 'Perfumes', href: '/collections/perfumes', slug: 'perfumes' },
   { label: 'Combos & Sets', href: '/collections/combos', slug: 'combos' },
+  { label: '✨ Professional', href: '/collections/professional', slug: 'professional' },
+  { label: '🔥 Offers', href: '/collections/offers', slug: 'offers' },
 ];
 
 export function CollectionClient({ slug }: CollectionClientProps) {
@@ -38,6 +41,9 @@ export function CollectionClient({ slug }: CollectionClientProps) {
 
   const isBestsellerView =
     slug === 'bestsellers' || slug === 'bestseller' || tagParam === 'bestseller';
+  const isNewArrivalsView = slug === 'new-arrivals' || tagParam === 'new';
+  const isOffersView = slug === 'offers' || tagParam === 'offers';
+  const isProfessionalView = slug === 'professional' || tagParam === 'professional';
 
   const defaultMeta = isBestsellerView
     ? {
@@ -51,6 +57,19 @@ export function CollectionClient({ slug }: CollectionClientProps) {
         bannerBg: 'from-[#4A0E17] via-[#8B1E3F] to-[#24050D]',
         bannerImageUrl: '/brand/dimsglow-logo.jpg',
         accentBadge: 'TOP RATED FAVORITES',
+      }
+    : isNewArrivalsView
+    ? {
+        id: 'new-arrivals',
+        slug: 'new-arrivals',
+        title: 'New Arrivals',
+        tagline: 'FRESH FORMULATION DROPS',
+        description: 'Discover the latest formulations, trending lip oils, and viral highlighters freshly added to the DIMSGLOW collection.',
+        bannerTitle: 'JUST DROPPED: NEW ARRIVALS',
+        bannerSubtitle: 'Be the first to wear the latest trendsetting formulas and seasonal releases',
+        bannerBg: 'from-[#2D0B1E] via-[#541235] to-[#141215]',
+        bannerImageUrl: '/brand/dimsglow-logo.jpg',
+        accentBadge: 'JUST LAUNCHED',
       }
     : CATEGORIES[slug] ||
       (slug === 'all'
@@ -106,14 +125,28 @@ export function CollectionClient({ slug }: CollectionClientProps) {
 
     if (isBestsellerView) {
       list = list.filter((p) => p.bestseller === true);
+    } else if (isNewArrivalsView) {
+      list = list.filter((p) => p.featured === true || p.bestseller === true);
+    } else if (isOffersView) {
+      list = list.filter(
+        (p) =>
+          p.categoryIds.includes('offers') ||
+          p.unlockFreeGift === true ||
+          Boolean(p.compareAtPricePaise && p.compareAtPricePaise > p.pricePaise)
+      );
+    } else if (isProfessionalView) {
+      list = list.filter(
+        (p) =>
+          p.categoryIds.includes('professional') ||
+          p.categoryIds.includes('face') ||
+          p.categoryIds.includes('eyes')
+      );
     } else if (slug !== 'all') {
       list = list.filter((p) => p.categoryIds.includes(categoryMeta.id || slug));
     }
 
     // Additional query param filters
-    if (tagParam === 'new') {
-      list = list.filter((p) => p.featured === true);
-    } else if (tagParam === 'gift') {
+    if (tagParam === 'gift') {
       list = list.filter((p) => p.unlockFreeGift === true);
     }
 

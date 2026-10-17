@@ -41,6 +41,10 @@ import {
   ChevronRight,
   HelpCircle,
   MessageSquare,
+  Upload,
+  Video,
+  Film,
+  Play,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -58,12 +62,48 @@ const GRADIENT_PRESETS = [
 ];
 
 export default function AdminContentPage() {
-  const [activeTab, setActiveTab] = useState<'hero' | 'categories' | 'sections' | 'faqs'>('hero');
+  const [activeTab, setActiveTab] = useState<'hero' | 'categories' | 'video' | 'sections' | 'faqs'>('hero');
   const [homepageContent, setHomepageContent] = useState<HomepageContent>(DEFAULT_HOMEPAGE_CONTENT);
   const [categoryHeroes, setCategoryHeroes] = useState<Record<string, CategoryHero>>(DEFAULT_CATEGORY_HEROES);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Helper for manual device file uploads (Images & Videos)
+  const handleDeviceUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    onComplete: (dataUrl: string) => void
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          onComplete(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUpdateCampaignVideo = (updates: Partial<HomepageContent['campaignVideo']>) => {
+    setHomepageContent((prev) => ({
+      ...prev,
+      campaignVideo: {
+        ...(prev.campaignVideo || {
+          title: "WE'VE GOT EVERYTHING COVERED",
+          subtitle: 'High-performing, weightless luxury formulations designed to move with you all day long.',
+          videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-young-woman-applying-makeup-with-a-brush-41484-large.mp4',
+          posterUrl: '/categories/face.jpg',
+          tagline: 'THE GO-TO GLAM ROUTINE',
+          ctaText: 'EXPLORE FULL CAMPAIGN',
+          ctaLink: '/collections/all',
+          active: true,
+        }),
+        ...updates,
+      },
+    }));
+  };
 
   // Load content from Firestore
   useEffect(() => {
@@ -295,6 +335,18 @@ export default function AdminContentPage() {
         </button>
         <button
           type="button"
+          onClick={() => setActiveTab('video')}
+          className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-2 ${
+            activeTab === 'video'
+              ? 'bg-[#5B132B] text-white shadow-xs'
+              : 'text-[#6D6670] hover:bg-white hover:text-[#19161A]'
+          }`}
+        >
+          <Film className="w-3.5 h-3.5" />
+          Campaign Video Player
+        </button>
+        <button
+          type="button"
           onClick={() => setActiveTab('sections')}
           className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-2 ${
             activeTab === 'sections'
@@ -449,7 +501,7 @@ export default function AdminContentPage() {
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold uppercase tracking-wider text-[#19161A] mb-1">
-                        Emblem / Feature Image URL
+                        Emblem / Feature Image
                       </label>
                       <Input
                         value={slide.imageUrl}
@@ -457,6 +509,32 @@ export default function AdminContentPage() {
                         placeholder="/brand/dimsglow-logo.jpg"
                         className="text-xs font-mono"
                       />
+                      <div className="flex items-center gap-2 mt-2">
+                        <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#FAF8FA] hover:bg-[#E8E2E7] border border-[#E8E2E7] rounded-md text-[11px] font-semibold text-[#19161A] transition-colors">
+                          <Upload className="w-3.5 h-3.5 text-[#B83B63]" />
+                          <span>Upload Image from Device</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) =>
+                              handleDeviceUpload(e, (dataUrl) =>
+                                handleUpdateSlide(idx, { imageUrl: dataUrl })
+                              )
+                            }
+                          />
+                        </label>
+                        {slide.imageUrl && (
+                          <div className="relative w-8 h-8 rounded-full border border-[#D4AF37] overflow-hidden bg-white shrink-0">
+                            <Image
+                              src={slide.imageUrl}
+                              alt="Slide preview"
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -553,13 +631,39 @@ export default function AdminContentPage() {
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold uppercase tracking-wider text-[#19161A] mb-1">
-                        Banner Image URL
+                        Banner Image
                       </label>
                       <Input
                         value={cat.bannerImageUrl}
                         onChange={(e) => handleUpdateCategory(key, { bannerImageUrl: e.target.value })}
                         className="text-xs font-mono"
                       />
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <label className="cursor-pointer inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#FAF8FA] hover:bg-[#E8E2E7] border border-[#E8E2E7] rounded text-[10px] font-semibold text-[#19161A] transition-colors">
+                          <Upload className="w-3 h-3 text-[#B83B63]" />
+                          <span>Upload from Device</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) =>
+                              handleDeviceUpload(e, (dataUrl) =>
+                                handleUpdateCategory(key, { bannerImageUrl: dataUrl })
+                              )
+                            }
+                          />
+                        </label>
+                        {cat.bannerImageUrl && (
+                          <div className="relative w-6 h-6 rounded border border-[#E8E2E7] overflow-hidden bg-white shrink-0">
+                            <Image
+                              src={cat.bannerImageUrl}
+                              alt="Banner preview"
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -592,7 +696,185 @@ export default function AdminContentPage() {
         </div>
       )}
 
-      {/* TAB 3: HOMEPAGE SECTIONS & PROMOS */}
+      {/* TAB 3: CAMPAIGN VIDEO PLAYER */}
+      {activeTab === 'video' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-bold text-[#19161A] flex items-center gap-2">
+                <Film className="w-4 h-4 text-[#B83B63]" /> Campaign Video Banner (Screenshot 2)
+              </h2>
+              <p className="text-xs text-[#6D6670]">
+                Configure the auto-playing campaign video banner, headlines, CTA, and manual device video/poster uploads.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-[#19161A]">Active on Storefront:</span>
+              <button
+                type="button"
+                onClick={() =>
+                  handleUpdateCampaignVideo({
+                    active: !homepageContent.campaignVideo?.active,
+                  })
+                }
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
+                  homepageContent.campaignVideo?.active ? 'bg-emerald-500' : 'bg-gray-300'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    homepageContent.campaignVideo?.active ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Live Video Preview Box */}
+            <div className="lg:col-span-5 space-y-3">
+              <Card className="border-[#E8E2E7] overflow-hidden bg-black shadow-md">
+                <div className="p-3 bg-[#1F161E] text-white border-b border-[#3B2C3A] flex items-center justify-between">
+                  <span className="text-xs font-bold text-[#D4AF37]">LIVE VIDEO PREVIEW</span>
+                  <span className="text-[10px] text-white/60 font-mono">16:9 Landscape</span>
+                </div>
+                <div className="relative aspect-video bg-black flex items-center justify-center">
+                  <video
+                    src={homepageContent.campaignVideo?.videoUrl}
+                    poster={homepageContent.campaignVideo?.posterUrl}
+                    controls
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </Card>
+
+              <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
+                <p className="font-bold flex items-center gap-1.5">
+                  💡 Video Optimization Tip
+                </p>
+                <p className="text-[11px] leading-relaxed text-amber-800">
+                  You can upload any MP4 or WebM video file directly from your computer device, or paste a CDN video URL. The video automatically loops silently on user devices with custom controls.
+                </p>
+              </div>
+            </div>
+
+            {/* Campaign Video Settings Form */}
+            <div className="lg:col-span-7">
+              <Card className="border-[#E8E2E7] bg-white shadow-xs">
+                <CardContent className="p-5 space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-[#19161A] mb-1">
+                        Campaign Tagline Badge
+                      </label>
+                      <Input
+                        value={homepageContent.campaignVideo?.tagline || ''}
+                        onChange={(e) => handleUpdateCampaignVideo({ tagline: e.target.value })}
+                        placeholder="e.g. THE GO-TO GLAM ROUTINE"
+                        className="text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-[#19161A] mb-1">
+                        CTA Button Text
+                      </label>
+                      <Input
+                        value={homepageContent.campaignVideo?.ctaText || ''}
+                        onChange={(e) => handleUpdateCampaignVideo({ ctaText: e.target.value })}
+                        placeholder="e.g. EXPLORE FULL CAMPAIGN"
+                        className="text-xs font-bold"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-[#19161A] mb-1">
+                      Main Video Headline (H2)
+                    </label>
+                    <Input
+                      value={homepageContent.campaignVideo?.title || ''}
+                      onChange={(e) => handleUpdateCampaignVideo({ title: e.target.value })}
+                      placeholder="WE'VE GOT EVERYTHING COVERED"
+                      className="text-xs font-bold font-serif-brand"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-[#19161A] mb-1">
+                      Subtitle / Narrative
+                    </label>
+                    <Input
+                      value={homepageContent.campaignVideo?.subtitle || ''}
+                      onChange={(e) => handleUpdateCampaignVideo({ subtitle: e.target.value })}
+                      placeholder="High-performing, weightless luxury formulations designed to move with you all day long."
+                      className="text-xs"
+                    />
+                  </div>
+
+                  <div className="space-y-2 pt-2 border-t border-[#E8E2E7]">
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-[#19161A]">
+                      Campaign Video File / URL *
+                    </label>
+                    <Input
+                      value={homepageContent.campaignVideo?.videoUrl || ''}
+                      onChange={(e) => handleUpdateCampaignVideo({ videoUrl: e.target.value })}
+                      placeholder="https://assets.mixkit.co/videos/preview/..."
+                      className="text-xs font-mono"
+                    />
+                    <div className="flex items-center gap-3 pt-1">
+                      <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#FAF8FA] hover:bg-[#E8E2E7] border border-[#E8E2E7] rounded-md text-xs font-semibold text-[#19161A] transition-colors">
+                        <Upload className="w-3.5 h-3.5 text-[#B83B63]" />
+                        <span>Upload Video from Device</span>
+                        <input
+                          type="file"
+                          accept="video/*"
+                          className="hidden"
+                          onChange={(e) =>
+                            handleDeviceUpload(e, (dataUrl) =>
+                              handleUpdateCampaignVideo({ videoUrl: dataUrl })
+                            )
+                          }
+                        />
+                      </label>
+                      <span className="text-[10px] text-[#6D6670]">Supports MP4, WEBM</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 pt-2 border-t border-[#E8E2E7]">
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-[#19161A]">
+                      Video Poster Fallback Image
+                    </label>
+                    <Input
+                      value={homepageContent.campaignVideo?.posterUrl || ''}
+                      onChange={(e) => handleUpdateCampaignVideo({ posterUrl: e.target.value })}
+                      placeholder="/categories/face.jpg"
+                      className="text-xs font-mono"
+                    />
+                    <div className="flex items-center gap-3 pt-1">
+                      <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#FAF8FA] hover:bg-[#E8E2E7] border border-[#E8E2E7] rounded-md text-xs font-semibold text-[#19161A] transition-colors">
+                        <Upload className="w-3.5 h-3.5 text-[#B83B63]" />
+                        <span>Upload Poster from Device</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) =>
+                            handleDeviceUpload(e, (dataUrl) =>
+                              handleUpdateCampaignVideo({ posterUrl: dataUrl })
+                            )
+                          }
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: HOMEPAGE SECTIONS & PROMOS */}
       {activeTab === 'sections' && (
         <div className="space-y-8">
           {/* Section Visibility Switches */}
@@ -610,6 +892,8 @@ export default function AdminContentPage() {
                   { key: 'heroCarousel', label: 'Hero Carousel' },
                   { key: 'categoryCircles', label: 'Category Quick Browse' },
                   { key: 'bestsellers', label: 'Best Sellers Showcase' },
+                  { key: 'newArrivals', label: 'New Arrivals Grid' },
+                  { key: 'campaignVideo', label: 'Campaign Video Player' },
                   { key: 'promoClinical', label: 'Clinical 95% Dark Spot' },
                   { key: 'routineLooks', label: 'Get The Look! Routines' },
                   { key: 'combosBox', label: 'Buy 3 for ₹699 Box' },

@@ -76,6 +76,33 @@ export const CATEGORIES: Record<string, CategoryInfo> = {
     bannerSubtitle: 'Perfectlys BUNDLED for maximum savings and complete routine harmony',
     bannerBg: 'from-[#831843] via-[#BE185D] to-[#500724]',
   },
+  professional: {
+    id: 'professional',
+    slug: 'professional',
+    title: 'Professional Studio',
+    description: 'High-pigment professional makeup artist grade primers, foundations, fixers, and palettes designed for HD studio wear.',
+    bannerTitle: 'PROFESSIONAL HD ESSENTIALS',
+    bannerSubtitle: 'Studio-grade high definition coverage, setting sprays, and pigments for runway elegance',
+    bannerBg: 'from-[#1A1815] via-[#382F24] to-[#120F0A]',
+  },
+  offers: {
+    id: 'offers',
+    slug: 'offers',
+    title: 'Special Offers & Deals',
+    description: 'Exclusive bundle discounts, Buy 3 at ₹699, free gifts on orders above ₹699, and limited-edition flash offers.',
+    bannerTitle: 'EXCLUSIVE DEALS & SPECIAL OFFERS',
+    bannerSubtitle: 'Save big with complimentary luxury gifts, combo markdowns, and direct-to-consumer savings',
+    bannerBg: 'from-[#831843] via-[#BE185D] to-[#4C0519]',
+  },
+  'new-arrivals': {
+    id: 'new-arrivals',
+    slug: 'new-arrivals',
+    title: 'New Arrivals',
+    description: 'Discover the latest formulations, trending lip oils, and viral highlighters freshly added to the DIMSGLOW collection.',
+    bannerTitle: 'JUST DROPPED: NEW ARRIVALS',
+    bannerSubtitle: 'Be the first to wear the latest trendsetting formulas and seasonal releases',
+    bannerBg: 'from-[#2D0B1E] via-[#541235] to-[#141215]',
+  },
 };
 
 // Curated reference products adhering to all schema rules
@@ -86,7 +113,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     name: 'Skin Tint 5 In 1 Multifunctional Serum Foundation',
     tagline: 'Lightweight formula with Niacinamide & Rice Water for a natural, hydrated glow',
     description: 'A revolutionary 5-in-1 powerhouse effortlessly blending the benefits of a primer, foundation, sunscreen, and moisturizer in one step. Enriched with Niacinamide and rice water for breathable, buildable coverage with SPF 20 PA++++ protection.',
-    categoryIds: ['face', 'all'],
+    categoryIds: ['face', 'professional', 'offers', 'all'],
     status: 'published',
     pricePaise: 31900,
     compareAtPricePaise: 39900,
@@ -94,7 +121,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     media: [
       {
         publicId: 'dimsglow/products/skin_tint_1',
-        secureUrl: '/brand/dimsglow-logo.jpg',
+        secureUrl: '/products/featured-product.jpeg',
         altText: 'DIMSGLOW Skin Tint 5 In 1 Serum Foundation',
         isPrimary: true,
       },
@@ -204,7 +231,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     name: '24 Hrs Non Transfer Matte Lipstick',
     tagline: 'High pigment creamy matte finish that stays up to 24 hours without cracking',
     description: 'Rich, transfer-proof matte lip color enriched with Vitamin E and Castor Oil. Glides like silk and dries down to a comfortable, non-drying velvety finish.',
-    categoryIds: ['lips', 'all'],
+    categoryIds: ['lips', 'offers', 'all'],
     status: 'published',
     pricePaise: 31000,
     compareAtPricePaise: 39000,
@@ -212,7 +239,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     media: [
       {
         publicId: 'dimsglow/products/matte_lipstick_1',
-        secureUrl: '/brand/dimsglow-logo.jpg',
+        secureUrl: '/categories/lips.jpg',
         altText: 'DIMSGLOW 24 Hrs Non Transfer Matte Lipstick',
         isPrimary: true,
       },
@@ -330,7 +357,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     name: 'Super Lock Makeup Setting Spray',
     tagline: 'High-performing with Witch Hazel & Aloe Vera for 24-hour shine control',
     description: 'An ultra-fine weightless mist that seals makeup for up to 24 hours against heat, humidity, and sweat.',
-    categoryIds: ['face', 'all'],
+    categoryIds: ['face', 'professional', 'offers', 'all'],
     status: 'published',
     pricePaise: 24000,
     compareAtPricePaise: 31000,
@@ -338,7 +365,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     media: [
       {
         publicId: 'dimsglow/products/setting_spray_1',
-        secureUrl: '/brand/dimsglow-logo.jpg',
+        secureUrl: '/categories/face.jpg',
         altText: 'DIMSGLOW Setting Spray',
         isPrimary: true,
       },
@@ -371,7 +398,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     name: 'Studio Kajal 24 Hours Smudge-Proof',
     tagline: 'Intense jet black finish with nourishing Vitamin E & Chamomile',
     description: 'Single-stroke bold black kajal that glides with zero tugging and lasts 24 hours without smudging or fading.',
-    categoryIds: ['eyes', 'all'],
+    categoryIds: ['eyes', 'professional', 'all'],
     status: 'published',
     pricePaise: 22000,
     compareAtPricePaise: 29000,
@@ -379,7 +406,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     media: [
       {
         publicId: 'dimsglow/products/kajal_1',
-        secureUrl: '/brand/dimsglow-logo.jpg',
+        secureUrl: '/categories/eyes.jpg',
         altText: 'DIMSGLOW Studio Kajal',
         isPrimary: true,
       },
@@ -420,7 +447,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     media: [
       {
         publicId: 'dimsglow/products/nail_polish_1',
-        secureUrl: '/brand/dimsglow-logo.jpg',
+        secureUrl: '/categories/nails.jpg',
         altText: 'DIMSGLOW Nail Polish',
         isPrimary: true,
       },
@@ -483,7 +510,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     media: [
       {
         publicId: 'dimsglow/products/perfume_set_1',
-        secureUrl: '/brand/dimsglow-logo.jpg',
+        secureUrl: '/categories/perfumes.jpg',
         altText: 'DIMSGLOW Eau De Parfum Set',
         isPrimary: true,
       },
@@ -524,7 +551,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     media: [
       {
         publicId: 'dimsglow/products/sheet_mask_1',
-        secureUrl: '/brand/dimsglow-logo.jpg',
+        secureUrl: '/categories/skin-care.jpg',
         altText: 'DIMSGLOW Rice Water Face Mask Sheet',
         isPrimary: true,
       },

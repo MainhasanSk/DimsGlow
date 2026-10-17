@@ -82,8 +82,31 @@ export const FaqItemSchema = z.object({
 
 export type FaqItem = z.infer<typeof FaqItemSchema>;
 
+export const CampaignVideoSchema = z.object({
+  title: z.string().default("WE'VE GOT EVERYTHING COVERED"),
+  subtitle: z.string().default('High-performance, weightless luxury formulations designed to move with you all day long.'),
+  videoUrl: z.string().default('https://assets.mixkit.co/videos/preview/mixkit-young-woman-applying-makeup-with-a-brush-41484-large.mp4'),
+  posterUrl: z.string().default('/brand/dimsglow-logo.jpg'),
+  tagline: z.string().default('THE GO-TO GLAM ROUTINE'),
+  ctaText: z.string().default('EXPLORE FULL CAMPAIGN'),
+  ctaLink: z.string().default('/collections/all'),
+  active: z.boolean().default(true),
+});
+
+export type CampaignVideo = z.infer<typeof CampaignVideoSchema>;
+
 export const HomepageContentSchema = z.object({
   heroSlides: z.array(HeroSlideSchema),
+  campaignVideo: CampaignVideoSchema.default({
+    title: "WE'VE GOT EVERYTHING COVERED",
+    subtitle: 'High-performance, weightless luxury formulations designed to move with you all day long.',
+    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-young-woman-applying-makeup-with-a-brush-41484-large.mp4',
+    posterUrl: '/brand/dimsglow-logo.jpg',
+    tagline: 'THE GO-TO GLAM ROUTINE',
+    ctaText: 'EXPLORE FULL CAMPAIGN',
+    ctaLink: '/collections/all',
+    active: true,
+  }),
   promoClinical: PromoClinicalSchema,
   routineLooks: z.array(RoutineLookSchema),
   testimonials: z.array(TestimonialSchema),
@@ -92,6 +115,8 @@ export const HomepageContentSchema = z.object({
     heroCarousel: z.boolean().default(true),
     categoryCircles: z.boolean().default(true),
     bestsellers: z.boolean().default(true),
+    newArrivals: z.boolean().default(true),
+    campaignVideo: z.boolean().default(true),
     promoClinical: z.boolean().default(true),
     routineLooks: z.boolean().default(true),
     combosBox: z.boolean().default(true),
