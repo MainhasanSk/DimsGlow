@@ -16,8 +16,7 @@ export async function listCrmCustomers(options?: {
   search?: string;
   limit?: number;
 }): Promise<CrmCustomerProfile[]> {
-  // Query users or aggregate from completed orders
-  const ordersSnap = await adminDb.collection('orders').orderBy('createdAt', 'desc').get();
+  // 1. Fetch registered customers from customers collection
   const customerMap = new Map<string, {
     uid: string;
     email: string;
@@ -26,6 +25,27 @@ export async function listCrmCustomers(options?: {
     orders: Order[];
     tags: CustomerTag[];
   }>();
+
+  try {
+    const customersSnap = await adminDb.collection('customers').get();
+    customersSnap.forEach((doc) => {
+      const c = doc.data();
+      const uid = c.uid || doc.id;
+      customerMap.set(uid, {
+        uid,
+        email: c.email || 'customer@dimsglow.com',
+        displayName: c.displayName || 'Customer',
+        phone: c.phone || undefined,
+        orders: [],
+        tags: ['new_shopper'],
+      });
+    });
+  } catch (custErr) {
+    console.warn('CRM customers collection query warning:', custErr);
+  }
+
+  // 2. Query completed orders and aggregate
+  const ordersSnap = await adminDb.collection('orders').orderBy('createdAt', 'desc').get();
 
   ordersSnap.forEach((doc) => {
     const order = doc.data() as Order;

@@ -26,6 +26,7 @@ import {
   HelpCircle,
   FileText,
   Download,
+  Printer,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -272,20 +273,37 @@ export default function CustomerOrdersPage() {
                   )}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2.5">
-                  {/* Invoice Download Action & Eligibility */}
-                  {['confirmed', 'packing', 'shipped', 'delivered'].includes(order.status) &&
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Invoice Download & Print Actions */}
+                  {['placed', 'confirmed', 'packing', 'shipped', 'delivered'].includes(order.status) &&
                     order.paymentStatus !== 'refunded' && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={downloadingOrderId === order.id}
-                        onClick={() => handleDownloadInvoice(order.id, order.orderNumber)}
-                        className="text-xs h-7 px-2.5 flex items-center gap-1.5 border-[#E8E2E7] hover:border-[#B83B63] hover:text-[#B83B63]"
-                      >
-                        <FileText className="w-3.5 h-3.5 text-[#B83B63]" />
-                        {downloadingOrderId === order.id ? 'Preparing...' : 'Tax Invoice'}
-                      </Button>
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={downloadingOrderId === order.id}
+                          onClick={() => handleDownloadInvoice(order.id, order.orderNumber)}
+                          className="text-xs h-7 px-2.5 flex items-center gap-1.5 border-[#E8E2E7] hover:border-[#B83B63] hover:text-[#B83B63] cursor-pointer"
+                        >
+                          <Download className="w-3.5 h-3.5 text-[#B83B63]" />
+                          {downloadingOrderId === order.id ? 'Preparing...' : 'Download Invoice'}
+                        </Button>
+
+                        <a
+                          href={`/api/orders/${order.id}/invoice`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs h-7 px-2.5 flex items-center gap-1.5 border-[#E8E2E7] hover:border-[#18794E] hover:text-[#18794E] cursor-pointer"
+                          >
+                            <Printer className="w-3.5 h-3.5 text-[#18794E]" />
+                            Print
+                          </Button>
+                        </a>
+                      </>
                     )}
 
                   {order.status === 'cancelled' && (
@@ -297,12 +315,6 @@ export default function CustomerOrdersPage() {
                   {order.paymentStatus === 'refunded' && (
                     <span className="text-[11px] font-medium text-[#DC2626] bg-[#FEF2F2] border border-[#FECACA] px-2.5 py-1 rounded-md flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" /> Invoice Voided (Refund Issued)
-                    </span>
-                  )}
-
-                  {order.status === 'placed' && (
-                    <span className="text-[11px] text-[#8C8490] italic">
-                      Invoice generated upon confirmation
                     </span>
                   )}
 

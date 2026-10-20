@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { RadianceComparisonSlider } from '@/components/storefront/RadianceComparisonSlider';
 
 export default function HomePage() {
   const [content, setContent] = useState<HomepageContent>(DEFAULT_HOMEPAGE_CONTENT);
@@ -118,90 +119,56 @@ export default function HomePage() {
 
   return (
     <StorefrontShell>
-      {/* 1. Dynamic Auto-Moving Hero Carousel */}
+      {/* 1. Dynamic Auto-Moving Hero Carousel (Flawless Parity across Mobile, Tablet, and Desktop) */}
       {visibility.heroCarousel && (
         <section
-          className="relative overflow-hidden group/hero select-none"
+          className="relative w-full overflow-hidden select-none bg-[#14050E]"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          <div
-            className={`w-full min-h-115 sm:min-h-130 lg:min-h-145 bg-linear-to-r ${curSlideData.bgGradient} text-white flex items-center transition-all duration-700 ease-in-out`}
+          {/* 16:9 Aspect Ratio on all devices ensures 100% full banner visibility with zero top, bottom, or side cropping */}
+          <Link
+            href={curSlideData.ctaLink || '/collections/all'}
+            className="relative block w-full aspect-[16/9] cursor-pointer"
           >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full grid grid-cols-1 md:grid-cols-2 items-center gap-10">
-              <div className="space-y-4 max-w-xl text-center md:text-left">
-                <span className="inline-block text-[11px] sm:text-xs font-bold tracking-[0.25em] text-[#D4AF37] uppercase">
-                  {curSlideData.tagline}
-                </span>
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-serif-brand tracking-tight leading-tight">
-                  {curSlideData.title}
-                </h1>
-                <p className="text-xs sm:text-sm text-white/80 leading-relaxed font-light">
-                  {curSlideData.subtitle}
-                </p>
-                <div className="pt-4 flex flex-wrap gap-3 justify-center md:justify-start">
-                  <Link href={curSlideData.ctaLink}>
-                    <Button variant="primary" size="lg" className="shadow-lg bg-[#5B132B] hover:bg-[#781838] border border-[#D4AF37]/30">
-                      {curSlideData.ctaText} <ArrowRight className="w-4 h-4 ml-1.5" />
-                    </Button>
-                  </Link>
-                  <Link href="/collections/all">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      className="bg-white/10 text-white border-white/20 hover:bg-white/20"
-                    >
-                      VIEW ALL PRODUCTS
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-
-              {/* Visual Emblem Display */}
-              <div className="flex justify-center items-center">
-                <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full border-2 border-[#D4AF37]/40 p-4 shadow-2xl flex items-center justify-center bg-black/20 backdrop-blur-xs">
-                  <div className="relative w-full h-full rounded-full overflow-hidden shadow-inner">
-                    <Image
-                      src={curSlideData.imageUrl || '/brand/dimsglow-logo.jpg'}
-                      alt={curSlideData.title}
-                      fill
-                      className="object-cover"
-                      priority
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+            <Image
+              src={curSlideData.imageUrl || 'https://res.cloudinary.com/web8vmww/image/upload/v1792429948/dimsglow/hero/hero_lock_the_shine_banner.jpg'}
+              alt={curSlideData.title || 'DIMSGLOW Luxury Hero Banner'}
+              fill
+              className="object-cover object-center transition-transform duration-1000 ease-out"
+              priority
+              sizes="100vw"
+            />
+          </Link>
 
           {/* Carousel Nav Arrows */}
           <button
             type="button"
             onClick={prevSlide}
             aria-label="Previous slide"
-            className="absolute left-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/30 hover:bg-black/60 text-white backdrop-blur-xs transition-colors cursor-pointer opacity-80 hover:opacity-100"
+            className="absolute left-1.5 sm:left-4 lg:left-6 top-1/2 -translate-y-1/2 w-6 h-6 sm:w-9 sm:h-9 lg:w-11 lg:h-11 rounded-full bg-black/40 hover:bg-black/75 text-white backdrop-blur-md flex items-center justify-center transition-all cursor-pointer opacity-85 hover:opacity-100 z-20 shadow-lg"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-3.5 h-3.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
           </button>
           <button
             type="button"
             onClick={nextSlide}
             aria-label="Next slide"
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/30 hover:bg-black/60 text-white backdrop-blur-xs transition-colors cursor-pointer opacity-80 hover:opacity-100"
+            className="absolute right-1.5 sm:right-4 lg:right-6 top-1/2 -translate-y-1/2 w-6 h-6 sm:w-9 sm:h-9 lg:w-11 lg:h-11 rounded-full bg-black/40 hover:bg-black/75 text-white backdrop-blur-md flex items-center justify-center transition-all cursor-pointer opacity-85 hover:opacity-100 z-20 shadow-lg"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-3.5 h-3.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
           </button>
 
           {/* Slide Indicator Dots */}
-          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20">
+          <div className="absolute bottom-1.5 sm:bottom-3 lg:bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 sm:gap-2 z-20">
             {activeSlides.map((_, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => setCurrentSlide(idx)}
                 aria-label={`Go to slide ${idx + 1}`}
-                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                  currentSlide === idx ? 'w-8 bg-[#D4AF37]' : 'w-2 bg-white/40 hover:bg-white/70'
+                className={`rounded-full transition-all duration-300 cursor-pointer shadow-md ${
+                  currentSlide === idx ? 'w-5 sm:w-7 lg:w-9 h-1.5 sm:h-2 lg:h-2.5 bg-[#D4AF37]' : 'w-1.5 sm:w-2 lg:w-2.5 h-1.5 sm:h-2 lg:h-2.5 bg-white/50 hover:bg-white/90'
                 }`}
               />
             ))}
@@ -492,61 +459,64 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* 5. Editorial Highlight Banner: 95% Reduction in Dark Spots (Firestore CMS Managed) */}
+      {/* 5. Editorial Highlight Banner: 95% Reduction in Dark Spots (Firestore & Cloudinary Managed) */}
       {visibility.promoClinical && (
-        <section className="py-14 bg-[#FBEAF0] border-y border-[#F5D8E4]">
+        <section className="py-10 sm:py-14 bg-[#FBEAF0] border-y border-[#F5D8E4]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-10">
-              <div className="space-y-4">
-                <span className="text-xs font-bold uppercase tracking-widest text-[#B83B63]">
-                  {content.promoClinical.headline || 'CLINICALLY PROVEN FORMULATION'}
+            {/* Same Row on Mobile and Desktop: grid-cols-2 */}
+            <div className="grid grid-cols-2 items-center gap-3 sm:gap-8 lg:gap-10">
+              <div className="space-y-2 sm:space-y-4">
+                <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-[#B83B63] flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#D4AF37]" />
+                  {content.promoClinical.headline || 'CLINICALLY PROVEN • SPF 50+'}
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-black font-serif-brand text-[#19161A]">
-                  <span className="text-[#B83B63] text-5xl">{content.promoClinical.statNumber}</span>{' '}
+                <h2 className="text-lg sm:text-3xl lg:text-4xl font-black font-serif-brand text-[#19161A] leading-tight">
+                  <span className="text-[#B83B63] text-xl sm:text-4xl lg:text-5xl">{content.promoClinical.statNumber}</span>{' '}
                   {content.promoClinical.statLabel}
                 </h2>
-                <p className="text-xs sm:text-sm text-[#6D6670] leading-relaxed">
+                <p className="text-[10px] sm:text-xs lg:text-sm text-[#6D6670] leading-snug line-clamp-3 sm:line-clamp-none">
                   {content.promoClinical.description}
                 </p>
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {(content.promoClinical.activeIngredients || []).map((ing) => (
+                <div className="flex flex-wrap gap-1 sm:gap-2 pt-1">
+                  {(content.promoClinical.activeIngredients || []).slice(0, 3).map((ing) => (
                     <span
                       key={ing}
-                      className="text-xs bg-white text-[#B83B63] border border-[#B83B63]/20 font-bold px-3 py-1 rounded-full shadow-2xs"
+                      className="text-[9px] sm:text-xs bg-white text-[#B83B63] border border-[#B83B63]/25 font-bold px-2 py-0.5 rounded-full shadow-2xs whitespace-nowrap"
                     >
                       ✓ {ing}
                     </span>
                   ))}
                 </div>
-                <div className="pt-2">
+                <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                   <Link href={content.promoClinical.ctaLink || '/collections/skin-care'}>
-                    <Button variant="primary" size="md">
-                      {content.promoClinical.ctaText || 'SHOP RADIANCE SERUM'}
+                    <Button variant="primary" size="sm" className="shadow-md bg-[#5B132B] hover:bg-[#781838] text-[10px] sm:text-xs px-3 py-1.5 h-auto">
+                      {content.promoClinical.ctaText || 'BUY NOW'}
                     </Button>
                   </Link>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-xs sm:text-base font-black text-[#5B132B]">
+                      {content.promoClinical.featuredProductPrice || '₹999'}
+                    </span>
+                    <span className="text-[10px] sm:text-xs line-through text-[#6D6670]">₹1,299</span>
+                    <span className="text-[8px] sm:text-[10px] font-bold px-1 rounded bg-emerald-100 text-emerald-800">
+                      23% OFF
+                    </span>
+                  </div>
                 </div>
               </div>
 
+              {/* Exact User Provided Clinical Sunscreen Poster (Cloudinary Loaded - Height Reduced by 25%) */}
               <div className="flex justify-center">
-                <div className="relative w-72 h-72 sm:w-88 sm:h-88 rounded-2xl bg-white border border-[#E8E2E7] shadow-lg p-6 flex flex-col justify-center items-center text-center space-y-4">
-                  <div className="w-24 h-24 rounded-full overflow-hidden border border-[#D4AF37]/50 shadow-sm relative">
-                    <Image
-                      src={content.promoClinical.imageUrl || '/brand/dimsglow-logo.jpg'}
-                      alt="Active Serum"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="text-base font-bold text-[#19161A]">
-                      {content.promoClinical.featuredProductName}
-                    </h4>
-                    <p className="text-xs text-[#18794E] font-semibold">
-                      {content.promoClinical.featuredProductRating}
-                    </p>
-                    <p className="text-sm font-bold text-[#19161A]">
-                      {content.promoClinical.featuredProductPrice}
-                    </p>
+                <div className="relative w-full max-w-[210px] sm:max-w-xs md:max-w-sm aspect-square rounded-xl sm:rounded-2xl overflow-hidden border-2 border-[#D4AF37]/50 shadow-xl bg-[#FAF8FA] group p-1.5 sm:p-2">
+                  <Image
+                    src={content.promoClinical.imageUrl || 'https://res.cloudinary.com/web8vmww/image/upload/v1792340975/dimsglow/editorial/dimsglow_sunscreen_poster.jpg'}
+                    alt="DIMSGLOW Tinted Sunscreen SPF 50+ Clinical Dark Spot Fading Proof"
+                    fill
+                    className="object-contain"
+                    priority
+                  />
+                  <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-[#5B132B]/90 backdrop-blur-md px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#D4AF37]/40 text-white text-[8px] sm:text-xs font-bold shadow-md">
+                    ★ CLINICAL TRIAL
                   </div>
                 </div>
               </div>
@@ -555,76 +525,55 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* 6. Interactive Before & After Formulation Radiance Slider (From Reference PDF) */}
+      {/* 6. Interactive Before & After Formulation Radiance Slider (Positioned in Same Row with Text for Each Device) */}
       {visibility.beforeAfter && (
-        <section className="py-14 bg-white border-b border-[#E8E2E7]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-            <div className="text-center space-y-2 max-w-2xl mx-auto">
-              <span className="text-xs font-bold tracking-widest uppercase text-[#B83B63]">
-                Visible Clinical Results
-              </span>
-              <h2 className="text-2xl sm:text-4xl font-bold font-serif-brand text-[#19161A]">
-                Day 1 vs Day 14 Radiance Transformation
-              </h2>
-              <p className="text-xs text-[#6D6670] leading-relaxed">
-                Noticeable reduction in redness, fine pore blurring, and 24-hour hydration barrier strengthening verified in 90-day clinical trials.
-              </p>
-            </div>
+        <section className="py-10 sm:py-14 bg-white border-b border-[#E8E2E7]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 items-center gap-3 sm:gap-8 lg:gap-12">
+              {/* Left Column: Text, Information & Metrics */}
+              <div className="space-y-2 sm:space-y-4">
+                <span className="text-[9px] sm:text-xs font-bold tracking-widest uppercase text-[#B83B63] flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#D4AF37]" /> Visible Clinical Results
+                </span>
+                <h2 className="text-lg sm:text-3xl lg:text-4xl font-bold font-serif-brand text-[#19161A] leading-tight">
+                  Day 1 vs Day 14 Radiance Transformation
+                </h2>
+                <p className="text-[10px] sm:text-xs lg:text-sm text-[#6D6670] leading-snug line-clamp-3 sm:line-clamp-none">
+                  Drag the interactive slider to inspect visible clinical reduction in dark spots, sun tan, and skin texture restoration in 14 days.
+                </p>
 
-            <div className="max-w-xl mx-auto space-y-4">
-              <div className="relative h-72 sm:h-80 rounded-2xl overflow-hidden border border-[#E8E2E7] shadow-lg bg-[#FAF8FA]">
-                {/* Before Image Background */}
-                <div className="absolute inset-0 bg-[#EFE9EB] flex items-center justify-center">
-                  <div className="text-center space-y-2 p-6">
-                    <span className="text-xs font-bold tracking-wider px-3 py-1 rounded-full bg-black/60 text-white uppercase">
-                      Before (Day 1)
-                    </span>
-                    <p className="text-xs text-[#6D6670] max-w-xs">
-                      Uneven texture, visible dark spots, and dull complexion prior to Niacinamide treatment.
-                    </p>
+                {/* Clinical Verification Metrics */}
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-3 pt-1 text-center">
+                  <div className="p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl bg-[#FAF8FA] border border-[#E8E2E7]">
+                    <p className="text-sm sm:text-xl font-black text-[#B83B63]">95%</p>
+                    <p className="text-[8px] sm:text-[11px] text-[#6D6670] font-semibold">Dark Spots</p>
+                  </div>
+                  <div className="p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl bg-[#FAF8FA] border border-[#E8E2E7]">
+                    <p className="text-sm sm:text-xl font-black text-[#B83B63]">98%</p>
+                    <p className="text-[8px] sm:text-[11px] text-[#6D6670] font-semibold">Radiance</p>
+                  </div>
+                  <div className="p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl bg-[#FAF8FA] border border-[#E8E2E7]">
+                    <p className="text-sm sm:text-xl font-black text-[#B83B63]">24H</p>
+                    <p className="text-[8px] sm:text-[11px] text-[#6D6670] font-semibold">SPF 50+</p>
                   </div>
                 </div>
 
-                {/* After Image Overlay with dynamic clip path */}
-                <div
-                  className="absolute inset-0 bg-linear-to-br from-[#FAF0F3] to-[#F5D8E4] flex items-center justify-center transition-all"
-                  style={{ clipPath: `polygon(0 0, ${sliderPosition}% 0, ${sliderPosition}% 100%, 0 100%)` }}
-                >
-                  <div className="text-center space-y-2 p-6">
-                    <span className="text-xs font-bold tracking-wider px-3 py-1 rounded-full bg-[#5B132B] text-white uppercase">
-                      After (Day 14)
-                    </span>
-                    <p className="text-xs text-[#5B132B] max-w-xs font-semibold">
-                      95% clearer texture, restored natural glow, and illuminated glass skin radiance.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Slider divider line */}
-                <div
-                  className="absolute top-0 bottom-0 w-1 bg-white shadow-lg pointer-events-none"
-                  style={{ left: `${sliderPosition}%` }}
-                >
-                  <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#5B132B] text-white flex items-center justify-center text-[10px] font-bold shadow-md">
-                    ⇄
-                  </div>
+                <div className="pt-1 hidden sm:block">
+                  <Link href="/collections/skin-care">
+                    <Button variant="primary" size="sm" className="shadow-md bg-[#5B132B] hover:bg-[#781838] text-xs px-4 py-2">
+                      EXPLORE SKINCARE
+                    </Button>
+                  </Link>
                 </div>
               </div>
 
-              {/* Slider Input Range */}
-              <div className="flex items-center gap-3">
-                <span className="text-[11px] font-bold text-[#6D6670] uppercase">Day 1</span>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={sliderPosition}
-                  onChange={(e) => setSliderPosition(Number(e.target.value))}
-                  aria-label="Before after comparison slider"
-                  className="w-full accent-[#5B132B] cursor-pointer"
-                />
-                <span className="text-[11px] font-bold text-[#5B132B] uppercase">Day 14 (Radiant)</span>
-              </div>
+              {/* Right Column: Interactive Face Comparison Slider (Clean Images With Draggable Arrow Handle) */}
+              <RadianceComparisonSlider
+                beforeImage="https://res.cloudinary.com/web8vmww/image/upload/v1792431841/dimsglow/editorial/day1_before_clean_radiance.jpg"
+                afterImage="https://res.cloudinary.com/web8vmww/image/upload/v1792431843/dimsglow/editorial/day14_after_clean_radiance.jpg"
+                beforeAlt="Day 1 Clinical Face Before Radiance Treatment"
+                afterAlt="Day 14 Radiant Glass Skin Clinical Transformation"
+              />
             </div>
           </div>
         </section>
@@ -648,14 +597,24 @@ export default function HomePage() {
                 <Link
                   key={look.id || look.title}
                   href={look.href}
-                  className="group relative rounded-[10px] overflow-hidden aspect-3/4 bg-[#F7F5F7] border border-[#E8E2E7] flex flex-col justify-end p-4 transition-all duration-300 hover:shadow-lg"
+                  className="group relative rounded-[12px] overflow-hidden aspect-3/4 bg-[#14050E] border border-[#E8E2E7] flex flex-col justify-end p-4 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
                 >
-                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent z-10" />
-                  <div className="relative z-20 space-y-1 text-white">
-                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#D4AF37] text-black uppercase tracking-wider inline-block">
+                  {look.imageUrl && (
+                    <Image
+                      src={look.imageUrl}
+                      alt={look.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-108"
+                      sizes="(max-width: 640px) 50vw, 25vw"
+                    />
+                  )}
+                  {/* Subtle luxury gradient for readable text */}
+                  <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/35 to-transparent z-10 transition-opacity group-hover:opacity-95" />
+                  <div className="relative z-20 space-y-1.5 text-white">
+                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#D4AF37] text-black uppercase tracking-wider inline-block shadow-xs">
                       {look.badge || 'ROUTINE'}
                     </span>
-                    <h3 className="text-xs sm:text-sm font-bold tracking-wider group-hover:text-[#D4AF37] transition-colors">
+                    <h3 className="text-xs sm:text-sm font-bold tracking-wider group-hover:text-[#D4AF37] transition-colors drop-shadow-xs">
                       {look.title}
                     </h3>
                     <p className="text-[10px] text-white/80 line-clamp-1">{look.desc}</p>

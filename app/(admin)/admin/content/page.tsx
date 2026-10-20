@@ -189,7 +189,7 @@ export default function AdminContentPage() {
       subtitle: 'Luxury formulations designed for flawless skin and non-drying all-day wear',
       ctaText: 'EXPLORE COLLECTION',
       ctaLink: '/collections/all',
-      imageUrl: '/brand/dimsglow-logo.jpg',
+      imageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340972/dimsglow/hero/hero_lock_the_shine.jpg',
       bgGradient: 'from-[#2D0B1E] via-[#541235] to-[#141215]',
       accentColor: '#B83B63',
       active: true,
@@ -518,13 +518,13 @@ export default function AdminContentPage() {
                       <Input
                         value={slide.imageUrl}
                         onChange={(e) => handleUpdateSlide(idx, { imageUrl: e.target.value })}
-                        placeholder="/brand/dimsglow-logo.jpg"
+                        placeholder="/brand/hero-lock-the-shine.jpg"
                         className="text-xs font-mono"
                       />
-                      <div className="flex items-center gap-2 mt-2">
+                      <div className="flex flex-wrap items-center gap-2 mt-2">
                         <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#FAF8FA] hover:bg-[#E8E2E7] border border-[#E8E2E7] rounded-md text-[11px] font-semibold text-[#19161A] transition-colors">
                           <Upload className="w-3.5 h-3.5 text-[#B83B63]" />
-                          <span>Upload Image from Device</span>
+                          <span>Upload Image</span>
                           <input
                             type="file"
                             accept="image/*"
@@ -536,8 +536,39 @@ export default function AdminContentPage() {
                             }
                           />
                         </label>
+
+                        {/* Quick Presets */}
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateSlide(idx, { imageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792429044/dimsglow/hero/hero_lock_the_shine.jpg' })}
+                          className="px-2 py-1 text-[10px] font-bold rounded bg-[#2D0B1E] text-white border border-[#D4AF37]/40 hover:opacity-90"
+                        >
+                          1: Lock The Shine
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateSlide(idx, { imageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792429045/dimsglow/hero/hero_lip_oil_offer.jpg' })}
+                          className="px-2 py-1 text-[10px] font-bold rounded bg-[#B83B63] text-white border border-white/20 hover:opacity-90"
+                        >
+                          2: Free Lip Oil Offer
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateSlide(idx, { imageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792429047/dimsglow/hero/hero_skin_tint.jpg' })}
+                          className="px-2 py-1 text-[10px] font-bold rounded bg-[#3A1424] text-[#D4AF37] border border-[#D4AF37]/40 hover:opacity-90"
+                        >
+                          3: Skin Tint Radiance
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateSlide(idx, { imageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792429049/dimsglow/hero/hero_festive_glam.jpg' })}
+                          className="px-2 py-1 text-[10px] font-bold rounded bg-[#1E0814] text-white border border-[#D4AF37]/40 hover:opacity-90"
+                        >
+                          4: Festive Glam
+                        </button>
+
                         {slide.imageUrl && (
-                          <div className="relative w-8 h-8 rounded-full border border-[#D4AF37] overflow-hidden bg-white shrink-0">
+                          <div className="relative w-14 h-9 rounded-md border border-[#D4AF37] overflow-hidden bg-black shrink-0 ml-auto">
                             <Image
                               src={slide.imageUrl}
                               alt="Slide preview"
@@ -1060,6 +1091,222 @@ export default function AdminContentPage() {
                     className="text-xs font-mono"
                   />
                 </div>
+              </div>
+
+              {/* Poster Image Management */}
+              <div>
+                <label className="block text-[11px] font-bold uppercase text-[#19161A] mb-1">
+                  Clinical Proof Poster Image URL
+                </label>
+                <Input
+                  value={homepageContent.promoClinical.imageUrl}
+                  onChange={(e) =>
+                    setHomepageContent({
+                      ...homepageContent,
+                      promoClinical: { ...homepageContent.promoClinical, imageUrl: e.target.value },
+                    })
+                  }
+                  placeholder="/brand/dimsglow-sunscreen-clinical.jpg"
+                  className="text-xs font-mono"
+                />
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                  <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#FAF8FA] hover:bg-[#E8E2E7] border border-[#E8E2E7] rounded-md text-[11px] font-semibold text-[#19161A] transition-colors">
+                    <Upload className="w-3.5 h-3.5 text-[#B83B63]" />
+                    <span>Upload Poster Image</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) =>
+                        handleDeviceUpload(e, (dataUrl) =>
+                          setHomepageContent({
+                            ...homepageContent,
+                            promoClinical: { ...homepageContent.promoClinical, imageUrl: dataUrl },
+                          })
+                        )
+                      }
+                    />
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setHomepageContent({
+                        ...homepageContent,
+                        promoClinical: {
+                          ...homepageContent.promoClinical,
+                          imageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340975/dimsglow/editorial/dimsglow_sunscreen_poster.jpg',
+                        },
+                      })
+                    }
+                    className="px-2 py-1 text-[10px] font-bold rounded bg-[#5B132B] text-white border border-[#D4AF37]/40 hover:opacity-90"
+                  >
+                    DIMSGLOW Sunscreen Poster (Verified)
+                  </button>
+
+                  {homepageContent.promoClinical.imageUrl && (
+                    <div className="relative w-12 h-16 rounded-md border border-[#D4AF37] overflow-hidden bg-white shrink-0 ml-auto">
+                      <Image
+                        src={homepageContent.promoClinical.imageUrl}
+                        alt="Clinical Poster preview"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Get The Look! - Routine Looks Visual Cards */}
+          <Card className="border-[#E8E2E7] bg-white shadow-xs">
+            <CardContent className="p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold px-2 py-0.5 rounded bg-[#D4AF37]/20 text-[#5B132B] uppercase">
+                      ROUTINES
+                    </span>
+                    <h3 className="text-sm font-bold text-[#19161A]">Get The Look! Visual Cards</h3>
+                  </div>
+                  <p className="text-xs text-[#6D6670] mt-0.5">
+                    Curated beauty routines for Day, Romantic Glam, Bold & Beautiful, and Festive Glow with Cloudinary visuals.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {(homepageContent.routineLooks || []).map((look, lIdx) => (
+                  <div
+                    key={look.id || lIdx}
+                    className="p-4 rounded-xl border border-[#E8E2E7] bg-[#FAF8FA] space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-[#5B132B] uppercase">Look #{lIdx + 1}</span>
+                      <div className="flex items-center gap-2">
+                        <label className="text-[10px] font-semibold text-[#6D6670]">Active:</label>
+                        <input
+                          type="checkbox"
+                          checked={look.active}
+                          onChange={(e) => {
+                            const updated = [...(homepageContent.routineLooks || [])];
+                            updated[lIdx] = { ...updated[lIdx], active: e.target.checked };
+                            setHomepageContent({ ...homepageContent, routineLooks: updated });
+                          }}
+                          className="accent-[#5B132B] rounded cursor-pointer"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase text-[#19161A] mb-1">
+                          Routine Title
+                        </label>
+                        <Input
+                          value={look.title}
+                          onChange={(e) => {
+                            const updated = [...(homepageContent.routineLooks || [])];
+                            updated[lIdx] = { ...updated[lIdx], title: e.target.value };
+                            setHomepageContent({ ...homepageContent, routineLooks: updated });
+                          }}
+                          className="text-xs font-bold"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase text-[#19161A] mb-1">
+                          Badge Tag
+                        </label>
+                        <Input
+                          value={look.badge || ''}
+                          onChange={(e) => {
+                            const updated = [...(homepageContent.routineLooks || [])];
+                            updated[lIdx] = { ...updated[lIdx], badge: e.target.value };
+                            setHomepageContent({ ...homepageContent, routineLooks: updated });
+                          }}
+                          className="text-xs"
+                          placeholder="Trending, Popular..."
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase text-[#19161A] mb-1">
+                        Description
+                      </label>
+                      <Input
+                        value={look.desc}
+                        onChange={(e) => {
+                          const updated = [...(homepageContent.routineLooks || [])];
+                          updated[lIdx] = { ...updated[lIdx], desc: e.target.value };
+                          setHomepageContent({ ...homepageContent, routineLooks: updated });
+                        }}
+                        className="text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase text-[#19161A] mb-1">
+                        Link URL
+                      </label>
+                      <Input
+                        value={look.href}
+                        onChange={(e) => {
+                          const updated = [...(homepageContent.routineLooks || [])];
+                          updated[lIdx] = { ...updated[lIdx], href: e.target.value };
+                          setHomepageContent({ ...homepageContent, routineLooks: updated });
+                        }}
+                        className="text-xs font-mono"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase text-[#19161A] mb-1">
+                        Visual Image URL (Cloudinary)
+                      </label>
+                      <Input
+                        value={look.imageUrl || ''}
+                        onChange={(e) => {
+                          const updated = [...(homepageContent.routineLooks || [])];
+                          updated[lIdx] = { ...updated[lIdx], imageUrl: e.target.value };
+                          setHomepageContent({ ...homepageContent, routineLooks: updated });
+                        }}
+                        className="text-xs font-mono"
+                        placeholder="https://res.cloudinary.com/..."
+                      />
+                      <div className="flex items-center gap-2 mt-2">
+                        <label className="cursor-pointer inline-flex items-center gap-1.5 px-2.5 py-1 bg-white hover:bg-[#E8E2E7] border border-[#E8E2E7] rounded text-[10px] font-semibold text-[#19161A] transition-colors">
+                          <Upload className="w-3 h-3 text-[#B83B63]" />
+                          <span>Upload Image</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) =>
+                              handleDeviceUpload(e, (dataUrl) => {
+                                const updated = [...(homepageContent.routineLooks || [])];
+                                updated[lIdx] = { ...updated[lIdx], imageUrl: dataUrl };
+                                setHomepageContent({ ...homepageContent, routineLooks: updated });
+                              }, 'dimsglow/editorial')
+                            }
+                          />
+                        </label>
+
+                        {look.imageUrl && (
+                          <div className="relative w-10 h-12 rounded border border-[#D4AF37] overflow-hidden bg-white shrink-0 ml-auto">
+                            <Image
+                              src={look.imageUrl}
+                              alt={look.title}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>

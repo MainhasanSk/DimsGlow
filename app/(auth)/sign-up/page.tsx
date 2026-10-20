@@ -48,17 +48,23 @@ export default function SignUpPage() {
         displayName: fullName.trim(),
       });
 
-      // Write initial user profile in Firestore
+      // Write initial user profile in Firestore (both users and customers collections)
       const now = Date.now();
-      await setDoc(doc(db, 'users', user.uid), {
+      const customerRecord = {
         uid: user.uid,
         displayName: fullName.trim(),
         email: email.trim(),
         phone: phone.trim() || null,
+        role: 'customer',
         status: 'active',
+        totalOrders: 0,
+        totalSpendPaise: 0,
         createdAt: now,
         updatedAt: now,
-      });
+      };
+
+      await setDoc(doc(db, 'users', user.uid), customerRecord, { merge: true });
+      await setDoc(doc(db, 'customers', user.uid), customerRecord, { merge: true });
 
       router.push('/account');
     } catch (err: any) {

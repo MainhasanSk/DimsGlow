@@ -8,6 +8,18 @@
         ".write": "auth != null && auth.uid === $userId",
         ".validate": "newData.hasChildren(['status', 'lastSeen']) && (newData.child('status').val() === 'online' || newData.child('status').val() === 'offline')"
       }
+    },
+    "cart_sync": {
+      "$userId": {
+        ".read": "auth != null && auth.uid === $userId",
+        ".write": "auth != null && auth.uid === $userId"
+      }
+    },
+    "notifications": {
+      "$userId": {
+        ".read": "auth != null && auth.uid === $userId",
+        ".write": false
+      }
     }
   }
 }

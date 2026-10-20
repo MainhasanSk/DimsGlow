@@ -1,0 +1,110 @@
+{
+  "all": {
+    "bannerTitle": "Explore Complete DIMSGLOW Collection",
+    "id": "all",
+    "tagline": "COMPLETE LUXURY CATALOG",
+    "accentBadge": "ALL CREATIONS",
+    "description": "Explore our complete luxury cosmetic, skincare, and fragrance collections.",
+    "bannerSubtitle": "High-performance, toxic-free formulations designed for everyday luxury",
+    "bannerBg": "from-[#2D0B1E] via-[#541235] to-[#141215]",
+    "bannerImageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340972/dimsglow/hero/hero_lock_the_shine.jpg",
+    "title": "All Products",
+    "slug": "all"
+  },
+  "bestsellers": {
+    "bannerImageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340981/dimsglow/looks/look_romantic_glam.webp",
+    "bannerBg": "from-[#4A0E17] via-[#8B1E3F] to-[#24050D]",
+    "accentBadge": "TOP RATED",
+    "slug": "bestsellers",
+    "description": "The top-rated, viral beauty formulas adored by thousands of customers.",
+    "bannerSubtitle": "Our most awarded, viral formulas for effortless daily radiance",
+    "bannerTitle": "DIMSGLOW BEST SELLERS",
+    "id": "bestsellers",
+    "title": "Best Sellers",
+    "tagline": "CUSTOMER LOVED FORMULATIONS"
+  },
+  "face": {
+    "bannerTitle": "Explore CLASSIC FACE ESSENTIALS",
+    "tagline": "COMPLEXION PERFECTION",
+    "slug": "face",
+    "bannerImageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340978/dimsglow/looks/look_everyday_glow.webp",
+    "description": "Foundations, concealers, compact powders, primers and strobing creams for seamless complexion wear.",
+    "accentBadge": "FLAWLESS BASE",
+    "bannerSubtitle": "That always deliver flawless coverage and second-skin natural glow",
+    "bannerBg": "from-[#3B1F2B] via-[#632742] to-[#200B15]",
+    "title": "Face",
+    "id": "face"
+  },
+  "eyes": {
+    "title": "Eyes",
+    "slug": "eyes",
+    "tagline": "INTENSE DEFINITION",
+    "bannerImageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340984/dimsglow/looks/look_bold_beautiful.webp",
+    "bannerSubtitle": "Essentials for your next restock run and all-day smudge resistance",
+    "bannerTitle": "EXPLORE LASTING EYE MAKEUP",
+    "bannerBg": "from-[#1E293B] via-[#334155] to-[#0F172A]",
+    "description": "24-hour smudge-proof kajal, high-volume mascaras, and intense pigmentation eyeshadow palettes.",
+    "accentBadge": "SMUDGE PROOF",
+    "id": "eyes"
+  },
+  "lips": {
+    "title": "Lips",
+    "slug": "lips",
+    "tagline": "24HR TRANSFER-PROOF",
+    "description": "Transfer-proof matte lipsticks, peptide lip oils, vinyl glosses, and creamy hydrating crayons.",
+    "accentBadge": "HIGH PIGMENT",
+    "id": "lips",
+    "bannerBg": "from-[#4C0519] via-[#881337] to-[#2E020E]",
+    "bannerImageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340974/dimsglow/hero/hero_lip_oil_offer.jpg",
+    "bannerSubtitle": "Must-try formulas for your everyday glam and non-drying all-day wear",
+    "bannerTitle": "LONG LASTING LIP LUXURY"
+  },
+  "nails": {
+    "bannerTitle": "BOLD NAILS, BIG ENERGY",
+    "id": "nails",
+    "title": "Nails",
+    "accentBadge": "TOXIC FREE",
+    "description": "Toxic-free high-shine lacquers, fast-dry pastel enamels, and acetone-free remover wipes.",
+    "bannerBg": "from-[#701A75] via-[#A21CAF] to-[#4A044E]",
+    "slug": "nails",
+    "tagline": "CHIP-RESISTANT GLOSS",
+    "bannerSubtitle": "Grab your favourite safe, chip-resistant nail colors now",
+    "bannerImageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340988/dimsglow/looks/look_festive_glow.webp"
+  },
+  "skin-care": {
+    "title": "Skin Care",
+    "description": "Dermatologist-formulated active serums, clarifying toners, and Korean rice water mask sheets.",
+    "slug": "skin-care",
+    "accentBadge": "CLINICAL GRADE",
+    "bannerImageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340975/dimsglow/editorial/dimsglow_sunscreen_poster.jpg",
+    "bannerSubtitle": "Powered by active Niacinamide, Rice Water & Hyaluronic Acid for a better you",
+    "bannerTitle": "Effective Skincare Essentials",
+    "bannerBg": "from-[#064E3B] via-[#047857] to-[#022C22]",
+    "id": "skin-care",
+    "tagline": "ACTIVE DERMA RADIANCE"
+  },
+  "perfumes": {
+    "accentBadge": "18HR LASTING",
+    "description": "Luxurious Eau De Parfum editions and curated fragrance combos lasting up to 18 hours.",
+    "bannerBg": "from-[#3B0764] via-[#6B21A8] to-[#1E0338]",
+    "bannerTitle": "Everyday Fragrances",
+    "title": "Perfumes",
+    "tagline": "EAU DE PARFUM LUXE",
+    "id": "perfumes",
+    "bannerSubtitle": "That stay all day long with captivating floral, amber, and woody notes",
+    "slug": "perfumes",
+    "bannerImageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340988/dimsglow/looks/look_festive_glow.webp"
+  },
+  "combos": {
+    "tagline": "MAXIMUM VALUE VALUE SETS",
+    "bannerImageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340974/dimsglow/hero/hero_lip_oil_offer.jpg",
+    "bannerBg": "from-[#831843] via-[#BE185D] to-[#500724]",
+    "bannerSubtitle": "Perfectlys BUNDLED for maximum savings and complete routine harmony",
+    "description": "Perfect value bundles, 3-at-₹699 sets, and curated gift boxes for complete glam routines.",
+    "accentBadge": "SAVE UP TO 35%",
+    "slug": "combos",
+    "title": "Bundles & Combos",
+    "id": "combos",
+    "bannerTitle": "Your Everyday ESSENTIALS"
+  }
+}

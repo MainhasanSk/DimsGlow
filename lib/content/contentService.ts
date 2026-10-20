@@ -15,10 +15,10 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
     id: 'slide_1',
     tagline: 'NEW LAUNCH • TRANSFER-PROOF COLLECTION',
     title: 'LOCK THE SHINE',
-    subtitle: 'Flawless Vinyl Lip Color with Zero Touch-ups Required for 24 Hours',
+    subtitle: 'Flawless Vinyl Lip Color with Zero Touch-ups Required for 24 Hours. India\'s Most Loved Matte Lipstick.',
     ctaText: 'EXPLORE LIP LUXURY',
     ctaLink: '/collections/lips',
-    imageUrl: '/brand/dimsglow-logo.jpg',
+    imageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792429044/dimsglow/hero/hero_lock_the_shine.jpg',
     bgGradient: 'from-[#2D0B1E] via-[#541235] to-[#141215]',
     accentColor: '#B83B63',
     active: true,
@@ -26,40 +26,40 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
   },
   {
     id: 'slide_2',
-    tagline: 'HIGH-PERFORMING SKINCARE ESSENTIAL',
-    title: 'SUPER LOCK SETTING MIST',
-    subtitle: 'Infused with Witch Hazel & Aloe Vera for 24-Hour Flawless Freshness',
-    ctaText: 'SHOP SETTING SPRAY',
-    ctaLink: '/products/super-lock-makeup-setting-spray',
-    imageUrl: '/brand/dimsglow-logo.jpg',
-    bgGradient: 'from-[#0C2D3E] via-[#104D6B] to-[#0A1A24]',
-    accentColor: '#18794E',
+    tagline: 'EXCLUSIVE WEBSITE OFFER • ABOVE ₹699',
+    title: 'FREE LIP OIL & LIPSTICK',
+    subtitle: 'Complimentary full-size Peptide Lip Oil & Matte Lipstick gift with every order above ₹699. Limited period offer.',
+    ctaText: 'UNLOCK FREE GIFT',
+    ctaLink: '/collections/combos',
+    imageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792429045/dimsglow/hero/hero_lip_oil_offer.jpg',
+    bgGradient: 'from-[#3A0F24] via-[#751B47] to-[#240815]',
+    accentColor: '#D4AF37',
     active: true,
     order: 2,
   },
   {
     id: 'slide_3',
-    tagline: 'EXCLUSIVE WEBSITE OFFER',
-    title: 'FREE LIP OIL & LIPSTICK',
-    subtitle: 'Complimentary full-size beauty gift on all orders above ₹699',
-    ctaText: 'UNLOCK FREE GIFT',
-    ctaLink: '/collections/combos',
-    imageUrl: '/brand/dimsglow-logo.jpg',
-    bgGradient: 'from-[#3A1C0E] via-[#6B3210] to-[#1A0B05]',
+    tagline: 'ACTIVE DERMA COMPLEXION • 5-IN-1',
+    title: 'SECOND-SKIN RADIANCE',
+    subtitle: 'Weightless micro-pigment Serum Foundation that blurs imperfections and delivers 24H dewy hydration for glass skin.',
+    ctaText: 'DISCOVER SKIN TINTS',
+    ctaLink: '/collections/face',
+    imageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792429047/dimsglow/hero/hero_skin_tint.jpg',
+    bgGradient: 'from-[#2A0E1A] via-[#4D1530] to-[#15060D]',
     accentColor: '#D4AF37',
     active: true,
     order: 3,
   },
   {
     id: 'slide_4',
-    tagline: 'INSTANT GLASS SKIN RADIANCE',
-    title: 'STROBE & GLOW ILLUMINATOR',
-    subtitle: 'Ultra-refined pearl micro-pigments with Hyaluronic Acid for a lit-from-within glow',
-    ctaText: 'EXPLORE STROBE CREAM',
-    ctaLink: '/products/instant-glass-skin-strobe-cream',
-    imageUrl: '/brand/dimsglow-logo.jpg',
-    bgGradient: 'from-[#331422] via-[#5C233E] to-[#1C0913]',
-    accentColor: '#E8B4B8',
+    tagline: 'RED CARPET READY • SMUDGE-PROOF',
+    title: 'UNSTOPPABLE ALL-DAY GLAM',
+    subtitle: 'Intense matte pigments, 24-hour smudge-proof kajal, and hydrating strobe mist for evening elegance.',
+    ctaText: 'SHOP THE GLAM SET',
+    ctaLink: '/collections/all',
+    imageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792429049/dimsglow/hero/hero_festive_glam.jpg',
+    bgGradient: 'from-[#1E0814] via-[#3E1128] to-[#12040C]',
+    accentColor: '#B83B63',
     active: true,
     order: 4,
   },
@@ -68,16 +68,16 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
 export const DEFAULT_PROMO_CLINICAL: PromoClinical = {
   statNumber: '95%',
   statLabel: 'Reduction in Dark Spots',
-  headline: 'CLINICALLY PROVEN FORMULATION',
+  headline: 'CLINICALLY PROVEN FORMULATION • SPF 50+ PA++++',
   description:
-    'Reduces blemishes, provides radiant glow, improves skin elasticity, and refines hyperpigmentation with active Niacinamide, Arbutin, and 2.5% Glutathione.',
-  activeIngredients: ['Arbutin', '2.5% Glutathione', 'Vitamin C', 'Amino Acid'],
-  ctaText: 'SHOP RADIANCE SERUM',
+    'Formulated with Broad Spectrum UVA/UVB protection, Niacinamide, and Arbutin. Clinically proven to fade stubborn sun tan, reduce dark spots, and restore luminous, even-toned skin within 14 days.',
+  activeIngredients: ['SPF 50+ PA++++', 'Fades Pigmentation', 'Reduces Tanning', 'Even Tone & Brightness', 'Dermatologically Tested'],
+  ctaText: 'BUY TINTED SUNSCREEN',
   ctaLink: '/collections/skin-care',
-  featuredProductName: 'Youthful Glow Face Serum',
-  featuredProductPrice: '₹299.00',
-  featuredProductRating: '★ 4.9 (14 Reviews)',
-  imageUrl: '/brand/dimsglow-logo.jpg',
+  featuredProductName: 'DIMSGLOW Tinted Sunscreen SPF 50+ PA++++',
+  featuredProductPrice: '₹999 (MRP ₹1,299)',
+  featuredProductRating: '★ 4.9 (Clinical Trial Verified)',
+  imageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340975/dimsglow/editorial/dimsglow_sunscreen_poster.jpg',
   active: true,
 };
 
@@ -87,7 +87,7 @@ export const DEFAULT_ROUTINE_LOOKS: RoutineLook[] = [
     title: 'EVERYDAY GLOW',
     desc: 'Natural skin tints & dewy cheeks',
     href: '/collections/face',
-    imageUrl: '/brand/dimsglow-logo.jpg',
+    imageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340978/dimsglow/looks/look_everyday_glow.webp',
     badge: 'Trending',
     active: true,
   },
@@ -96,7 +96,7 @@ export const DEFAULT_ROUTINE_LOOKS: RoutineLook[] = [
     title: 'ROMANTIC GLAM',
     desc: 'Soft rose lips & shimmering eyelids',
     href: '/collections/lips',
-    imageUrl: '/brand/dimsglow-logo.jpg',
+    imageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340981/dimsglow/looks/look_romantic_glam.webp',
     badge: 'Popular',
     active: true,
   },
@@ -105,7 +105,7 @@ export const DEFAULT_ROUTINE_LOOKS: RoutineLook[] = [
     title: 'BOLD & BEAUTIFUL',
     desc: 'Winged drama & smokey depth',
     href: '/collections/eyes',
-    imageUrl: '/brand/dimsglow-logo.jpg',
+    imageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340984/dimsglow/looks/look_bold_beautiful.webp',
     badge: 'Evening',
     active: true,
   },
@@ -114,7 +114,7 @@ export const DEFAULT_ROUTINE_LOOKS: RoutineLook[] = [
     title: 'FESTIVE GLOW',
     desc: 'Full coverage radiance & golden accents',
     href: '/collections/combos',
-    imageUrl: '/brand/dimsglow-logo.jpg',
+    imageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340988/dimsglow/looks/look_festive_glow.webp',
     badge: 'Celebration',
     active: true,
   },
@@ -202,7 +202,7 @@ export const DEFAULT_CAMPAIGN_VIDEO = {
   title: "WE'VE GOT EVERYTHING COVERED",
   subtitle: 'High-performance, weightless luxury formulations designed to move with you all day long.',
   videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-young-woman-applying-makeup-with-a-brush-41484-large.mp4',
-  posterUrl: '/brand/dimsglow-logo.jpg',
+  posterUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340978/dimsglow/looks/look_everyday_glow.webp',
   tagline: 'THE GO-TO GLAM ROUTINE',
   ctaText: 'EXPLORE FULL CAMPAIGN',
   ctaLink: '/collections/all',
@@ -245,7 +245,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerTitle: 'Explore Complete DIMSGLOW Collection',
     bannerSubtitle: 'High-performance, toxic-free formulations designed for everyday luxury',
     bannerBg: 'from-[#2D0B1E] via-[#541235] to-[#141215]',
-    bannerImageUrl: '/products/featured-product.jpeg',
+    bannerImageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340972/dimsglow/hero/hero_lock_the_shine.jpg',
     accentBadge: 'ALL CREATIONS',
   },
   bestsellers: {
@@ -257,7 +257,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerTitle: 'DIMSGLOW BEST SELLERS',
     bannerSubtitle: 'Our most awarded, viral formulas for effortless daily radiance',
     bannerBg: 'from-[#4A0E17] via-[#8B1E3F] to-[#24050D]',
-    bannerImageUrl: '/categories/lips.jpg',
+    bannerImageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340981/dimsglow/looks/look_romantic_glam.webp',
     accentBadge: 'TOP RATED',
   },
   face: {
@@ -270,7 +270,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerTitle: 'Explore CLASSIC FACE ESSENTIALS',
     bannerSubtitle: 'That always deliver flawless coverage and second-skin natural glow',
     bannerBg: 'from-[#3B1F2B] via-[#632742] to-[#200B15]',
-    bannerImageUrl: '/categories/face.jpg',
+    bannerImageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340978/dimsglow/looks/look_everyday_glow.webp',
     accentBadge: 'FLAWLESS BASE',
   },
   eyes: {
@@ -283,7 +283,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerTitle: 'EXPLORE LASTING EYE MAKEUP',
     bannerSubtitle: 'Essentials for your next restock run and all-day smudge resistance',
     bannerBg: 'from-[#1E293B] via-[#334155] to-[#0F172A]',
-    bannerImageUrl: '/categories/eyes.jpg',
+    bannerImageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340984/dimsglow/looks/look_bold_beautiful.webp',
     accentBadge: 'SMUDGE PROOF',
   },
   lips: {
@@ -296,7 +296,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerTitle: 'LONG LASTING LIP LUXURY',
     bannerSubtitle: "Must-try formulas for your everyday glam and non-drying all-day wear",
     bannerBg: 'from-[#4C0519] via-[#881337] to-[#2E020E]',
-    bannerImageUrl: '/categories/lips.jpg',
+    bannerImageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340974/dimsglow/hero/hero_lip_oil_offer.jpg',
     accentBadge: 'HIGH PIGMENT',
   },
   nails: {
@@ -309,7 +309,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerTitle: 'BOLD NAILS, BIG ENERGY',
     bannerSubtitle: 'Grab your favourite safe, chip-resistant nail colors now',
     bannerBg: 'from-[#701A75] via-[#A21CAF] to-[#4A044E]',
-    bannerImageUrl: '/categories/nails.jpg',
+    bannerImageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340988/dimsglow/looks/look_festive_glow.webp',
     accentBadge: 'TOXIC FREE',
   },
   'skin-care': {
@@ -323,7 +323,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerSubtitle:
       'Powered by active Niacinamide, Rice Water & Hyaluronic Acid for a better you',
     bannerBg: 'from-[#064E3B] via-[#047857] to-[#022C22]',
-    bannerImageUrl: '/categories/skin-care.jpg',
+    bannerImageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340975/dimsglow/editorial/dimsglow_sunscreen_poster.jpg',
     accentBadge: 'CLINICAL GRADE',
   },
   perfumes: {
@@ -336,7 +336,7 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerTitle: 'Everyday Fragrances',
     bannerSubtitle: 'That stay all day long with captivating floral, amber, and woody notes',
     bannerBg: 'from-[#3B0764] via-[#6B21A8] to-[#1E0338]',
-    bannerImageUrl: '/categories/perfumes.jpg',
+    bannerImageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340988/dimsglow/looks/look_festive_glow.webp',
     accentBadge: '18HR LASTING',
   },
   combos: {
@@ -349,15 +349,31 @@ export const DEFAULT_CATEGORY_HEROES: Record<string, CategoryHero> = {
     bannerTitle: 'Your Everyday ESSENTIALS',
     bannerSubtitle: 'Perfectlys BUNDLED for maximum savings and complete routine harmony',
     bannerBg: 'from-[#831843] via-[#BE185D] to-[#500724]',
-    bannerImageUrl: '/categories/combos.jpg',
+    bannerImageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792340974/dimsglow/hero/hero_lip_oil_offer.jpg',
     accentBadge: 'SAVE UP TO 35%',
   },
 };
 
 /**
- * Fetch Homepage dynamic content from Firestore with local fallback
+ * Fetch Homepage dynamic content from Firestore or Server API with local fallback
  */
 export async function getHomepageContent(): Promise<HomepageContent> {
+  // 1. Try server-side API first if in browser
+  if (typeof window !== 'undefined') {
+    try {
+      const res = await fetch('/api/content/homepage', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.heroSlides) {
+          return { ...DEFAULT_HOMEPAGE_CONTENT, ...data };
+        }
+      }
+    } catch (e) {
+      // Continue to Firestore
+    }
+  }
+
+  // 2. Try Firestore
   try {
     const docRef = doc(db, 'siteContent', 'homepage');
     const snap = await getDoc(docRef);
@@ -371,17 +387,51 @@ export async function getHomepageContent(): Promise<HomepageContent> {
 }
 
 /**
- * Save Homepage dynamic content into Firestore
+ * Save Homepage dynamic content into Database & Firestore
  */
 export async function saveHomepageContent(content: HomepageContent): Promise<void> {
-  const docRef = doc(db, 'siteContent', 'homepage');
-  await setDoc(docRef, { ...content, updatedAt: Date.now() }, { merge: true });
+  const payload = { ...content, updatedAt: Date.now() };
+
+  // 1. Save to server API endpoint (persists to dynamic data store)
+  if (typeof window !== 'undefined') {
+    try {
+      await fetch('/api/content/homepage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    } catch (apiErr) {
+      console.warn('API route save warning:', apiErr);
+    }
+  }
+
+  // 2. Also try client-side Firestore setDoc
+  try {
+    const docRef = doc(db, 'siteContent', 'homepage');
+    await setDoc(docRef, payload, { merge: true });
+  } catch (err) {
+    console.warn('Firestore client setDoc warning:', err);
+  }
 }
 
 /**
- * Fetch Category Hero banners from Firestore with fallback
+ * Fetch Category Hero banners from Server API / Firestore with fallback
  */
 export async function getCategoryHeroes(): Promise<Record<string, CategoryHero>> {
+  if (typeof window !== 'undefined') {
+    try {
+      const res = await fetch('/api/content/categories', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && typeof data === 'object') {
+          return { ...DEFAULT_CATEGORY_HEROES, ...data };
+        }
+      }
+    } catch (e) {
+      // Continue to Firestore
+    }
+  }
+
   try {
     const docRef = doc(db, 'siteContent', 'categories');
     const snap = await getDoc(docRef);
@@ -396,11 +446,29 @@ export async function getCategoryHeroes(): Promise<Record<string, CategoryHero>>
 }
 
 /**
- * Save Category Hero banners into Firestore
+ * Save Category Hero banners into Database & Firestore
  */
 export async function saveCategoryHeroes(categories: Record<string, CategoryHero>): Promise<void> {
-  const docRef = doc(db, 'siteContent', 'categories');
-  await setDoc(docRef, { categories, updatedAt: Date.now() }, { merge: true });
+  // 1. Save to server API endpoint (persists to data store & syncs Firestore)
+  if (typeof window !== 'undefined') {
+    try {
+      await fetch('/api/content/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(categories),
+      });
+    } catch (apiErr) {
+      console.warn('API route categories save warning:', apiErr);
+    }
+  }
+
+  // 2. Also attempt client-side Firestore setDoc
+  try {
+    const docRef = doc(db, 'siteContent', 'categories');
+    await setDoc(docRef, { categories, updatedAt: Date.now() }, { merge: true });
+  } catch (err) {
+    console.warn('Firestore client setDoc categories warning:', err);
+  }
 }
 
 /**

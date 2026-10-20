@@ -47,3 +47,25 @@ describe('UI Primitives and Design System', () => {
     expect(formatPricePaise(0)).toBe('₹0.00');
   });
 });
+
+describe('RadianceComparisonSlider Component', () => {
+  it('renders before-after radiance comparison slider with accessible attributes', async () => {
+    const { RadianceComparisonSlider } = await import('@/components/storefront/RadianceComparisonSlider');
+    render(<RadianceComparisonSlider />);
+
+    const slider = screen.getByRole('slider', { name: /day 1 vs day 14 radiance comparison slider/i });
+    expect(slider).toBeDefined();
+    expect(slider.getAttribute('aria-valuenow')).toBe('50');
+
+    // Badges
+    expect(screen.getByText(/day 1 • before/i)).toBeDefined();
+    expect(screen.getByText(/day 14 • radiance/i)).toBeDefined();
+
+    // Keyboard navigation
+    fireEvent.keyDown(slider, { key: 'ArrowRight' });
+    expect(slider.getAttribute('aria-valuenow')).toBe('55');
+
+    fireEvent.keyDown(slider, { key: 'ArrowLeft' });
+    expect(slider.getAttribute('aria-valuenow')).toBe('50');
+  });
+});

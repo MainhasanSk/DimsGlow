@@ -56,23 +56,10 @@ export async function verifyServerSession(idToken: string): Promise<VerifiedSess
     throw new Error('Authentication required: Invalid or expired ID token');
   }
 
-  // 3. Check for designated owner/admin emails (superusers)
-  const isSuperuser =
-    email === 'test@gmail.com' ||
-    (email && (email.includes('admin') || email.endsWith('dimsglow.com')));
+  // 3. Query Firestore userAccess dynamically — verified directly from Firestore
 
-  if (isSuperuser) {
-    return {
-      uid,
-      email,
-      role: 'owner',
-      permissions: ROLE_DEFAULT_PERMISSIONS.owner,
-      status: 'active',
-    };
-  }
-
-  // 4. Query Firestore userAccess if adminDb is active
-  if (hasAdminCredentials && adminDb && typeof adminDb.collection === 'function') {
+  // 4. Query Firestore userAccess — now works via REST proxy even without service account
+  if (adminDb && typeof adminDb.collection === 'function') {
     try {
       const accessDoc = await adminDb.collection('userAccess').doc(uid).get();
       if (accessDoc.exists) {

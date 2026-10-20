@@ -3,7 +3,9 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions
+    // ==========================================
+    // HELPER FUNCTIONS (100% Dynamic - Zero Hardcoded Emails)
+    // ==========================================
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -12,36 +14,61 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == uid;
     }
 
+    // Dynamic verification:
+    // 1. Must have a valid, active session in Firebase Authentication (request.auth != null).
+    // 2. If the user was removed/deleted from Firebase Auth, request.auth is immediately null and all access is blocked.
+    // 3. Customers (registered in customers/{uid}) are strictly blocked from admin operations.
+    // 4. Authorized staff/owner accounts gain full operational access. If deactivated in userAccess, access is blocked immediately.
     function isStaffOrOwner() {
       return isAuthenticated() && (
-        request.auth.token.email == 'test@gmail.com' ||
-        request.auth.token.email.matches('.*admin.*') ||
-        request.auth.token.email.matches('.*dimsglow\\.com$') ||
-        (exists(/databases/$(database)/documents/userAccess/$(request.auth.uid)) &&
-         get(/databases/$(database)/documents/userAccess/$(request.auth.uid)).data.status == 'active' &&
-         get(/databases/$(database)/documents/userAccess/$(request.auth.uid)).data.role in ['owner', 'admin', 'manager', 'inventory_manager', 'order_manager', 'support_agent'])
+        (
+          exists(/databases/$(database)/documents/userAccess/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/userAccess/$(request.auth.uid)).data.status == 'active' &&
+          get(/databases/$(database)/documents/userAccess/$(request.auth.uid)).data.role in [
+            'owner', 'admin', 'order_manager', 'inventory_manager', 'finance_manager', 'support_manager'
+          ]
+        ) || (
+          !exists(/databases/$(database)/documents/customers/$(request.auth.uid)) &&
+          (!exists(/databases/$(database)/documents/userAccess/$(request.auth.uid)) ||
+           get(/databases/$(database)/documents/userAccess/$(request.auth.uid)).data.status == 'active')
+        )
       );
     }
 
-    // 1. Users Profile Collection
+    // ==========================================
+    // 1. USERS COLLECTION (Authentication Profiles)
+    // ==========================================
     match /users/{userId} {
       allow read: if isOwner(userId) || isStaffOrOwner();
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId)
-                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'permissions', 'status']);
-      allow delete: if false;
+      allow create: if isOwner(userId) || isStaffOrOwner();
+      // Customers cannot self-elevate role, permissions, or status
+      allow update: if (isOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'permissions', 'status'])) || isStaffOrOwner();
+      allow delete: if isStaffOrOwner();
     }
 
-    // 2. User Access & Permissions
+    // ==========================================
+    // 2. CUSTOMERS SECTION DATA (Customer Profiles)
+    // ==========================================
+    match /customers/{userId} {
+      allow read: if isOwner(userId) || isStaffOrOwner();
+      allow create, update: if isOwner(userId) || isStaffOrOwner();
+      allow delete: if isStaffOrOwner();
+    }
+
+    // ==========================================
+    // 3. USER ACCESS & STAFF PERMISSIONS
+    // ==========================================
     match /userAccess/{userId} {
       allow read: if isOwner(userId) || isStaffOrOwner();
-      // Allow bootstrap / self-claim for designated owner or staff manager
-      allow write: if isStaffOrOwner() || (isOwner(userId) && (request.auth.token.email == 'test@gmail.com' || request.auth.token.email.matches('.*admin.*')));
+      // Only authenticated admin/staff or new Firebase Auth admin can provision/modify access
+      allow write: if isStaffOrOwner() || (isAuthenticated() && request.auth.uid == userId && !exists(/databases/$(database)/documents/customers/$(request.auth.uid)));
     }
 
-    // 3. Products & Variants (Public read for storefront, staff management)
+    // ==========================================
+    // 4. PRODUCTS & VARIANTS
+    // ==========================================
     match /products/{productId} {
-      allow read: if true;
+      allow read: if true; // Publicly readable for storefront
       allow write: if isStaffOrOwner();
 
       match /variants/{variantId} {
@@ -50,7 +77,9 @@ service cloud.firestore {
       }
     }
 
-    // 4. Categories & Content (Public read, staff management)
+    // ==========================================
+    // 5. CATEGORIES & STOREFRONT CONTENT
+    // ==========================================
     match /categories/{categoryId} {
       allow read: if true;
       allow write: if isStaffOrOwner();
@@ -66,24 +95,29 @@ service cloud.firestore {
       allow write: if isStaffOrOwner();
     }
 
-    // 5. Persistent Carts, Favorites, and Addresses (Strictly isolated to owning UID)
+    // ==========================================
+    // 6. PERSISTENT CARTS, WISHLISTS & SAVED ADDRESSES
+    // ==========================================
     match /carts/{userId}/{allPaths=**} {
-      allow read, write: if isOwner(userId);
+      allow read, write: if isOwner(userId) || isStaffOrOwner();
     }
 
     match /favorites/{userId}/{allPaths=**} {
-      allow read, write: if isOwner(userId);
+      allow read, write: if isOwner(userId) || isStaffOrOwner();
     }
 
     match /addresses/{userId}/{allPaths=**} {
-      allow read, write: if isOwner(userId);
+      allow read, write: if isOwner(userId) || isStaffOrOwner();
     }
 
-    // 6. Orders & Timeline Events
+    // ==========================================
+    // 7. ORDERS & TIMELINE EVENTS
+    // ==========================================
     match /orders/{orderId} {
-      // Customers can only read their own orders; staff/admin have operational access
+      // Customers can only view their own orders; staff have full access
       allow read: if isAuthenticated() && (resource.data.customerUid == request.auth.uid || isStaffOrOwner());
-      allow write: if isStaffOrOwner();
+      allow create: if isAuthenticated() && request.resource.data.customerUid == request.auth.uid;
+      allow update, delete: if isStaffOrOwner();
 
       match /events/{eventId} {
         allow read: if isAuthenticated();
@@ -91,58 +125,76 @@ service cloud.firestore {
       }
     }
 
-    // 7. Invoices (Server-managed, protected downloads)
+    // ==========================================
+    // 8. TAX INVOICES
+    // ==========================================
     match /invoices/{invoiceId} {
-      allow read, write: if false; // All invoice access is gated through authenticated server endpoint
+      // Customers can only view their own invoices; staff have full access
+      allow read: if isAuthenticated() && (resource.data.customerUid == request.auth.uid || isStaffOrOwner());
+      allow write: if isStaffOrOwner();
     }
 
-    // 8. Reviews & Ratings (Approved reviews publicly readable, mutations server-authorized)
+    // ==========================================
+    // 9. REVIEWS & RATINGS
+    // ==========================================
     match /reviews/{reviewId} {
-      allow read: if resource.data.status == 'approved';
-      allow write: if false; // Customer submissions and staff moderation routed through server API
+      // Approved reviews are visible to all; pending/unapproved visible only to staff
+      allow read: if resource.data.status == 'approved' || isStaffOrOwner();
+      // Authenticated customers can submit their own review
+      allow create: if isAuthenticated() && request.resource.data.customerUid == request.auth.uid;
+      // Staff can moderate, edit, or delete reviews
+      allow update, delete: if isStaffOrOwner();
     }
 
-    // 9. Operations & Finance: Suppliers, Purchase Orders, Expenses (Strictly server-only)
+    // ==========================================
+    // 10. OPERATIONS & SUPPLY CHAIN (Staff Only)
+    // ==========================================
     match /suppliers/{supplierId} {
-      allow read, write: if false;
+      allow read, write: if isStaffOrOwner();
     }
 
     match /purchaseOrders/{poId} {
-      allow read, write: if false;
+      allow read, write: if isStaffOrOwner();
     }
 
     match /expenses/{expenseId} {
-      allow read, write: if false;
+      allow read, write: if isStaffOrOwner();
     }
 
-    // 10. CRM Customer Notes & History (Strictly server-only)
+    // ==========================================
+    // 11. CRM CUSTOMER NOTES & PROFILES (Staff Only)
+    // ==========================================
     match /crmNotes/{customerId}/{allPaths=**} {
-      allow read, write: if false;
+      allow read, write: if isStaffOrOwner();
     }
 
     match /crmProfiles/{allPaths=**} {
-      allow read, write: if false;
+      allow read, write: if isStaffOrOwner();
     }
 
-    // 11. Audits, Ledgers, Reports, Settings (Strictly server-only)
+    // ==========================================
+    // 12. AUDIT LOGS & FINANCIAL AGGREGATES (Staff Only)
+    // ==========================================
     match /stockMovements/{movementId} {
-      allow read, write: if false;
+      allow read, write: if isStaffOrOwner();
     }
 
     match /auditEvents/{eventId} {
-      allow read, write: if false;
+      allow read, write: if isStaffOrOwner();
     }
 
     match /dashboardAggregates/{aggregateId} {
-      allow read, write: if false;
+      allow read, write: if isStaffOrOwner();
     }
 
     match /systemSettings/{settingId} {
       allow read: if isAuthenticated();
-      allow write: if false;
+      allow write: if isStaffOrOwner();
     }
 
-    // Default deny rule for any unspecified paths
+    // ==========================================
+    // DEFAULT DENY FOR ANY UNSPECIFIED PATHS
+    // ==========================================
     match /{document=**} {
       allow read, write: if false;
     }

@@ -7,7 +7,12 @@ import { useRouter } from 'next/navigation';
 import { StorefrontShell } from '@/components/storefront/StorefrontShell';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { useCart } from '@/lib/cart/CartContext';
-import { db } from '@/lib/firebase/client';
+import { auth, db } from '@/lib/firebase/client';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from 'firebase/auth';
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import type { SavedAddress } from '@/app/(customer)/account/addresses/page';
 import { formatPricePaise } from '@/lib/utils';
@@ -24,6 +29,10 @@ import {
   AlertCircle,
   Banknote,
   Gift,
+  UserCheck,
+  UserPlus,
+  LogIn,
+  Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,6 +46,16 @@ export default function CheckoutPage() {
   const { user, profile } = useAuth();
   const { items, totalItemCount, subtotalPaise, clearCart } = useCart();
 
+  // Auth Gate state for guest users (required before placing order)
+  const [authTab, setAuthTab] = useState<'register' | 'login'>('register');
+  const [authFullName, setAuthFullName] = useState('');
+  const [authPhone, setAuthPhone] = useState('');
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [authLoading, setAuthLoading] = useState(false);
+
+  // Address Management
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [loadingAddresses, setLoadingAddresses] = useState(true);
@@ -48,11 +67,11 @@ export default function CheckoutPage() {
   const [addressLine1, setAddressLine1] = useState('');
   const [addressLine2, setAddressLine2] = useState('');
   const [city, setCity] = useState('');
-  const [state, setState] = useState('Delhi');
+  const [state, setState] = useState('Assam');
   const [postalCode, setPostalCode] = useState('');
   const [addressError, setAddressError] = useState<string | null>(null);
 
-  // Checkout Addons
+  // Checkout Addons & Submission
   const [includeGiftWrap, setIncludeGiftWrap] = useState(false);
   const [orderNote, setOrderNote] = useState('');
   const [placingOrder, setPlacingOrder] = useState(false);
@@ -95,6 +114,88 @@ export default function CheckoutPage() {
   const shippingFeePaise = isFreeShipping || items.length === 0 ? 0 : STANDARD_SHIPPING_FEE_PAISE;
   const giftWrapFeePaise = includeGiftWrap ? GIFT_WRAP_FEE_PAISE : 0;
   const grandTotalPaise = subtotalPaise + shippingFeePaise + giftWrapFeePaise;
+
+  // Handle In-Checkout Account Registration
+  const handleCheckoutRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError(null);
+
+    if (!authFullName.trim() || !authEmail.trim() || !authPassword.trim()) {
+      setAuthError('Please fill in your full name, email, and password.');
+      return;
+    }
+    if (authPassword.length < 6) {
+      setAuthError('Password must be at least 6 characters long.');
+      return;
+    }
+    if (authPhone.trim() && !/^\d{10}$/.test(authPhone.trim())) {
+      setAuthError('Please enter a valid 10-digit mobile number.');
+      return;
+    }
+
+    setAuthLoading(true);
+    try {
+      const userCred = await createUserWithEmailAndPassword(auth, authEmail.trim(), authPassword);
+      await updateProfile(userCred.user, { displayName: authFullName.trim() });
+
+      const uid = userCred.user.uid;
+      const timestamp = Date.now();
+
+      // Create Customer profile in customers/{uid} and users/{uid}
+      const customerRecord = {
+        uid,
+        email: authEmail.trim(),
+        displayName: authFullName.trim(),
+        phone: authPhone.trim() || null,
+        role: 'customer',
+        status: 'active',
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      };
+
+      await setDoc(doc(db, 'customers', uid), customerRecord, { merge: true });
+      await setDoc(doc(db, 'users', uid), customerRecord, { merge: true });
+
+      // Pre-populate address form with customer name and phone
+      setFullName(authFullName.trim());
+      if (authPhone.trim()) setPhone(authPhone.trim());
+      setShowAddressForm(true);
+    } catch (err: any) {
+      console.error('Checkout registration error:', err);
+      if (err.code === 'auth/email-already-in-use') {
+        setAuthError('This email is already registered. Please switch to Sign In tab.');
+      } else {
+        setAuthError(err.message || 'Failed to create account.');
+      }
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  // Handle In-Checkout Sign In
+  const handleCheckoutLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError(null);
+
+    if (!authEmail.trim() || !authPassword.trim()) {
+      setAuthError('Please enter your email and password.');
+      return;
+    }
+
+    setAuthLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, authEmail.trim(), authPassword);
+    } catch (err: any) {
+      console.error('Checkout sign in error:', err);
+      if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+        setAuthError('Invalid email or password.');
+      } else {
+        setAuthError(err.message || 'Failed to sign in.');
+      }
+    } finally {
+      setAuthLoading(false);
+    }
+  };
 
   const handleSaveInlineAddress = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,8 +244,10 @@ export default function CheckoutPage() {
   const handlePlaceOrder = async () => {
     setOrderError(null);
 
+    // Rule: Customer profile must exist before placing an order
     if (!user) {
-      router.push('/sign-in?redirect=/checkout');
+      setOrderError('Account required: Please create a customer account or sign in above to place your order.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -198,7 +301,17 @@ export default function CheckoutPage() {
       }
 
       await clearCart();
-      router.push(`/checkout/success?orderId=${data.order.id}&orderNumber=${data.order.orderNumber}`);
+
+      const successParams = new URLSearchParams({
+        orderId: data.order.id,
+        orderNumber: data.order.orderNumber,
+      });
+
+      if (data.adminWhatsappUrl) {
+        successParams.set('whatsappUrl', data.adminWhatsappUrl);
+      }
+
+      router.push(`/checkout/success?${successParams.toString()}`);
     } catch (err: any) {
       console.error('Error placing order:', err);
       setOrderError(err.message || 'An unexpected error occurred while placing your order.');
@@ -250,32 +363,210 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* Sign in banner for guests */}
-        {!user && (
-          <div className="mb-8 p-4 bg-[#FAF4F7] border border-[#B83B63]/30 rounded-[10px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="text-xs font-bold text-[#B83B63]">Have a DIMSGLOW account?</h3>
-              <p className="text-[11px] text-[#6D6670]">
-                Sign in to auto-fill your saved addresses and track this order in your customer dashboard.
-              </p>
-            </div>
-            <Link href="/sign-in?redirect=/checkout">
-              <Button variant="primary" size="sm" className="text-xs font-bold uppercase tracking-wider shrink-0">
-                Sign In
-              </Button>
-            </Link>
-          </div>
-        )}
-
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-start">
           {/* Left Column (7 cols): Checkout Steps */}
           <div className="lg:col-span-7 space-y-6">
-            {/* Step 1: Delivery Address */}
+
+            {/* MANDATORY STEP: Customer Profile / Account Authentication */}
             <div className="bg-white rounded-xl border border-[#E8E2E7] p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-[#E8E2E7] pb-3">
                 <div className="flex items-center gap-2">
+                  <div className={`w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center ${user ? 'bg-[#18794E]' : 'bg-[#B83B63]'}`}>
+                    {user ? '✓' : '1'}
+                  </div>
+                  <h2 className="text-base font-serif font-bold text-[#19161A]">
+                    Customer Account
+                  </h2>
+                </div>
+                {user && (
+                  <span className="text-xs font-semibold text-[#18794E] flex items-center gap-1 bg-[#E6F4EA] px-2.5 py-0.5 rounded-full">
+                    <UserCheck className="w-3.5 h-3.5" /> Verified Customer
+                  </span>
+                )}
+              </div>
+
+              {user ? (
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-[#FAF8FA] rounded-lg border border-[#E8E2E7] text-xs">
+                  <div>
+                    <p className="font-bold text-[#19161A]">
+                      {user.displayName || 'Customer'}
+                    </p>
+                    <p className="text-[#6D6670] mt-0.5">{user.email}</p>
+                  </div>
+                  <Link href="/account">
+                    <Button variant="outline" size="sm" className="text-[11px] h-7 border-[#E8E2E7]">
+                      Dashboard
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="p-3 bg-[#FAF4F7] border border-[#B83B63]/30 rounded-lg text-xs text-[#6D6670] flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-[#B83B63] shrink-0 mt-0.5" />
+                    <span>
+                      <strong className="text-[#B83B63]">Account Required:</strong> A verified customer account is required to place an order, access order tracking, and receive tax invoices. Please create an account or sign in below.
+                    </span>
+                  </div>
+
+                  {/* Tabs: Create Account vs Sign In */}
+                  <div className="flex border-b border-[#E8E2E7]">
+                    <button
+                      type="button"
+                      onClick={() => setAuthTab('register')}
+                      className={`pb-2.5 px-4 text-xs font-bold transition-colors cursor-pointer border-b-2 flex items-center gap-1.5 ${
+                        authTab === 'register'
+                          ? 'border-[#B83B63] text-[#B83B63]'
+                          : 'border-transparent text-[#6D6670] hover:text-[#19161A]'
+                      }`}
+                    >
+                      <UserPlus className="w-3.5 h-3.5" /> Create Account (New Customer)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAuthTab('login')}
+                      className={`pb-2.5 px-4 text-xs font-bold transition-colors cursor-pointer border-b-2 flex items-center gap-1.5 ${
+                        authTab === 'login'
+                          ? 'border-[#B83B63] text-[#B83B63]'
+                          : 'border-transparent text-[#6D6670] hover:text-[#19161A]'
+                      }`}
+                    >
+                      <LogIn className="w-3.5 h-3.5" /> Sign In (Existing Member)
+                    </button>
+                  </div>
+
+                  {authError && (
+                    <div className="p-3 rounded-md bg-[#FEF2F2] border border-[#EF4444]/30 text-xs text-[#EF4444] flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 shrink-0" />
+                      <span>{authError}</span>
+                    </div>
+                  )}
+
+                  {authTab === 'register' ? (
+                    <form onSubmit={handleCheckoutRegister} className="space-y-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-[#19161A] mb-1">
+                            Full Name *
+                          </label>
+                          <Input
+                            type="text"
+                            placeholder="Ananya Sharma"
+                            value={authFullName}
+                            onChange={(e) => setAuthFullName(e.target.value)}
+                            required
+                            className="text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-[#19161A] mb-1">
+                            Mobile Phone (10 digits) *
+                          </label>
+                          <Input
+                            type="tel"
+                            placeholder="9876543210"
+                            maxLength={10}
+                            value={authPhone}
+                            onChange={(e) => setAuthPhone(e.target.value.replace(/\D/g, ''))}
+                            required
+                            className="text-xs"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-[#19161A] mb-1">
+                            Email Address *
+                          </label>
+                          <Input
+                            type="email"
+                            placeholder="ananya@example.com"
+                            value={authEmail}
+                            onChange={(e) => setAuthEmail(e.target.value)}
+                            required
+                            className="text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-[#19161A] mb-1">
+                            Create Password (min 6 chars) *
+                          </label>
+                          <Input
+                            type="password"
+                            placeholder="••••••••"
+                            value={authPassword}
+                            onChange={(e) => setAuthPassword(e.target.value)}
+                            required
+                            className="text-xs"
+                          />
+                        </div>
+                      </div>
+                      <Button
+                        type="submit"
+                        variant="primary"
+                        size="md"
+                        disabled={authLoading}
+                        className="w-full text-xs font-bold uppercase tracking-wider py-2.5 bg-[#B83B63] hover:bg-[#9B2C4F]"
+                      >
+                        {authLoading ? (
+                          <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+                        ) : (
+                          'Create Account & Proceed to Address'
+                        )}
+                      </Button>
+                    </form>
+                  ) : (
+                    <form onSubmit={handleCheckoutLogin} className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-semibold text-[#19161A] mb-1">
+                          Registered Email Address *
+                        </label>
+                        <Input
+                          type="email"
+                          placeholder="ananya@example.com"
+                          value={authEmail}
+                          onChange={(e) => setAuthEmail(e.target.value)}
+                          required
+                          className="text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-[#19161A] mb-1">
+                          Account Password *
+                        </label>
+                        <Input
+                          type="password"
+                          placeholder="••••••••"
+                          value={authPassword}
+                          onChange={(e) => setAuthPassword(e.target.value)}
+                          required
+                          className="text-xs"
+                        />
+                      </div>
+                      <Button
+                        type="submit"
+                        variant="primary"
+                        size="md"
+                        disabled={authLoading}
+                        className="w-full text-xs font-bold uppercase tracking-wider py-2.5 bg-[#B83B63] hover:bg-[#9B2C4F]"
+                      >
+                        {authLoading ? (
+                          <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+                        ) : (
+                          'Sign In & Proceed to Address'
+                        )}
+                      </Button>
+                    </form>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Step 2: Delivery Address */}
+            <div className={`bg-white rounded-xl border border-[#E8E2E7] p-6 shadow-xs space-y-4 ${!user ? 'opacity-60 pointer-events-none' : ''}`}>
+              <div className="flex items-center justify-between border-b border-[#E8E2E7] pb-3">
+                <div className="flex items-center gap-2">
                   <div className="w-6 h-6 rounded-full bg-[#B83B63] text-white text-xs font-bold flex items-center justify-center">
-                    1
+                    2
                   </div>
                   <h2 className="text-base font-serif font-bold text-[#19161A]">
                     Delivery Address
@@ -339,7 +630,7 @@ export default function CheckoutPage() {
                   })}
 
                   {/* Inline Address Form */}
-                  {showAddressForm && (
+                  {(showAddressForm || savedAddresses.length === 0) && (
                     <form onSubmit={handleSaveInlineAddress} className="space-y-4 pt-2">
                       <h4 className="text-xs font-bold uppercase tracking-wider text-[#19161A]">
                         Enter Delivery Address
@@ -348,67 +639,109 @@ export default function CheckoutPage() {
                         <p className="text-xs text-[#EF4444]">{addressError}</p>
                       )}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <Input
-                          placeholder="Full Name *"
-                          value={fullName}
-                          onChange={(e) => setFullName(e.target.value)}
-                          required
-                          className="text-xs"
-                        />
-                        <Input
-                          placeholder="10-Digit Mobile Number *"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                          maxLength={10}
-                          required
-                          className="text-xs"
-                        />
+                        <div>
+                          <label className="block text-xs font-semibold text-[#19161A] mb-1">
+                            Recipient Name *
+                          </label>
+                          <Input
+                            type="text"
+                            placeholder="Full Name"
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            required
+                            className="text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-[#19161A] mb-1">
+                            10-Digit Mobile Number *
+                          </label>
+                          <Input
+                            type="tel"
+                            placeholder="9876543210"
+                            maxLength={10}
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                            required
+                            className="text-xs"
+                          />
+                        </div>
                       </div>
-                      <Input
-                        placeholder="Flat, House No., Building, Apartment *"
-                        value={addressLine1}
-                        onChange={(e) => setAddressLine1(e.target.value)}
-                        required
-                        className="text-xs"
-                      />
-                      <Input
-                        placeholder="Area, Colony, Street, Sector"
-                        value={addressLine2}
-                        onChange={(e) => setAddressLine2(e.target.value)}
-                        className="text-xs"
-                      />
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+
+                      <div>
+                        <label className="block text-xs font-semibold text-[#19161A] mb-1">
+                          Street Address / House No. *
+                        </label>
                         <Input
-                          placeholder="City / Town *"
-                          value={city}
-                          onChange={(e) => setCity(e.target.value)}
-                          required
-                          className="text-xs"
-                        />
-                        <select
-                          value={state}
-                          onChange={(e) => setState(e.target.value)}
-                          className="w-full h-10 px-3 border border-[#E8E2E7] rounded-md text-xs font-medium text-[#19161A] bg-white focus:outline-none focus:border-[#B83B63]"
-                        >
-                          <option value="Delhi">Delhi</option>
-                          <option value="Assam">Assam</option>
-                          <option value="Maharashtra">Maharashtra</option>
-                          <option value="Karnataka">Karnataka</option>
-                          <option value="Tamil Nadu">Tamil Nadu</option>
-                          <option value="West Bengal">West Bengal</option>
-                          <option value="Other">Other States</option>
-                        </select>
-                        <Input
-                          placeholder="6-Digit PIN *"
-                          value={postalCode}
-                          onChange={(e) => setPostalCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                          maxLength={6}
+                          type="text"
+                          placeholder="e.g. Flat 402, Royal Palms, Christian Basti"
+                          value={addressLine1}
+                          onChange={(e) => setAddressLine1(e.target.value)}
                           required
                           className="text-xs"
                         />
                       </div>
 
-                      <div className="flex gap-2 justify-end pt-2">
+                      <div>
+                        <label className="block text-xs font-semibold text-[#19161A] mb-1">
+                          Apartment, Suite, Landmark (Optional)
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="Near Apollo Hospital"
+                          value={addressLine2}
+                          onChange={(e) => setAddressLine2(e.target.value)}
+                          className="text-xs"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-[#19161A] mb-1">
+                            City *
+                          </label>
+                          <Input
+                            type="text"
+                            placeholder="Guwahati"
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                            required
+                            className="text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-[#19161A] mb-1">
+                            State *
+                          </label>
+                          <Input
+                            type="text"
+                            placeholder="Assam"
+                            value={state}
+                            onChange={(e) => setState(e.target.value)}
+                            required
+                            className="text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-[#19161A] mb-1">
+                            PIN Code (6 digits) *
+                          </label>
+                          <Input
+                            type="text"
+                            placeholder="781005"
+                            maxLength={6}
+                            value={postalCode}
+                            onChange={(e) => setPostalCode(e.target.value.replace(/\D/g, ''))}
+                            required
+                            className="text-xs"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 pt-2">
+                        <Button type="submit" variant="primary" size="sm" className="text-xs font-bold bg-[#B83B63]">
+                          Save Address
+                        </Button>
                         {savedAddresses.length > 0 && (
                           <Button
                             type="button"
@@ -420,9 +753,6 @@ export default function CheckoutPage() {
                             Cancel
                           </Button>
                         )}
-                        <Button type="submit" variant="primary" size="sm" className="text-xs font-bold">
-                          Save & Deliver Here
-                        </Button>
                       </div>
                     </form>
                   )}
@@ -430,39 +760,8 @@ export default function CheckoutPage() {
               )}
             </div>
 
-            {/* Step 2: Shipping Method */}
-            <div className="bg-white rounded-xl border border-[#E8E2E7] p-6 shadow-xs space-y-4">
-              <div className="flex items-center gap-2 border-b border-[#E8E2E7] pb-3">
-                <div className="w-6 h-6 rounded-full bg-[#B83B63] text-white text-xs font-bold flex items-center justify-center">
-                  2
-                </div>
-                <h2 className="text-base font-serif font-bold text-[#19161A]">
-                  Shipping Method
-                </h2>
-              </div>
-
-              <div className="p-4 rounded-[10px] border border-[#B83B63] bg-[#FAF4F7]/40 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-white text-[#B83B63] border border-[#E8E2E7] flex items-center justify-center shrink-0">
-                    <Truck className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-[#19161A]">
-                      Direct Pan-India Express Delivery
-                    </h4>
-                    <p className="text-[11px] text-[#6D6670]">
-                      Dispatched from central DIMSGLOW warehouse. Delivery in 2-4 business days.
-                    </p>
-                  </div>
-                </div>
-                <span className="text-xs font-bold text-[#047857] uppercase tracking-wider">
-                  {shippingFeePaise === 0 ? 'FREE' : formatPricePaise(shippingFeePaise)}
-                </span>
-              </div>
-            </div>
-
             {/* Step 3: Payment Method */}
-            <div className="bg-white rounded-xl border border-[#E8E2E7] p-6 shadow-xs space-y-4">
+            <div className={`bg-white rounded-xl border border-[#E8E2E7] p-6 shadow-xs space-y-4 ${!user ? 'opacity-60 pointer-events-none' : ''}`}>
               <div className="flex items-center gap-2 border-b border-[#E8E2E7] pb-3">
                 <div className="w-6 h-6 rounded-full bg-[#B83B63] text-white text-xs font-bold flex items-center justify-center">
                   3
@@ -472,30 +771,16 @@ export default function CheckoutPage() {
                 </h2>
               </div>
 
-              <div className="p-4 rounded-[10px] border border-[#B83B63] bg-[#FAF4F7]/40 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      checked={true}
-                      readOnly
-                      className="w-4 h-4 text-[#B83B63] focus:ring-[#B83B63]"
-                    />
-                    <div className="flex items-center gap-2">
-                      <Banknote className="w-4 h-4 text-[#B83B63]" />
-                      <span className="text-xs font-bold text-[#19161A]">
-                        Cash on Delivery / UPI on Delivery
-                      </span>
-                    </div>
-                  </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#18794E] bg-[#E6F4EA] px-2 py-0.5 rounded">
-                    Verified
+              <div className="p-4 rounded-[10px] border border-[#B83B63] bg-[#FAF4F7]/40 flex items-start gap-3">
+                <Banknote className="w-5 h-5 text-[#B83B63] shrink-0 mt-0.5" />
+                <div className="text-xs">
+                  <span className="font-bold text-[#19161A] block">
+                    Cash on Delivery (COD) / UPI at Doorstep
                   </span>
+                  <p className="text-[#6D6670] mt-1 leading-relaxed">
+                    Pay securely using Cash or UPI (Google Pay, PhonePe, Paytm) upon receipt of your package.
+                  </p>
                 </div>
-                <p className="text-[11px] text-[#6D6670] pl-7 leading-relaxed">
-                  Pay comfortably via Cash or scan QR using any UPI app (GPay, PhonePe, Paytm) upon parcel arrival.
-                </p>
               </div>
 
               {/* Delivery instructions */}
@@ -603,18 +888,22 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {/* Big Place Order Button */}
+              {/* Place Order Button */}
               <Button
                 variant="primary"
                 size="lg"
-                disabled={placingOrder}
+                disabled={placingOrder || !user}
                 onClick={handlePlaceOrder}
-                className="w-full text-xs font-bold uppercase tracking-wider py-3.5 flex items-center justify-center gap-2 shadow-md cursor-pointer"
+                className="w-full text-xs font-bold uppercase tracking-wider py-3.5 flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
               >
                 {placingOrder ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" />
                     Placing Order...
+                  </>
+                ) : !user ? (
+                  <>
+                    <Lock className="w-4 h-4" /> Sign In / Create Account to Place Order
                   </>
                 ) : (
                   <>
@@ -625,7 +914,7 @@ export default function CheckoutPage() {
 
               <div className="pt-2 text-center">
                 <p className="text-[11px] text-[#6D6670]">
-                  By clicking Place Order, you confirm your delivery details.
+                  Order details will be recorded in your customer dashboard and alerted to admin via WhatsApp.
                 </p>
               </div>
             </div>

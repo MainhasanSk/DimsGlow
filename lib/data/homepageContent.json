@@ -1,0 +1,135 @@
+{
+  "heroSlides": [
+    {
+      "id": "slide_1",
+      "imageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792429948/dimsglow/hero/hero_lock_the_shine_banner.jpg",
+      "ctaLink": "/collections/lips",
+      "title": "Transfer-Proof Matte Lipstick",
+      "tagline": "",
+      "subtitle": "",
+      "ctaText": "SHOP NOW",
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "slide_2",
+      "imageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792429950/dimsglow/hero/hero_lip_oil_gift_banner.jpg",
+      "ctaLink": "/collections/combos",
+      "title": "Peptide Lip Oil Free Gift Offer",
+      "tagline": "",
+      "subtitle": "",
+      "ctaText": "SHOP NOW",
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "slide_3",
+      "imageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792429951/dimsglow/hero/hero_skin_tint_banner.jpg",
+      "ctaLink": "/collections/face",
+      "title": "Radiant Skin Serum Foundation",
+      "tagline": "",
+      "subtitle": "",
+      "ctaText": "SHOP NOW",
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "slide_4",
+      "imageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792429953/dimsglow/hero/hero_festive_glam_banner.jpg",
+      "ctaLink": "/collections/all",
+      "title": "Festive Glam Red Carpet Collection",
+      "tagline": "",
+      "subtitle": "",
+      "ctaText": "SHOP NOW",
+      "active": true,
+      "order": 4
+    }
+  ],
+  "campaignVideo": {
+    "tagline": "THE GO-TO GLAM ROUTINE",
+    "ctaText": "EXPLORE FULL CAMPAIGN",
+    "posterUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340978/dimsglow/looks/look_everyday_glow.webp",
+    "ctaLink": "/collections/all",
+    "subtitle": "High-performing, weightless luxury formulations designed to move with you all day long.",
+    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-young-woman-applying-makeup-with-a-brush-41484-large.mp4",
+    "active": true,
+    "title": "WE'VE GOT EVERYTHING COVERED"
+  },
+  "promoClinical": {
+    "featuredProductName": "DIMSGLOW Tinted Sunscreen SPF 50+ PA++++",
+    "ctaText": "BUY TINTED SUNSCREEN",
+    "statLabel": "Reduction in Dark Spots",
+    "active": true,
+    "headline": "CLINICALLY PROVEN FORMULATION • SPF 50+ PA++++",
+    "description": "Formulated with Broad Spectrum UVA/UVB protection, Niacinamide, and Arbutin. Clinically proven to fade stubborn sun tan, reduce dark spots, and restore luminous, even-toned skin within 14 days.",
+    "ctaLink": "/collections/skin-care",
+    "featuredProductPrice": "₹999 (MRP ₹1,299)",
+    "featuredProductRating": "★ 4.9 (Clinical Trial Verified)",
+    "activeIngredients": [
+      "SPF 50+ PA++++",
+      "Fades Pigmentation",
+      "Reduces Tanning",
+      "Even Tone & Brightness",
+      "Dermatologically Tested"
+    ],
+    "imageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340975/dimsglow/editorial/dimsglow_sunscreen_poster.jpg",
+    "statNumber": "95%"
+  },
+  "routineLooks": [
+    {
+      "id": "look_1",
+      "title": "EVERYDAY GLOW",
+      "desc": "Natural skin tints & dewy cheeks",
+      "href": "/collections/face",
+      "imageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340978/dimsglow/looks/look_everyday_glow.webp",
+      "badge": "Trending",
+      "active": true
+    },
+    {
+      "id": "look_2",
+      "title": "ROMANTIC GLAM",
+      "desc": "Soft rose lips & shimmering eyelids",
+      "href": "/collections/lips",
+      "imageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340981/dimsglow/looks/look_romantic_glam.webp",
+      "badge": "Popular",
+      "active": true
+    },
+    {
+      "id": "look_3",
+      "title": "BOLD & BEAUTIFUL",
+      "desc": "Winged drama & smokey depth",
+      "href": "/collections/eyes",
+      "imageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340984/dimsglow/looks/look_bold_beautiful.webp",
+      "badge": "Evening",
+      "active": true
+    },
+    {
+      "id": "look_4",
+      "title": "FESTIVE GLOW",
+      "desc": "Full coverage radiance & golden accents",
+      "href": "/collections/combos",
+      "imageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340988/dimsglow/looks/look_festive_glow.webp",
+      "badge": "Celebration",
+      "active": true
+    }
+  ],
+  "testimonials": [],
+  "faqs": [],
+  "sectionsVisibility": {
+    "campaignVideo": true,
+    "bestsellers": true,
+    "faqs": true,
+    "trustMarquee": true,
+    "beforeAfter": true,
+    "newArrivals": true,
+    "combosBox": true,
+    "heroCarousel": true,
+    "testimonials": true,
+    "categoryCircles": true,
+    "ourPromise": true,
+    "promoClinical": true,
+    "routineLooks": true
+  },
+  "updatedAt": 1792429916766,
+  "updatedBy": "admin_banana_sync"
+}

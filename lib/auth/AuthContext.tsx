@@ -4,6 +4,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
   onAuthStateChanged,
   signOut as firebaseSignOut,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   type User,
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/client';
@@ -25,7 +27,6 @@ export interface AuthContextType {
   isLoading: boolean;
   signOut: () => Promise<void>;
   getIdToken: () => Promise<string | null>;
-  claimMasterAccess: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -36,19 +37,7 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   signOut: async () => {},
   getIdToken: async () => null,
-  claimMasterAccess: async () => {},
 });
-
-const isOwnerDesignatedEmail = (email?: string | null) => {
-  if (!email) return false;
-  const em = email.toLowerCase().trim();
-  return (
-    em === 'test@gmail.com' ||
-    em === 'admin@dimsglow.com' ||
-    em.includes('admin') ||
-    em.endsWith('@dimsglow.com')
-  );
-};
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -68,45 +57,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (firebaseUser) {
-        const isOwnerEmail = isOwnerDesignatedEmail(firebaseUser.email);
         const accessDocRef = doc(db, 'userAccess', firebaseUser.uid);
 
         unsubscribeAccess = onSnapshot(
           accessDocRef,
-          async (snapshot) => {
+          (snapshot) => {
             if (snapshot.exists()) {
               const data = snapshot.data() as UserAccessRecord;
               if (data.status === 'active') {
                 setRole(data.role);
-                setPermissions(data.permissions || []);
-              } else if (isOwnerEmail) {
-                // Designated owner override if accidentally marked inactive
-                setRole('owner');
-                setPermissions(ROLE_DEFAULT_PERMISSIONS.owner);
+                setPermissions(data.permissions || ROLE_DEFAULT_PERMISSIONS[data.role as keyof typeof ROLE_DEFAULT_PERMISSIONS] || []);
               } else {
                 setRole('customer');
                 setPermissions([]);
-              }
-            } else if (isOwnerEmail) {
-              // Auto-bootstrap master owner in Firestore on first login
-              try {
-                const ownerRecord = {
-                  uid: firebaseUser.uid,
-                  email: firebaseUser.email,
-                  role: 'owner' as const,
-                  permissions: ROLE_DEFAULT_PERMISSIONS.owner,
-                  status: 'active' as const,
-                  createdBy: 'auto_owner_bootstrap',
-                  createdAt: Date.now(),
-                  updatedAt: Date.now(),
-                };
-                await setDoc(accessDocRef, ownerRecord, { merge: true });
-                setRole('owner');
-                setPermissions(ROLE_DEFAULT_PERMISSIONS.owner);
-              } catch (writeErr) {
-                console.warn('Auto owner bootstrap setDoc deferred:', writeErr);
-                setRole('owner');
-                setPermissions(ROLE_DEFAULT_PERMISSIONS.owner);
               }
             } else {
               setRole('customer');
@@ -116,13 +79,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           },
           (err) => {
             console.warn('userAccess listener warning:', err.message);
-            if (isOwnerEmail) {
-              setRole('owner');
-              setPermissions(ROLE_DEFAULT_PERMISSIONS.owner);
-            } else {
-              setRole('customer');
-              setPermissions([]);
-            }
+            setRole('customer');
+            setPermissions([]);
             setIsLoading(false);
           }
         );
@@ -133,39 +91,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
+    // Safety timeout: Ensure isLoading resolves within 1200ms even if network or auth is slow
+    const fallbackTimer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1200);
+
     return () => {
+      clearTimeout(fallbackTimer);
       unsubscribeAuth();
       if (unsubscribeAccess) unsubscribeAccess();
     };
   }, []);
 
-  const claimMasterAccess = async () => {
-    if (!user) return;
-    try {
-      const accessDocRef = doc(db, 'userAccess', user.uid);
-      const ownerRecord = {
-        uid: user.uid,
-        email: user.email,
-        role: 'owner' as const,
-        permissions: ROLE_DEFAULT_PERMISSIONS.owner,
-        status: 'active' as const,
-        createdBy: 'claim_master_access',
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      };
-      await setDoc(accessDocRef, ownerRecord, { merge: true });
-      setRole('owner');
-      setPermissions(ROLE_DEFAULT_PERMISSIONS.owner);
-    } catch (err: any) {
-      console.error('Failed to claim master access in Firestore:', err);
-      // Fallback local state grant for UI access
-      setRole('owner');
-      setPermissions(ROLE_DEFAULT_PERMISSIONS.owner);
-    }
-  };
-
   const handleSignOut = async () => {
     await firebaseSignOut(auth);
+    setRole('customer');
+    setPermissions([]);
   };
 
   const getIdToken = async (): Promise<string | null> => {
@@ -192,7 +133,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         signOut: handleSignOut,
         getIdToken,
-        claimMasterAccess,
       }}
     >
       {children}
