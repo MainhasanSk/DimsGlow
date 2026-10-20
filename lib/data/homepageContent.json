@@ -46,25 +46,24 @@
     }
   ],
   "campaignVideo": {
-    "tagline": "THE GO-TO GLAM ROUTINE",
     "ctaText": "EXPLORE FULL CAMPAIGN",
-    "posterUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340978/dimsglow/looks/look_everyday_glow.webp",
+    "tagline": "THE GO-TO GLAM ROUTINE",
     "ctaLink": "/collections/all",
     "subtitle": "High-performing, weightless luxury formulations designed to move with you all day long.",
+    "posterUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340978/dimsglow/looks/look_everyday_glow.webp",
+    "title": "WE'VE GOT EVERYTHING COVERED",
     "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-young-woman-applying-makeup-with-a-brush-41484-large.mp4",
-    "active": true,
-    "title": "WE'VE GOT EVERYTHING COVERED"
+    "active": true
   },
   "promoClinical": {
-    "featuredProductName": "DIMSGLOW Tinted Sunscreen SPF 50+ PA++++",
-    "ctaText": "BUY TINTED SUNSCREEN",
-    "statLabel": "Reduction in Dark Spots",
-    "active": true,
-    "headline": "CLINICALLY PROVEN FORMULATION • SPF 50+ PA++++",
-    "description": "Formulated with Broad Spectrum UVA/UVB protection, Niacinamide, and Arbutin. Clinically proven to fade stubborn sun tan, reduce dark spots, and restore luminous, even-toned skin within 14 days.",
     "ctaLink": "/collections/skin-care",
     "featuredProductPrice": "₹999 (MRP ₹1,299)",
-    "featuredProductRating": "★ 4.9 (Clinical Trial Verified)",
+    "statNumber": "95%",
+    "active": true,
+    "statLabel": "Reduction in Dark Spots",
+    "description": "Formulated with Broad Spectrum UVA/UVB protection, Niacinamide, and Arbutin. Clinically proven to fade stubborn sun tan, reduce dark spots, and restore luminous, even-toned skin within 14 days.",
+    "imageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340975/dimsglow/editorial/dimsglow_sunscreen_poster.jpg",
+    "featuredProductName": "DIMSGLOW Tinted Sunscreen SPF 50+ PA++++",
     "activeIngredients": [
       "SPF 50+ PA++++",
       "Fades Pigmentation",
@@ -72,8 +71,9 @@
       "Even Tone & Brightness",
       "Dermatologically Tested"
     ],
-    "imageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340975/dimsglow/editorial/dimsglow_sunscreen_poster.jpg",
-    "statNumber": "95%"
+    "featuredProductRating": "★ 4.9 (Clinical Trial Verified)",
+    "headline": "CLINICALLY PROVEN FORMULATION • SPF 50+ PA++++",
+    "ctaText": "BUY TINTED SUNSCREEN"
   },
   "routineLooks": [
     {
@@ -116,20 +116,20 @@
   "testimonials": [],
   "faqs": [],
   "sectionsVisibility": {
-    "campaignVideo": true,
-    "bestsellers": true,
-    "faqs": true,
-    "trustMarquee": true,
-    "beforeAfter": true,
     "newArrivals": true,
-    "combosBox": true,
+    "bestsellers": true,
     "heroCarousel": true,
-    "testimonials": true,
+    "beforeAfter": true,
+    "campaignVideo": true,
+    "trustMarquee": true,
     "categoryCircles": true,
+    "routineLooks": true,
     "ourPromise": true,
-    "promoClinical": true,
-    "routineLooks": true
+    "faqs": true,
+    "testimonials": true,
+    "combosBox": true,
+    "promoClinical": true
   },
-  "updatedAt": 1792429916766,
+  "updatedAt": 1792505124768,
   "updatedBy": "admin_banana_sync"
 }

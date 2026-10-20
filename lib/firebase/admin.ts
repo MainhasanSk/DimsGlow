@@ -11,18 +11,27 @@ export const hasAdminCredentials = !!(
   process.env.GOOGLE_APPLICATION_CREDENTIALS
 );
 
-if (!admin.apps.length) {
+const fbAdmin: any = (admin as any)?.default || admin;
+const getAppsList = (): any[] => {
+  try {
+    return fbAdmin?.apps || [];
+  } catch {
+    return [];
+  }
+};
+
+if (!getAppsList().length) {
   try {
     if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
       const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
+      fbAdmin.initializeApp({
+        credential: fbAdmin.credential.cert(serviceAccount),
         projectId,
         databaseURL,
       });
     } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-      admin.initializeApp({
-        credential: admin.credential.applicationDefault(),
+      fbAdmin.initializeApp({
+        credential: fbAdmin.credential.applicationDefault(),
         projectId,
         databaseURL,
       });
@@ -341,12 +350,12 @@ const restDb = {
 
 // ─── Final exports ─────────────────────────────────────────────────────────────
 
-export const adminAuth = admin.apps.length ? admin.auth() : ({} as admin.auth.Auth);
-export const adminDb = (admin.apps.length ? admin.firestore() : restDb) as unknown as FirebaseFirestore.Firestore;
+export const adminAuth = getAppsList().length ? fbAdmin.auth() : ({} as admin.auth.Auth);
+export const adminDb = (getAppsList().length ? fbAdmin.firestore() : restDb) as unknown as FirebaseFirestore.Firestore;
 
 export const getAdminRtdb = () => {
   try {
-    if (admin.apps.length) return admin.database();
+    if (getAppsList().length) return fbAdmin.database();
     return null;
   } catch {
     return null;
