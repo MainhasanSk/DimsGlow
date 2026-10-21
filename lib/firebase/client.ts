@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
-import { getFirestore, type Firestore } from 'firebase/firestore';
+import { initializeFirestore, getFirestore, type Firestore } from 'firebase/firestore';
 import { getDatabase, type Database } from 'firebase/database';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
@@ -18,7 +18,17 @@ const firebaseConfig = {
 // Singleton initialization pattern for client browser
 const app: FirebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const auth: Auth = getAuth(app);
-const db: Firestore = getFirestore(app);
+
+// Use experimentalForceLongPolling to eliminate 10-second WebSocket backend hang warnings
+let db: Firestore;
+try {
+  db = initializeFirestore(app, {
+    experimentalForceLongPolling: true,
+  });
+} catch {
+  db = getFirestore(app);
+}
+
 const rtdb: Database = getDatabase(app);
 const storage: FirebaseStorage = getStorage(app);
 

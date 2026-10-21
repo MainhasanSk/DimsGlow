@@ -202,34 +202,30 @@ export async function fetchAdminOrders(options: {
   limit?: number;
   search?: string;
 }): Promise<Order[]> {
-  let query = adminDb.collection('orders').orderBy('createdAt', 'desc');
-
-  if (options.status && options.status !== 'all') {
-    query = query.where('status', '==', options.status) as any;
-  }
-
-  if (options.limit) {
-    query = query.limit(options.limit);
-  } else {
-    query = query.limit(50);
-  }
-
-  const snap = await query.get();
+  const maxLimit = options.limit ? Math.max(options.limit, 100) : 100;
+  const snap = await adminDb.collection('orders').get();
   let orders: Order[] = [];
   snap.forEach((d) => orders.push(d.data() as Order));
+
+  // Sort descending by createdAt in memory
+  orders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+  if (options.status && options.status !== 'all') {
+    orders = orders.filter((o) => o.status === options.status);
+  }
 
   if (options.search) {
     const term = options.search.trim().toLowerCase();
     orders = orders.filter(
       (o) =>
-        o.orderNumber.toLowerCase().includes(term) ||
-        o.customerEmail.toLowerCase().includes(term) ||
-        o.shippingAddress.fullName.toLowerCase().includes(term) ||
-        o.shippingAddress.phone.includes(term)
+        (o.orderNumber && o.orderNumber.toLowerCase().includes(term)) ||
+        (o.customerEmail && o.customerEmail.toLowerCase().includes(term)) ||
+        (o.shippingAddress?.fullName && o.shippingAddress.fullName.toLowerCase().includes(term)) ||
+        (o.shippingAddress?.phone && o.shippingAddress.phone.includes(term))
     );
   }
 
-  return orders;
+  return orders.slice(0, maxLimit);
 }
 
 export async function fetchOrderById(orderId: string): Promise<Order | null> {

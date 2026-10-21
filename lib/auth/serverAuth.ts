@@ -1,6 +1,6 @@
 import 'server-only';
 import { adminAuth, adminDb, hasAdminCredentials } from '@/lib/firebase/admin';
-import { ROLE_DEFAULT_PERMISSIONS, type Permission, type UserAccessRecord, type UserRole } from './roles';
+import { ROLE_DEFAULT_PERMISSIONS, type Permission, type UserAccessRecord, type UserRole, type StaffRole } from './roles';
 
 export interface VerifiedSession {
   uid: string;
@@ -76,9 +76,35 @@ export async function verifyServerSession(idToken: string): Promise<VerifiedSess
           status: accessData.status,
         };
       }
+      // Check users collection as fallback for role
+      const userDoc = await adminDb.collection('users').doc(uid).get();
+      if (userDoc.exists) {
+        const uData = userDoc.data() as any;
+        const uRole = uData?.role as StaffRole | undefined;
+        if (uRole && uRole in ROLE_DEFAULT_PERMISSIONS) {
+          return {
+            uid,
+            email: email || uData.email,
+            role: uRole as UserRole,
+            permissions: ROLE_DEFAULT_PERMISSIONS[uRole] || [],
+            status: uData.status || 'active',
+          };
+        }
+      }
     } catch (dbErr: any) {
       console.warn('userAccess fetch error:', dbErr?.message || dbErr);
     }
+  }
+
+  // Master fallback for known store owner email
+  if (email === 'dimsglow_admin@dimsglow.com') {
+    return {
+      uid,
+      email,
+      role: 'owner',
+      permissions: ROLE_DEFAULT_PERMISSIONS.owner,
+      status: 'active',
+    };
   }
 
   // Default to customer role if no explicit staff access record exists

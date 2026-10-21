@@ -63,6 +63,7 @@ export const OrderSchema = z.object({
   currency: z.literal('INR').default('INR'),
   status: OrderStatusEnum.default('placed'),
   paymentStatus: PaymentStatusEnum.default('pending'),
+  paymentMethod: z.string().optional().default('cod'),
   invoiceId: z.string().optional(),
   courier: CourierTrackingSchema.optional(),
   cancellationReason: z.string().optional(),

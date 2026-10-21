@@ -41,9 +41,9 @@ describe('Phase 9 Invoices, Eligibility & Finance RBAC', () => {
         totalPaise: 84900,
       },
     ],
-    subtotalPaise: 84900,
+    subtotalPaise: 71949,
     discountPaise: 0,
-    taxPaise: 12950,
+    taxPaise: 12951,
     shippingFeePaise: 0,
     totalPaise: 84900,
     currency: 'INR',
@@ -59,11 +59,14 @@ describe('Phase 9 Invoices, Eligibility & Finance RBAC', () => {
     expect(parsed.contactPhone).toBe('+913614556830');
   });
 
-  it('validates official InvoiceSchema structure', () => {
+  it('validates exact statutory GST equality: Taxable Base + Tax + Shipping - Discount === Total', () => {
     const validated = InvoiceSchema.parse(sampleInvoice);
     expect(validated.invoiceNumber).toBe('INV-2026-1001');
     expect(validated.status).toBe('active');
     expect(validated.totalPaise).toBe(84900);
+    // Strict statutory equation check
+    const equationSum = validated.subtotalPaise + validated.taxPaise + validated.shippingFeePaise - validated.discountPaise;
+    expect(equationSum).toBe(validated.totalPaise);
   });
 
   it('evaluates invoice eligibility per PRD & TASKS.md specifications', () => {

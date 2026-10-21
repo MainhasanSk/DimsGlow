@@ -27,6 +27,7 @@ import {
   UserCheck,
   Palette,
   Settings,
+  AlertTriangle,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
@@ -37,13 +38,13 @@ const ADMIN_NAV = [
   { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
   { label: 'Products', href: '/admin/products', icon: Package },
   { label: 'Inventory', href: '/admin/inventory', icon: Layers },
+  { label: 'Low Stock Alerts', href: '/admin/stock-alerts', icon: AlertTriangle },
   { label: 'Invoices & Tax', href: '/admin/invoices', icon: FileText },
   { label: 'Purchases & Vendors', href: '/admin/purchases', icon: Building },
   { label: 'Expenses', href: '/admin/expenses', icon: Receipt },
   { label: 'CRM & Clients', href: '/admin/crm', icon: UserCheck },
   { label: 'Reviews', href: '/admin/reviews', icon: Star },
   { label: 'Analytics & Reports', href: '/admin/reports', icon: BarChart3 },
-  { label: 'Staff & Roles', href: '/admin/staff', icon: Users },
   { label: 'Audit Security', href: '/admin/audit', icon: ShieldCheck },
 ];
 

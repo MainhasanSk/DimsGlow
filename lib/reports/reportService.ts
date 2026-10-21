@@ -54,22 +54,28 @@ export async function getAnalyticsSummary(filter?: ReportDateFilter): Promise<An
 
   const endTime = filter?.endDate || now;
 
-  // 1. Fetch Orders
-  const ordersSnap = await adminDb.collection('orders').orderBy('createdAt', 'desc').get();
+  // 1. Fetch Orders without compound index dependencies
+  const ordersSnap = await adminDb.collection('orders').get();
   const allOrders: Order[] = [];
   ordersSnap.forEach((doc) => allOrders.push(doc.data() as Order));
 
   const filteredOrders = allOrders.filter(
-    (o) => o.createdAt >= startTime && o.createdAt <= endTime
+    (o) => {
+      const created = Number(o.createdAt) || 0;
+      return created >= startTime && created <= endTime;
+    }
   );
 
-  // 2. Fetch Expenses
-  const expensesSnap = await adminDb.collection('expenses').orderBy('date', 'desc').get();
+  // 2. Fetch Expenses without compound index dependencies
+  const expensesSnap = await adminDb.collection('expenses').get();
   const allExpenses: Expense[] = [];
   expensesSnap.forEach((doc) => allExpenses.push(doc.data() as Expense));
 
   const filteredExpenses = allExpenses.filter(
-    (e) => e.date >= startTime && e.date <= endTime
+    (e) => {
+      const expDate = Number(e.date) || 0;
+      return expDate >= startTime && expDate <= endTime;
+    }
   );
 
   // 3. Compute Metrics
@@ -83,10 +89,10 @@ export async function getAnalyticsSummary(filter?: ReportDateFilter): Promise<An
   const productStats = new Map<string, { sku: string; title: string; units: number; revenue: number }>();
 
   for (const order of filteredOrders) {
-    const status = order.status;
+    const status = order.status || 'placed';
     ordersByStatus[status] = (ordersByStatus[status] || 0) + 1;
 
-    const orderAmount = order.totalPaise;
+    const orderAmount = Number(order.totalPaise) || 0;
     totalGrossRevenuePaise += orderAmount;
 
     if (status === 'cancelled') {
@@ -98,17 +104,20 @@ export async function getAnalyticsSummary(filter?: ReportDateFilter): Promise<An
       if (['shipped', 'packing'].includes(status)) inTransitOrdersCount++;
 
       // Track item sales
-      for (const item of order.items) {
-        const key = item.sku;
-        const current = productStats.get(key) || {
-          sku: item.sku,
-          title: item.productName,
-          units: 0,
-          revenue: 0,
-        };
-        current.units += item.quantity;
-        current.revenue += item.quantity * item.unitPricePaise;
-        productStats.set(key, current);
+      if (Array.isArray(order.items)) {
+        for (const item of order.items) {
+          const key = item.sku || item.productId || 'item';
+          const title = item.productName || (item as any).titleSnapshot || 'Luxury Cosmetic';
+          const current = productStats.get(key) || {
+            sku: key,
+            title,
+            units: 0,
+            revenue: 0,
+          };
+          current.units += Number(item.quantity) || 1;
+          current.revenue += (Number(item.quantity) || 1) * (Number(item.unitPricePaise) || 0);
+          productStats.set(key, current);
+        }
       }
     }
   }
@@ -118,7 +127,7 @@ export async function getAnalyticsSummary(filter?: ReportDateFilter): Promise<An
   const averageOrderValuePaise =
     validOrdersCount > 0 ? Math.round(totalNetRevenuePaise / validOrdersCount) : 0;
 
-  const totalExpensePaise = filteredExpenses.reduce((sum, e) => sum + e.amountPaise, 0);
+  const totalExpensePaise = filteredExpenses.reduce((sum, e) => sum + (Number(e.amountPaise) || 0), 0);
   const operatingProfitPaise = totalNetRevenuePaise - totalExpensePaise;
 
   const topProducts = Array.from(productStats.values())
@@ -398,13 +407,15 @@ export async function generateExcelReport(
 
   const summary = await getAnalyticsSummary(filter);
 
-  const ordersSnap = await adminDb.collection('orders').orderBy('createdAt', 'desc').get();
+  const ordersSnap = await adminDb.collection('orders').get();
   const orders: Order[] = [];
   ordersSnap.forEach((doc) => orders.push(doc.data() as Order));
+  orders.sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0));
 
-  const expensesSnap = await adminDb.collection('expenses').orderBy('date', 'desc').get();
+  const expensesSnap = await adminDb.collection('expenses').get();
   const expenses: Expense[] = [];
   expensesSnap.forEach((doc) => expenses.push(doc.data() as Expense));
+  expenses.sort((a, b) => (Number(b.date) || 0) - (Number(a.date) || 0));
 
   return buildExcelWorkbook(summary, orders, expenses, actorEmail);
 }

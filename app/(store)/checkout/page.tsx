@@ -33,6 +33,7 @@ import {
   UserPlus,
   LogIn,
   Loader2,
+  Edit2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -60,8 +61,9 @@ export default function CheckoutPage() {
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [loadingAddresses, setLoadingAddresses] = useState(true);
 
-  // Inline Add Address Form state
+  // Inline Add/Edit Address Form state
   const [showAddressForm, setShowAddressForm] = useState(false);
+  const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [addressLine1, setAddressLine1] = useState('');
@@ -72,6 +74,7 @@ export default function CheckoutPage() {
   const [addressError, setAddressError] = useState<string | null>(null);
 
   // Checkout Addons & Submission
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'upi_doorstep' | 'online_upi'>('cod');
   const [includeGiftWrap, setIncludeGiftWrap] = useState(false);
   const [orderNote, setOrderNote] = useState('');
   const [placingOrder, setPlacingOrder] = useState(false);
@@ -197,6 +200,27 @@ export default function CheckoutPage() {
     }
   };
 
+  const handleStartEditAddress = (addr: SavedAddress, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingAddressId(addr.id);
+    setFullName(addr.fullName);
+    setPhone(addr.phoneNumber);
+    setAddressLine1(addr.addressLine1);
+    setAddressLine2(addr.addressLine2 || '');
+    setCity(addr.city);
+    setState(addr.state);
+    setPostalCode(addr.postalCode);
+    setAddressError(null);
+    setShowAddressForm(true);
+  };
+
+  const handleCancelAddressForm = () => {
+    setShowAddressForm(false);
+    setEditingAddressId(null);
+    setAddressError(null);
+  };
+
   const handleSaveInlineAddress = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -215,9 +239,9 @@ export default function CheckoutPage() {
       return;
     }
 
-    const newId = `addr_${Date.now()}`;
-    const newAddress: SavedAddress = {
-      id: newId,
+    const targetId = editingAddressId || `addr_${Date.now()}`;
+    const targetAddress: SavedAddress = {
+      id: targetId,
       fullName: fullName.trim(),
       phoneNumber: phone.trim(),
       addressLine1: addressLine1.trim(),
@@ -226,16 +250,25 @@ export default function CheckoutPage() {
       state,
       postalCode: postalCode.trim(),
       country: 'India',
-      isDefault: savedAddresses.length === 0,
-      createdAt: Date.now(),
+      isDefault: editingAddressId
+        ? (savedAddresses.find((a) => a.id === editingAddressId)?.isDefault || false)
+        : savedAddresses.length === 0,
+      createdAt: editingAddressId
+        ? (savedAddresses.find((a) => a.id === editingAddressId)?.createdAt || Date.now())
+        : Date.now(),
     };
 
     const uid = user.uid;
     try {
-      await setDoc(doc(db, 'addresses', uid, 'savedAddresses', newId), newAddress);
-      setSavedAddresses((prev) => [newAddress, ...prev]);
-      setSelectedAddressId(newId);
+      await setDoc(doc(db, 'addresses', uid, 'savedAddresses', targetId), targetAddress, { merge: true });
+      if (editingAddressId) {
+        setSavedAddresses((prev) => prev.map((a) => (a.id === targetId ? targetAddress : a)));
+      } else {
+        setSavedAddresses((prev) => [targetAddress, ...prev]);
+      }
+      setSelectedAddressId(targetId);
       setShowAddressForm(false);
+      setEditingAddressId(null);
     } catch (err: any) {
       setAddressError(err.message || 'Failed to save address');
     }
@@ -289,6 +322,7 @@ export default function CheckoutPage() {
             variantId: i.variantId,
             quantity: i.quantity,
           })),
+          paymentMethod,
           includeGiftWrap,
           orderNote: orderNote.trim() || undefined,
           idempotencyKey,
@@ -611,11 +645,21 @@ export default function CheckoutPage() {
                         <div className="flex-1 min-w-0 text-xs">
                           <div className="flex items-center justify-between gap-2 mb-1">
                             <span className="font-bold text-[#19161A]">{addr.fullName}</span>
-                            {addr.isDefault && (
-                              <span className="text-[10px] font-extrabold uppercase text-[#B83B63] bg-[#FBEAF0] px-2 py-0.5 rounded">
-                                Default
-                              </span>
-                            )}
+                            <div className="flex items-center gap-1.5">
+                              {addr.isDefault && (
+                                <span className="text-[10px] font-extrabold uppercase text-[#B83B63] bg-[#FBEAF0] px-2 py-0.5 rounded">
+                                  Default
+                                </span>
+                              )}
+                              <button
+                                type="button"
+                                onClick={(e) => handleStartEditAddress(addr, e)}
+                                className="text-[#6D6670] hover:text-[#B83B63] p-1 rounded hover:bg-[#FAF4F7] transition-colors cursor-pointer"
+                                title="Edit this address"
+                              >
+                                <Edit2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </div>
                           <p className="text-[#6D6670] leading-relaxed">
                             {addr.addressLine1}, {addr.addressLine2 ? `${addr.addressLine2}, ` : ''}
@@ -632,9 +676,20 @@ export default function CheckoutPage() {
                   {/* Inline Address Form */}
                   {(showAddressForm || savedAddresses.length === 0) && (
                     <form onSubmit={handleSaveInlineAddress} className="space-y-4 pt-2">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-[#19161A]">
-                        Enter Delivery Address
-                      </h4>
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-[#19161A]">
+                          {editingAddressId ? 'Edit Delivery Address' : 'Enter Delivery Address'}
+                        </h4>
+                        {savedAddresses.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={handleCancelAddressForm}
+                            className="text-xs text-[#6D6670] hover:text-[#B83B63] underline cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                      </div>
                       {addressError && (
                         <p className="text-xs text-[#EF4444]">{addressError}</p>
                       )}
@@ -740,14 +795,14 @@ export default function CheckoutPage() {
 
                       <div className="flex gap-2 pt-2">
                         <Button type="submit" variant="primary" size="sm" className="text-xs font-bold bg-[#B83B63]">
-                          Save Address
+                          {editingAddressId ? 'Update Address' : 'Save Address'}
                         </Button>
                         {savedAddresses.length > 0 && (
                           <Button
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() => setShowAddressForm(false)}
+                            onClick={handleCancelAddressForm}
                             className="text-xs"
                           >
                             Cancel
@@ -771,16 +826,102 @@ export default function CheckoutPage() {
                 </h2>
               </div>
 
-              <div className="p-4 rounded-[10px] border border-[#B83B63] bg-[#FAF4F7]/40 flex items-start gap-3">
-                <Banknote className="w-5 h-5 text-[#B83B63] shrink-0 mt-0.5" />
-                <div className="text-xs">
-                  <span className="font-bold text-[#19161A] block">
-                    Cash on Delivery (COD) / UPI at Doorstep
-                  </span>
-                  <p className="text-[#6D6670] mt-1 leading-relaxed">
-                    Pay securely using Cash or UPI (Google Pay, PhonePe, Paytm) upon receipt of your package.
-                  </p>
-                </div>
+              <div className="space-y-3">
+                {/* Option 1: Cash on Delivery */}
+                <label
+                  onClick={() => setPaymentMethod('cod')}
+                  className={`p-4 rounded-[10px] border flex items-start gap-3 cursor-pointer transition-all ${
+                    paymentMethod === 'cod'
+                      ? 'border-[#B83B63] bg-[#FAF4F7] ring-1 ring-[#B83B63]'
+                      : 'border-[#E8E2E7] bg-white hover:border-[#B83B63]/40'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="cod"
+                    checked={paymentMethod === 'cod'}
+                    onChange={() => setPaymentMethod('cod')}
+                    className="mt-1 w-4 h-4 text-[#B83B63] focus:ring-[#B83B63] cursor-pointer"
+                  />
+                  <div className="flex-1 min-w-0 text-xs">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-bold text-[#19161A] flex items-center gap-1.5">
+                        <Banknote className="w-4 h-4 text-[#B83B63]" /> Cash on Delivery (COD)
+                      </span>
+                      <span className="text-[10px] font-extrabold uppercase text-[#18794E] bg-[#E6F4EA] px-2 py-0.5 rounded">
+                        Standard
+                      </span>
+                    </div>
+                    <p className="text-[#6D6670] mt-1 leading-relaxed">
+                      Pay with cash directly to the courier executive upon parcel handover.
+                    </p>
+                  </div>
+                </label>
+
+                {/* Option 2: UPI / QR at Doorstep */}
+                <label
+                  onClick={() => setPaymentMethod('upi_doorstep')}
+                  className={`p-4 rounded-[10px] border flex items-start gap-3 cursor-pointer transition-all ${
+                    paymentMethod === 'upi_doorstep'
+                      ? 'border-[#B83B63] bg-[#FAF4F7] ring-1 ring-[#B83B63]'
+                      : 'border-[#E8E2E7] bg-white hover:border-[#B83B63]/40'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="upi_doorstep"
+                    checked={paymentMethod === 'upi_doorstep'}
+                    onChange={() => setPaymentMethod('upi_doorstep')}
+                    className="mt-1 w-4 h-4 text-[#B83B63] focus:ring-[#B83B63] cursor-pointer"
+                  />
+                  <div className="flex-1 min-w-0 text-xs">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-bold text-[#19161A] flex items-center gap-1.5">
+                        <CreditCard className="w-4 h-4 text-[#B83B63]" /> UPI / QR at Doorstep
+                      </span>
+                      <span className="text-[10px] font-extrabold uppercase text-[#B83B63] bg-[#FBEAF0] px-2 py-0.5 rounded">
+                        Most Popular
+                      </span>
+                    </div>
+                    <p className="text-[#6D6670] mt-1 leading-relaxed">
+                      Scan delivery partner QR code using Google Pay, PhonePe, or Paytm when package arrives.
+                    </p>
+                  </div>
+                </label>
+
+                {/* Option 3: Instant Online UPI / Cards */}
+                <label
+                  onClick={() => setPaymentMethod('online_upi')}
+                  className={`p-4 rounded-[10px] border flex items-start gap-3 cursor-pointer transition-all ${
+                    paymentMethod === 'online_upi'
+                      ? 'border-[#B83B63] bg-[#FAF4F7] ring-1 ring-[#B83B63]'
+                      : 'border-[#E8E2E7] bg-white hover:border-[#B83B63]/40'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="online_upi"
+                    checked={paymentMethod === 'online_upi'}
+                    onChange={() => setPaymentMethod('online_upi')}
+                    className="mt-1 w-4 h-4 text-[#B83B63] focus:ring-[#B83B63] cursor-pointer"
+                  />
+                  <div className="flex-1 min-w-0 text-xs">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-bold text-[#19161A] flex items-center gap-1.5">
+                        <ShieldCheck className="w-4 h-4 text-[#B83B63]" /> Instant Online Payment (UPI / Cards)
+                      </span>
+                      <span className="text-[10px] font-extrabold uppercase text-[#0369A1] bg-[#E0F2FE] px-2 py-0.5 rounded">
+                        Priority Dispatch
+                      </span>
+                    </div>
+                    <p className="text-[#6D6670] mt-1 leading-relaxed">
+                      Fastest priority dispatch with verified instant order allocation and confirmation.
+                    </p>
+                  </div>
+                </label>
               </div>
 
               {/* Delivery instructions */}

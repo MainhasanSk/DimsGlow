@@ -14,6 +14,9 @@ import {
   Search,
   MessageSquare,
   AlertCircle,
+  Trash2,
+  EyeOff,
+  Eye,
 } from 'lucide-react';
 import type { Review } from '@/lib/schemas/operations';
 
@@ -21,7 +24,7 @@ export default function AdminReviewsPage() {
   const { user } = useAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState('pending');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -49,12 +52,15 @@ export default function AdminReviewsPage() {
     fetchReviews();
   }, [user, statusFilter]);
 
-  const handleModerate = async (reviewId: string, action: 'approve' | 'reject') => {
+  const handleModerate = async (reviewId: string, action: 'approve' | 'reject' | 'hide' | 'delete') => {
     if (!user) return;
     let reason: string | undefined = undefined;
-    if (action === 'reject') {
-      const input = prompt('Please enter a rejection reason (e.g. spam, inappropriate content, off-topic):');
-      if (input === null) return; // user cancelled prompt
+
+    if (action === 'delete') {
+      if (!confirm('Permanently delete this review? This cannot be undone.')) return;
+    } else if (action === 'reject') {
+      const input = prompt('Enter a rejection reason (e.g. spam, inappropriate content):');
+      if (input === null) return;
       reason = input.trim() || 'Did not meet moderation guidelines';
     }
 
@@ -63,21 +69,28 @@ export default function AdminReviewsPage() {
 
     try {
       const token = await user.getIdToken();
-      const res = await fetch(`/api/admin/reviews/${reviewId}/moderate`, {
-        method: 'POST',
+      const method = action === 'delete' ? 'DELETE' : 'PATCH';
+      const res = await fetch(`/api/admin/reviews/${reviewId}`, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ action, reason }),
+        ...(action !== 'delete' ? { body: JSON.stringify({ action, reason }) } : {}),
       });
 
       const data = await res.json();
       if (!data.success) throw new Error(data.error);
 
+      const labels: Record<string, string> = {
+        approve: 'approved',
+        reject: 'rejected',
+        hide: 'hidden',
+        delete: 'deleted',
+      };
       setFeedbackMessage({
         type: 'success',
-        text: `Review successfully ${action === 'approve' ? 'approved' : 'rejected'}.`,
+        text: `Review successfully ${labels[action]}.`,
       });
       fetchReviews();
     } catch (err: any) {
@@ -86,6 +99,7 @@ export default function AdminReviewsPage() {
       setIsSubmitting(false);
     }
   };
+
 
   return (
     <div className="space-y-6">
@@ -229,30 +243,71 @@ export default function AdminReviewsPage() {
                 )}
               </div>
 
-              {/* Moderation Actions */}
-              {rev.status === 'pending' && (
-                <div className="flex justify-end gap-2 pt-3 border-t border-black/5">
+              {/* Moderation Actions - Available for all review statuses */}
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-black/5">
+                <span className="text-[11px] text-[#5D4E60]">
+                  Status:{' '}
+                  <strong className="uppercase text-[#1F161E]">
+                    {rev.status}
+                  </strong>
+                </span>
+
+                <div className="flex items-center gap-2 ml-auto">
+                  {/* Delete Button (Permanent) */}
                   <Button
                     size="sm"
                     variant="outline"
                     disabled={isSubmitting}
-                    onClick={() => handleModerate(rev.id, 'reject')}
+                    onClick={() => handleModerate(rev.id, 'delete')}
                     className="text-[#EF4444] hover:bg-[#FDF0ED] border-[#EF4444]/30 text-xs h-8 cursor-pointer"
+                    title="Permanently Delete Review"
                   >
-                    <XCircle className="w-3.5 h-3.5 mr-1" />
-                    <span>Reject</span>
+                    <Trash2 className="w-3.5 h-3.5 mr-1" />
+                    <span>Delete</span>
                   </Button>
-                  <Button
-                    size="sm"
-                    disabled={isSubmitting}
-                    onClick={() => handleModerate(rev.id, 'approve')}
-                    className="bg-[#1E7E34] hover:bg-[#155724] text-white text-xs h-8 cursor-pointer"
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-                    <span>Approve & Publish</span>
-                  </Button>
+
+                  {/* Reject / Hide Button */}
+                  {rev.status === 'approved' && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={isSubmitting}
+                      onClick={() => handleModerate(rev.id, 'hide')}
+                      className="text-[#D9381E] hover:bg-[#FDF0ED] border-[#D9381E]/30 text-xs h-8 cursor-pointer"
+                      title="Hide from Storefront"
+                    >
+                      <EyeOff className="w-3.5 h-3.5 mr-1" />
+                      <span>Hide / Unpublish</span>
+                    </Button>
+                  )}
+
+                  {rev.status === 'pending' && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={isSubmitting}
+                      onClick={() => handleModerate(rev.id, 'reject')}
+                      className="text-[#EF4444] hover:bg-[#FDF0ED] border-[#EF4444]/30 text-xs h-8 cursor-pointer"
+                    >
+                      <XCircle className="w-3.5 h-3.5 mr-1" />
+                      <span>Reject</span>
+                    </Button>
+                  )}
+
+                  {/* Approve / Re-publish Button */}
+                  {rev.status !== 'approved' && (
+                    <Button
+                      size="sm"
+                      disabled={isSubmitting}
+                      onClick={() => handleModerate(rev.id, 'approve')}
+                      className="bg-[#1E7E34] hover:bg-[#155724] text-white text-xs h-8 cursor-pointer"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+                      <span>Approve & Publish</span>
+                    </Button>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           ))
         )}

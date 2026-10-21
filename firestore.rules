@@ -1,59 +1,258 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow authenticated users to read everything
-    match /{document=**} {
-      allow read: if request.auth != null;
+
+    // ──────────────────────────────────────────────
+    // Helper functions
+    // ──────────────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
     }
 
-    // Users can write their own profile
-    match /customers/{userId} {
-      allow create, update, delete: if request.auth.uid == userId;
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
     }
 
-    // Admins can write anywhere
-    match /{document=**} {
-      allow write: if request.auth.token.admin == true;
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.admin == true ||
+        request.auth.token.role == 'owner' ||
+        request.auth.token.role == 'admin' ||
+        (exists(/databases/$(database)/documents/userAccess/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/userAccess/$(request.auth.uid)).data.role in ['owner', 'admin']) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['owner', 'admin'])
+      );
     }
 
-    // Specific collections where users can write directly
-    match /orders/{orderId} {
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth.uid == resource.data.customerId || request.auth.token.admin == true;
+    function hasRole(role) {
+      return isSignedIn() && (
+        request.auth.token.role == role ||
+        (exists(/databases/$(database)/documents/userAccess/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/userAccess/$(request.auth.uid)).data.role == role) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role)
+      );
     }
 
-    match /reviews/{reviewId} {
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth.token.admin == true || request.auth.uid == resource.data.authorId;
+    function isStaff() {
+      return isAdmin() ||
+             hasRole('owner') ||
+             hasRole('admin') ||
+             hasRole('order_manager') ||
+             hasRole('inventory_manager') ||
+             hasRole('finance_manager') ||
+             hasRole('support_manager') ||
+             hasRole('analyst_readonly') ||
+             (isSignedIn() &&
+              exists(/databases/$(database)/documents/userAccess/$(request.auth.uid)) &&
+              get(/databases/$(database)/documents/userAccess/$(request.auth.uid)).data.role != 'customer') ||
+             (isSignedIn() &&
+              exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in [
+                'owner', 'admin', 'staff', 'order_manager', 'inventory_manager',
+                'finance_manager', 'support_manager', 'analyst_readonly'
+              ]);
     }
 
-    match /expenses/{expenseId} {
-      allow create, update, delete: if request.auth.token.admin == true;
-    }
-
-    match /staff/{staffId} {
-      allow create, update, delete: if request.auth.token.admin == true;
-    }
-
-    match /crm/{crmId} {
-      allow create, update, delete: if request.auth.token admin == true;
-    }
-
-    match /invoices/{invoiceId} {
-      allow read: if request.auth != null;
-      // only admin functions write invoices
-      allow create, update, delete: if request.auth.token.admin == true;
-    }
-
-    match /audit/{auditId} {
-      allow read: if request.auth.token.admin == true;
-      allow write: if request.auth.token.admin == true;
-    }
-
-    // Low stock alerts are read‑only for clients, written by admin function
+    // ──────────────────────────────────────────────
+    // Public: catalog & categories (read-only for all)
+    // ──────────────────────────────────────────────
     match /products/{productId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth.token.admin == true;
+      allow read: if true;
+      allow write: if isStaff();
+
+      match /variants/{variantId} {
+        allow read: if true;
+        allow write: if isStaff();
+      }
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    match /siteContent/{contentId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    match /siteSettings/{settingId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    match /systemSettings/{settingId} {
+      allow read: if isStaff();
+      allow write: if isAdmin();
+    }
+
+    // ──────────────────────────────────────────────
+    // Users & Customers: own profile access
+    // ──────────────────────────────────────────────
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isStaff();
+      allow create, update: if isOwner(userId) || isStaff();
+      allow delete: if isAdmin();
+    }
+
+    match /customers/{userId} {
+      allow read: if isOwner(userId) || isStaff();
+      allow create, update: if isOwner(userId) || isStaff();
+      allow delete: if isAdmin();
+    }
+
+    // User access/roles — only admins/owners can assign roles
+    match /userAccess/{userId} {
+      allow read: if isOwner(userId) || isStaff();
+      allow write: if isAdmin();
+    }
+
+    // Addresses — customer owns their address book
+    match /addresses/{userId}/savedAddresses/{addressId} {
+      allow read, write: if isOwner(userId) || isStaff();
+    }
+
+    // Cart & Favorites — user owns theirs
+    match /carts/{userId}/items/{itemKey} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /favorites/{userId}/items/{productId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // ──────────────────────────────────────────────
+    // Orders — customer reads own; staff manages
+    // ──────────────────────────────────────────────
+    match /orders/{orderId} {
+      allow read: if isSignedIn() && (
+        resource.data.customerUid == request.auth.uid ||
+        resource.data.customerEmail == request.auth.token.email ||
+        isStaff()
+      );
+      // Authenticated users can place orders; staff manages lifecycle
+      allow create: if isSignedIn();
+      allow update, delete: if isStaff();
+
+      match /events/{eventId} {
+        allow read: if isSignedIn() && (
+          get(/databases/$(database)/documents/orders/$(orderId)).data.customerUid == request.auth.uid ||
+          isStaff()
+        );
+        allow write: if isStaff();
+      }
+    }
+
+    // ──────────────────────────────────────────────
+    // Invoices — customer reads own confirmed; staff manages
+    // ──────────────────────────────────────────────
+    match /invoices/{invoiceId} {
+      allow read: if isSignedIn() && (
+        resource.data.customerUid == request.auth.uid || isStaff()
+      );
+      allow write: if isStaff();
+    }
+
+    // ──────────────────────────────────────────────
+    // Payment & Refund Records
+    // ──────────────────────────────────────────────
+    match /paymentRecords/{paymentId} {
+      allow read: if isSignedIn() && (
+        resource.data.customerUid == request.auth.uid || isStaff()
+      );
+      allow write: if isStaff();
+    }
+
+    match /refundRecords/{refundId} {
+      allow read: if isSignedIn() && (
+        resource.data.customerUid == request.auth.uid || isStaff()
+      );
+      allow write: if isStaff();
+    }
+
+    // ──────────────────────────────────────────────
+    // Reviews — public read; authenticated create; staff moderate
+    // ──────────────────────────────────────────────
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isStaff() || (
+        isSignedIn() && resource.data.customerUid == request.auth.uid
+      );
+    }
+
+    // ──────────────────────────────────────────────
+    // Expenses & Operations
+    // ──────────────────────────────────────────────
+    match /expenses/{expenseId} {
+      allow read, write: if isStaff();
+    }
+
+    // ──────────────────────────────────────────────
+    // Inventory & Stock Movements
+    // ──────────────────────────────────────────────
+    match /inventory/{inventoryId} {
+      allow read, write: if isStaff();
+    }
+
+    match /stockMovements/{movementId} {
+      allow read, write: if isStaff();
+    }
+
+    // ──────────────────────────────────────────────
+    // Suppliers & Purchase Orders
+    // ──────────────────────────────────────────────
+    match /suppliers/{supplierId} {
+      allow read, write: if isStaff();
+    }
+
+    match /purchaseOrders/{purchaseOrderId} {
+      allow read, write: if isStaff();
+
+      match /events/{eventId} {
+        allow read, write: if isStaff();
+      }
+    }
+
+    // ──────────────────────────────────────────────
+    // CRM & Client Intelligence
+    // ──────────────────────────────────────────────
+    match /crmProfiles/{profileId} {
+      allow read, write: if isStaff();
+    }
+
+    match /customerNotes/{noteId} {
+      allow read, write: if isStaff();
+    }
+
+    // ──────────────────────────────────────────────
+    // Audit Trail — append-only; staff/admins read
+    // ──────────────────────────────────────────────
+    match /auditEvents/{eventId} {
+      allow read: if isStaff();
+      allow create: if isStaff();
+      allow update, delete: if false;
+    }
+
+    // ──────────────────────────────────────────────
+    // Analytics & Low Stock Alerts
+    // ──────────────────────────────────────────────
+    match /dashboardAggregates/{dateKey} {
+      allow read, write: if isStaff();
+    }
+
+    match /alerts/{alertId} {
+      allow read, write: if isStaff();
+    }
+
+    // ──────────────────────────────────────────────
+    // Media & Static Assets
+    // ──────────────────────────────────────────────
+    match /mediaAssets/{assetId} {
+      allow read: if true;
+      allow write: if isStaff();
     }
   }
 }

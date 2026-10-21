@@ -29,7 +29,7 @@ const STAFF_ROLES: Array<{ role: StaffRole; label: string; description: string }
 ];
 
 export default function AdminStaffPage() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [staffList, setStaffList] = useState<Array<UserAccessRecord & { email?: string; displayName?: string }>>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
@@ -129,6 +129,18 @@ export default function AdminStaffPage() {
       setFeedbackMessage({ type: 'error', text: err.message || 'Failed to update status' });
     }
   };
+
+  if (role && !['owner', 'admin'].includes(role)) {
+    return (
+      <div className="p-8 bg-white rounded-xl border border-[#E8E2E7] text-center max-w-lg mx-auto my-12 space-y-3">
+        <Lock className="w-12 h-12 text-[#B83B63] mx-auto opacity-70" />
+        <h2 className="text-lg font-serif font-bold text-[#19161A]">Access Restricted: Admin Only</h2>
+        <p className="text-xs text-[#6D6670] leading-relaxed">
+          Staff credential provisioning and role permissions management are restricted to Store Owners and Executive Administrators.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

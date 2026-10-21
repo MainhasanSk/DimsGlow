@@ -23,18 +23,22 @@ export async function GET(req: NextRequest) {
     const targetType = searchParams.get('targetType') || undefined;
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!, 10) : 100;
 
-    let query = adminDb.collection('auditEvents').orderBy('timestamp', 'desc');
+    // Fetch recent audit events and filter in memory to avoid missing composite index errors
+    const snap = await adminDb.collection('auditEvents').get();
+    let events: AuditEvent[] = [];
+    snap.forEach((d) => events.push(d.data() as AuditEvent));
+    events.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
     if (action && action !== 'all') {
-      query = query.where('action', '==', action) as any;
+      events = events.filter((e) => e.action === action);
     }
     if (targetType && targetType !== 'all') {
-      query = query.where('targetType', '==', targetType) as any;
+      events = events.filter((e) => e.targetType === targetType);
     }
 
-    const snap = await query.limit(limit).get();
-    const events: AuditEvent[] = [];
-    snap.forEach((d) => events.push(d.data() as AuditEvent));
+    if (limit && events.length > limit) {
+      events = events.slice(0, limit);
+    }
 
     return NextResponse.json({ success: true, events });
   } catch (error: any) {

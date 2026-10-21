@@ -105,9 +105,12 @@ export default function AdminOrdersPage() {
 
   // Firestore real-time listener: strictly listens to live database records
   useEffect(() => {
+    // Immediate API load for instant responsiveness
+    loadOrders();
+
     let unsubscribe = () => {};
     try {
-      const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
+      const q = collection(db, 'orders');
       unsubscribe = onSnapshot(
         q,
         (snapshot) => {
@@ -116,6 +119,7 @@ export default function AdminOrdersPage() {
             snapshot.forEach((doc) => {
               list.push(doc.data() as Order);
             });
+            list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
             setOrders(list);
           } else {
             // Live Firestore collection has 0 orders
@@ -494,8 +498,29 @@ export default function AdminOrdersPage() {
     window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
   };
 
-  const handlePrintInvoice = () => {
-    window.print();
+  const handlePrintInvoice = async (order?: Order | null) => {
+    const targetOrder = order || selectedOrder;
+    if (!targetOrder || !user) return;
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch(`/api/orders/${targetOrder.id}/invoice`, {
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(`Cannot print invoice: ${data.error || 'Invoice available after order confirmation.'}`);
+        return;
+      }
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const printWin = window.open(blobUrl, '_blank');
+      if (printWin) {
+        printWin.focus();
+      }
+    } catch (err) {
+      console.error('Print invoice error:', err);
+      alert('Failed to load official invoice PDF for printing.');
+    }
   };
 
   const getStatusBadge = (status: Order['status']) => {
@@ -1224,7 +1249,7 @@ export default function AdminOrdersPage() {
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={handlePrintInvoice}
+                  onClick={() => handlePrintInvoice(selectedOrder)}
                   className="text-xs font-semibold flex items-center justify-center gap-1.5 h-9"
                   title="Print Tax Invoice"
                 >

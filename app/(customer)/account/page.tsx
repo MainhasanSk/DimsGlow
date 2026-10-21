@@ -38,19 +38,41 @@ export default function AccountOverviewPage() {
 
     async function loadOverviewData() {
       try {
-        // Fetch recent orders
-        const ordersQuery = query(
-          collection(db, 'orders'),
-          where('customerUid', '==', uid),
-          orderBy('createdAt', 'desc'),
-          limit(3)
-        );
-        const orderSnap = await getDocs(ordersQuery);
-        const fetchedOrders: Order[] = [];
-        orderSnap.forEach((doc) => {
-          fetchedOrders.push(doc.data() as Order);
-        });
-        setOrders(fetchedOrders);
+        // Fetch recent orders without requiring composite index
+        let fetchedOrders: Order[] = [];
+        try {
+          const ordersQuery = query(
+            collection(db, 'orders'),
+            where('customerUid', '==', uid)
+          );
+          const orderSnap = await getDocs(ordersQuery);
+          orderSnap.forEach((doc) => {
+            fetchedOrders.push(doc.data() as Order);
+          });
+          fetchedOrders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        } catch (queryErr) {
+          console.warn('Overview orders Firestore query error:', queryErr);
+        }
+
+        // Fallback to /api/orders if Firestore query yielded 0
+        if (fetchedOrders.length === 0 && user) {
+          try {
+            const token = await user.getIdToken();
+            const res = await fetch('/api/orders', {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.success && Array.isArray(data.orders)) {
+                fetchedOrders = data.orders;
+              }
+            }
+          } catch (apiErr) {
+            console.warn('Overview API fallback warning:', apiErr);
+          }
+        }
+
+        setOrders(fetchedOrders.slice(0, 5));
 
         // Fetch address count
         const addrSnap = await getDocs(

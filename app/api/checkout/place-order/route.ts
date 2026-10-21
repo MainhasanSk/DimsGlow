@@ -63,6 +63,7 @@ export async function POST(req: NextRequest) {
       couponCode: body.couponCode,
       includeGiftWrap: Boolean(body.includeGiftWrap),
       orderNote: body.orderNote,
+      paymentMethod: body.paymentMethod || 'cod',
       idempotencyKey: body.idempotencyKey,
     });
 
@@ -167,7 +168,7 @@ export async function POST(req: NextRequest) {
       itemsSummary,
       ``,
       `💰 *Total Amount:* ₹${totalRupees}`,
-      `💵 *Payment Method:* Cash on Delivery (COD) / Pending`,
+      `💵 *Payment Method:* ${order.paymentMethod === 'online_upi' ? 'Online UPI / NetBanking / Cards' : order.paymentMethod === 'upi_doorstep' ? 'UPI / QR at Doorstep' : 'Cash on Delivery (COD)'}`,
       `🕒 *Order Date:* ${orderDate}`,
       `━━━━━━━━━━━━━━━━━━━━━━━━`,
       `🔗 *Manage in Admin Console:*`,

@@ -28,23 +28,49 @@ export default function AdminOverviewDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'), limit(10));
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const list: Order[] = [];
-        snapshot.forEach((d) => list.push(d.data() as Order));
-        setOrders(list);
-        setLoading(false);
-      },
-      (err) => {
-        console.warn('Admin overview subscription error:', err);
+    let unsubscribe = () => {};
+
+    const fetchViaApi = async () => {
+      if (!user) return;
+      try {
+        const idToken = await user.getIdToken();
+        const res = await fetch('/api/admin/orders?limit=500', {
+          headers: { Authorization: `Bearer ${idToken}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.orders)) {
+            setOrders(data.orders);
+          }
+        }
+      } catch (err) {
+        console.warn('Admin overview API fallback error:', err);
+      } finally {
         setLoading(false);
       }
-    );
+    };
+
+    try {
+      const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
+      unsubscribe = onSnapshot(
+        q,
+        (snapshot) => {
+          const list: Order[] = [];
+          snapshot.forEach((d) => list.push(d.data() as Order));
+          setOrders(list);
+          setLoading(false);
+        },
+        (err) => {
+          console.warn('Admin overview subscription warning, falling back to API:', err.message);
+          fetchViaApi();
+        }
+      );
+    } catch {
+      fetchViaApi();
+    }
 
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   const totalRevenuePaise = orders.reduce((sum, o) => {
     return o.status !== 'cancelled' ? sum + o.totalPaise : sum;

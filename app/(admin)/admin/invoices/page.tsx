@@ -15,6 +15,7 @@ import {
   RefreshCw,
   Building,
   ShieldAlert,
+  Eye,
 } from 'lucide-react';
 
 export default function AdminInvoicesPage() {
@@ -94,10 +95,48 @@ export default function AdminInvoicesPage() {
     }
   };
 
-  const totalInvoicedPaise = invoices
-    .filter((inv) => inv.status === 'active')
-    .reduce((sum, inv) => sum + inv.totalPaise, 0);
-  const activeCount = invoices.filter((inv) => inv.status === 'active').length;
+  const handleViewPdf = async (invoice: Invoice) => {
+    if (!user) return;
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch(`/api/orders/${invoice.orderId}/invoice`, {
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        alert(`Cannot preview invoice: ${errData.error || 'Ineligible'}`);
+        return;
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch (err: any) {
+      console.error('Invoice preview error:', err);
+      alert('Failed to preview invoice PDF');
+    }
+  };
+
+  const getInvoiceTaxablePaise = (inv: Invoice) => {
+    const shipping = inv.shippingFeePaise || 0;
+    if (inv.subtotalPaise + (inv.taxPaise || 0) + shipping === inv.totalPaise && (inv.taxPaise || 0) > 0) {
+      return inv.subtotalPaise;
+    }
+    const netGoods = Math.max(0, inv.totalPaise - shipping);
+    return Math.round(netGoods / 1.18);
+  };
+
+  const getInvoiceGstPaise = (inv: Invoice) => {
+    const shipping = inv.shippingFeePaise || 0;
+    const taxable = getInvoiceTaxablePaise(inv);
+    const netGoods = Math.max(0, inv.totalPaise - shipping);
+    return Math.max(0, netGoods - taxable);
+  };
+
+  const activeInvoices = invoices.filter((inv) => inv.status === 'active');
+  const totalInvoicedPaise = activeInvoices.reduce((sum, inv) => sum + inv.totalPaise, 0);
+  const totalTaxablePaise = activeInvoices.reduce((sum, inv) => sum + getInvoiceTaxablePaise(inv), 0);
+  const totalGstPaise = activeInvoices.reduce((sum, inv) => sum + getInvoiceGstPaise(inv), 0);
+  const activeCount = activeInvoices.length;
   const voidedCount = invoices.filter((inv) => inv.status === 'voided').length;
 
   return (
@@ -125,7 +164,7 @@ export default function AdminInvoicesPage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div className="bg-white border border-[#EBEBEB] rounded-xl p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-[#737373]">
@@ -142,23 +181,40 @@ export default function AdminInvoicesPage() {
         <div className="bg-white border border-[#EBEBEB] rounded-xl p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-[#737373]">
-              Active Invoices
+              Net Taxable Base
             </span>
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <Building className="w-4 h-4 text-[#5B132B]" />
           </div>
-          <div className="mt-2 text-2xl font-bold text-[#19161A]">{activeCount}</div>
-          <p className="text-xs text-[#737373] mt-1">Valid invoices eligible for customer download</p>
+          <div className="mt-2 text-2xl font-bold text-[#19161A]">
+            ₹{(totalTaxablePaise / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+          </div>
+          <p className="text-xs text-[#737373] mt-1">Base value excluding statutory GST</p>
         </div>
 
         <div className="bg-white border border-[#EBEBEB] rounded-xl p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-[#737373]">
-              Voided / Credit Notes
+              GST Collected (18%)
+            </span>
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+          </div>
+          <div className="mt-2 text-2xl font-bold text-emerald-700">
+            ₹{(totalGstPaise / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+          </div>
+          <p className="text-xs text-[#737373] mt-1">CGST + SGST / IGST tax liability</p>
+        </div>
+
+        <div className="bg-white border border-[#EBEBEB] rounded-xl p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#737373]">
+              Invoices & Voids
             </span>
             <ShieldAlert className="w-4 h-4 text-rose-600" />
           </div>
-          <div className="mt-2 text-2xl font-bold text-[#19161A]">{voidedCount}</div>
-          <p className="text-xs text-[#737373] mt-1">Preserved for audit; blocked from customer download</p>
+          <div className="mt-2 text-2xl font-bold text-[#19161A]">
+            {activeCount} <span className="text-sm font-normal text-[#737373]">/ {voidedCount} void</span>
+          </div>
+          <p className="text-xs text-[#737373] mt-1">Active customer-valid vs voided credit notes</p>
         </div>
       </div>
 
@@ -229,72 +285,102 @@ export default function AdminInvoicesPage() {
                   <th className="py-3 px-4">Order #</th>
                   <th className="py-3 px-4">Customer</th>
                   <th className="py-3 px-4">Issue Date</th>
-                  <th className="py-3 px-4">Taxable</th>
-                  <th className="py-3 px-4">Total Amount</th>
+                  <th className="py-3 px-4">Taxable Base</th>
+                  <th className="py-3 px-4">GST (18%)</th>
+                  <th className="py-3 px-4">Shipping</th>
+                  <th className="py-3 px-4">Total Value</th>
                   <th className="py-3 px-4">Status</th>
                   <th className="py-3 px-4 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#EBEBEB]">
-                {invoices.map((inv) => (
-                  <tr key={inv.id} className="hover:bg-[#FCFBF9] transition-colors">
-                    <td className="py-3 px-4 font-mono font-bold text-[#5B132B]">
-                      {inv.invoiceNumber}
-                    </td>
-                    <td className="py-3 px-4 font-mono text-[#737373]">
-                      {inv.orderNumber}
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="font-medium text-[#19161A]">{inv.buyer.fullName}</div>
-                      <div className="text-[11px] text-[#737373]">
-                        {inv.buyer.city}, {inv.buyer.state}
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 text-[#737373]">
-                      {new Date(inv.issueDate).toLocaleDateString('en-IN', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </td>
-                    <td className="py-3 px-4 text-[#737373]">
-                      ₹{(inv.subtotalPaise / 100).toFixed(2)}
-                    </td>
-                    <td className="py-3 px-4 font-bold text-[#19161A]">
-                      ₹{(inv.totalPaise / 100).toFixed(2)}
-                    </td>
-                    <td className="py-3 px-4">
-                      {inv.status === 'active' ? (
-                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
-                          Active
-                        </Badge>
-                      ) : (
-                        <div>
-                          <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200">
-                            Voided
-                          </Badge>
-                          {inv.creditNoteReference && (
-                            <div className="text-[10px] text-[#737373] mt-0.5 font-mono">
-                              CRN: {inv.creditNoteReference}
-                            </div>
-                          )}
+                {invoices.map((inv) => {
+                  const taxablePaise = getInvoiceTaxablePaise(inv);
+                  const gstPaise = getInvoiceGstPaise(inv);
+                  const shippingPaise = inv.shippingFeePaise || 0;
+                  return (
+                    <tr key={inv.id} className="hover:bg-[#FCFBF9] transition-colors">
+                      <td className="py-3 px-4 font-mono font-bold text-[#5B132B]">
+                        {inv.invoiceNumber}
+                      </td>
+                      <td className="py-3 px-4 font-mono text-[#737373]">
+                        {inv.orderNumber}
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="font-medium text-[#19161A]">{inv.buyer.fullName}</div>
+                        <div className="text-[11px] text-[#737373]">
+                          {inv.buyer.city}, {inv.buyer.state}
                         </div>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        disabled={downloadingId === inv.id}
-                        onClick={() => handleDownloadPdf(inv)}
-                        className="text-xs h-7 px-2.5 flex items-center gap-1.5"
-                      >
-                        <Download className="w-3.5 h-3.5 text-[#5B132B]" />
-                        {downloadingId === inv.id ? 'Generating...' : 'PDF'}
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="py-3 px-4 text-[#737373]">
+                        {new Date(inv.issueDate).toLocaleDateString('en-IN', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </td>
+                      <td className="py-3 px-4 font-medium text-[#19161A]">
+                        ₹{(taxablePaise / 100).toFixed(2)}
+                      </td>
+                      <td className="py-3 px-4 text-[#737373]">
+                        ₹{(gstPaise / 100).toFixed(2)}
+                      </td>
+                      <td className="py-3 px-4 text-[#737373]">
+                        {shippingPaise === 0 ? (
+                          <span className="text-emerald-600 font-medium">Free</span>
+                        ) : (
+                          `₹${(shippingPaise / 100).toFixed(2)}`
+                        )}
+                      </td>
+                      <td className="py-3 px-4 font-bold text-[#5B132B]">
+                        ₹{(inv.totalPaise / 100).toFixed(2)}
+                      </td>
+                      <td className="py-3 px-4">
+                        {inv.status === 'active' ? (
+                          <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                            Active
+                          </Badge>
+                        ) : (
+                          <div>
+                            <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200">
+                              Voided
+                            </Badge>
+                            {inv.creditNoteReference && (
+                              <div className="text-[10px] text-[#737373] mt-0.5 font-mono">
+                                CRN: {inv.creditNoteReference}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleViewPdf(inv)}
+                            className="text-xs h-7 px-2.5 flex items-center gap-1 hover:border-[#5B132B] hover:text-[#5B132B]"
+                            title="Open official PDF in new tab"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                            View
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={downloadingId === inv.id}
+                            onClick={() => handleDownloadPdf(inv)}
+                            className="text-xs h-7 px-2.5 flex items-center gap-1.5"
+                            title="Download PDF to device"
+                          >
+                            <Download className="w-3.5 h-3.5 text-[#5B132B]" />
+                            {downloadingId === inv.id ? 'Generating...' : 'PDF'}
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

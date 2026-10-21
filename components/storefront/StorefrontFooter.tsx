@@ -202,7 +202,7 @@ export function StorefrontFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/account/orders" className="hover:text-white transition-colors">
+                <Link href="/track-order" className="hover:text-white transition-colors">
                   Track Order
                 </Link>
               </li>

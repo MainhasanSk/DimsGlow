@@ -148,6 +148,7 @@ export interface PlaceOrderInput {
   couponCode?: string;
   includeGiftWrap?: boolean;
   orderNote?: string;
+  paymentMethod?: string;
   idempotencyKey: string;
 }
 
@@ -211,6 +212,7 @@ export async function placeOrderTransaction(input: PlaceOrderInput): Promise<Ord
     currency: 'INR',
     status: 'placed',
     paymentStatus: 'pending', // Per ADR: Manual payment reconciliation in v1
+    paymentMethod: input.paymentMethod || 'cod',
     idempotencyKey,
     createdAt: timestamp,
     updatedAt: timestamp,

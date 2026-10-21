@@ -17,12 +17,18 @@ export function CustomerRouteGuard({ children }: CustomerRouteGuardProps) {
   const { user, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     if (!isLoading && !user) {
       router.push(`/sign-in?redirect=${encodeURIComponent(pathname)}`);
     }
   }, [user, isLoading, router, pathname]);
+
+  if (!mounted) {
+    return <>{children}</>;
+  }
 
   if (isLoading) {
     return (
@@ -45,15 +51,24 @@ interface AdminRouteGuardProps {
 
 export function AdminRouteGuard({ children, requiredPermission }: AdminRouteGuardProps) {
   const { user, role, permissions, isLoading, signOut } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
   const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     // Failsafe timer: After 500ms, if still loading, unblock and show the login form immediately
     const timer = setTimeout(() => {
       setAuthReady(true);
     }, 500);
     return () => clearTimeout(timer);
   }, []);
+
+  // During SSR and initial static prerendering, always render children so Next.js instant navigation validation validates the segment shell
+  if (!mounted) {
+    return <>{children}</>;
+  }
 
   // Only show brief loader for the first 500ms while checking session
   if (isLoading && !authReady && !user) {

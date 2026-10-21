@@ -141,7 +141,6 @@ export async function getApprovedReviewsForProduct(productSlug: string): Promise
     .collection('reviews')
     .where('productSlug', '==', productSlug)
     .where('status', '==', 'approved')
-    .orderBy('createdAt', 'desc')
     .get();
 
   const reviews: Review[] = [];
@@ -155,6 +154,9 @@ export async function getApprovedReviewsForProduct(productSlug: string): Promise
     ratingSum += r.rating;
   });
 
+  // Sort descending by creation date in memory
+  reviews.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
   const totalReviews = reviews.length;
   const averageRating = totalReviews > 0 ? Number((ratingSum / totalReviews).toFixed(1)) : 5.0;
 
@@ -167,14 +169,16 @@ export async function getApprovedReviewsForProduct(productSlug: string): Promise
 }
 
 export async function listAdminReviews(status?: string): Promise<Review[]> {
-  let query = adminDb.collection('reviews').orderBy('createdAt', 'desc');
+  const snap = await adminDb.collection('reviews').get();
+  let reviews: Review[] = [];
+  snap.forEach((doc) => reviews.push(doc.data() as Review));
+
+  // Sort descending by creation date in memory
+  reviews.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
   if (status && status !== 'all') {
-    query = query.where('status', '==', status) as any;
+    reviews = reviews.filter((r) => r.status === status);
   }
 
-  const snap = await query.limit(100).get();
-  const reviews: Review[] = [];
-  snap.forEach((doc) => reviews.push(doc.data() as Review));
-  return reviews;
+  return reviews.slice(0, 100);
 }

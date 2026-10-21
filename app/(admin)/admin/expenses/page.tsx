@@ -9,12 +9,10 @@ import {
   Plus,
   RefreshCw,
   IndianRupee,
-  CreditCard,
-  Building,
-  TrendingDown,
   PieChart,
-  Tag,
-  Calendar,
+  Pencil,
+  Trash2,
+  Eye,
 } from 'lucide-react';
 import type { Expense, ExpenseCategory, PaymentMode } from '@/lib/schemas/operations';
 
@@ -52,9 +50,20 @@ export default function AdminExpensesPage() {
     paymentMode: 'upi' as PaymentMode,
     vendorName: '',
     referenceNumber: '',
-    date: new Date().toISOString().split('T')[0],
+    date: '',
     notes: '',
   });
+
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [viewingExpense, setViewingExpense] = useState<Expense | null>(null);
+
+  useEffect(() => {
+    // Populate today's date in client effect after hydration to prevent prerender time leak
+    setNewExpense((prev) => ({
+      ...prev,
+      date: prev.date || new Date().toISOString().split('T')[0],
+    }));
+  }, []);
 
   const fetchExpenses = async () => {
     if (!user) return;
@@ -67,15 +76,39 @@ export default function AdminExpensesPage() {
       const data = await res.json();
       if (data.success) {
         setExpenses(data.expenses || []);
-        if (data.summary) {
-          setSummary(data.summary);
-        }
+        if (data.summary) setSummary(data.summary);
+      } else {
+        setFeedbackMessage({ type: 'error', text: data.error || 'Failed to load expense records.' });
       }
     } catch (err: any) {
       console.error('Error fetching expenses:', err);
       setFeedbackMessage({ type: 'error', text: 'Failed to load expense records.' });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDeleteExpense = async (expenseId: string, expenseNumber: string) => {
+    if (!user) return;
+    if (!confirm(`Delete expense ${expenseNumber}? This cannot be undone.`)) return;
+    setDeletingId(expenseId);
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch(`/api/admin/expenses/${expenseId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFeedbackMessage({ type: 'success', text: `Expense ${expenseNumber} deleted.` });
+        fetchExpenses();
+      } else {
+        setFeedbackMessage({ type: 'error', text: data.error || 'Delete failed.' });
+      }
+    } catch (err: any) {
+      setFeedbackMessage({ type: 'error', text: 'Delete failed.' });
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -276,6 +309,7 @@ export default function AdminExpensesPage() {
                 <th className="py-3.5 px-4">Payment Mode</th>
                 <th className="py-3.5 px-4">Date</th>
                 <th className="py-3.5 px-4 text-right">Amount</th>
+                <th className="py-3.5 px-4 text-center">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-black/5">
@@ -291,7 +325,7 @@ export default function AdminExpensesPage() {
                 </tr>
               ) : (
                 expenses.map((exp) => (
-                  <tr key={exp.id} className="hover:bg-black/1.5 transition-colors">
+                  <tr key={exp.id} className="hover:bg-black/5 transition-colors">
                     <td className="py-3.5 px-4 font-mono font-bold text-[#1F161E]">
                       {exp.expenseNumber}
                     </td>
@@ -309,7 +343,7 @@ export default function AdminExpensesPage() {
                       </Badge>
                     </td>
                     <td className="py-3.5 px-4 font-medium text-[#1F161E]">
-                      {exp.vendorName}
+                      {exp.vendorName || '—'}
                     </td>
                     <td className="py-3.5 px-4 uppercase text-[10px] font-semibold text-[#5D4E60]">
                       {exp.paymentMode.replace('_', ' ')}
@@ -323,6 +357,27 @@ export default function AdminExpensesPage() {
                     </td>
                     <td className="py-3.5 px-4 text-right font-black text-[#1F161E]">
                       ₹{(exp.amountPaise / 100).toLocaleString('en-IN')}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          type="button"
+                          title="View Details"
+                          onClick={() => setViewingExpense(exp)}
+                          className="p-1.5 rounded hover:bg-[#F0F0F0] text-[#5D4E60] hover:text-[#1F161E] transition-colors cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          title="Delete Expense"
+                          onClick={() => handleDeleteExpense(exp.id, exp.expenseNumber)}
+                          disabled={deletingId === exp.id}
+                          className="p-1.5 rounded hover:bg-red-50 text-[#5D4E60] hover:text-red-600 transition-colors cursor-pointer disabled:opacity-40"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

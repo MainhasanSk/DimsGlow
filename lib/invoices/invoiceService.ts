@@ -43,6 +43,23 @@ export async function generateOrderInvoiceSnapshot(
   const cleanOrderNum = order.orderNumber.replace(/[^0-9]/g, '') || `${Math.floor(1000 + Math.random() * 9000)}`;
   const invoiceNumber = `INV-${year}-${cleanOrderNum}`;
 
+  // Statutory 18% GST Decomposition for Indian B2C retail e-commerce:
+  // All DIMSGLOW prices are inclusive of 18% GST.
+  // Gross items total after discount:
+  const grossItemsPaise =
+    order.items?.reduce((sum, item) => sum + (item.totalPaise || (item.unitPricePaise * item.quantity)), 0) ||
+    order.subtotalPaise;
+  const discountPaise = order.discountPaise || 0;
+  const shippingFeePaise = order.shippingFeePaise || 0;
+  const netGoodsPaise = Math.max(0, grossItemsPaise - discountPaise);
+
+  // Statutory Taxable Base (Base Price before 18% GST):
+  const taxableBasePaise = Math.round(netGoodsPaise / 1.18);
+  // Statutory 18% GST:
+  const taxPaise = netGoodsPaise - taxableBasePaise;
+  // Total invoice value: taxableBasePaise + taxPaise + shippingFeePaise === totalPaise
+  const totalPaise = order.totalPaise || (taxableBasePaise + taxPaise + shippingFeePaise);
+
   const invoice: Invoice = {
     id: invoiceId,
     invoiceNumber,
@@ -61,11 +78,11 @@ export async function generateOrderInvoiceSnapshot(
     },
     buyer: order.shippingAddress,
     lineItems: order.items,
-    subtotalPaise: order.subtotalPaise,
-    discountPaise: order.discountPaise || 0,
-    taxPaise: order.taxPaise || 0,
-    shippingFeePaise: order.shippingFeePaise || 0,
-    totalPaise: order.totalPaise,
+    subtotalPaise: taxableBasePaise,
+    discountPaise,
+    taxPaise,
+    shippingFeePaise,
+    totalPaise,
     currency: 'INR',
     createdAt: timestamp,
     updatedAt: timestamp,
@@ -297,28 +314,24 @@ export async function fetchAdminInvoices(options?: {
   limit?: number;
 }): Promise<Invoice[]> {
   const queryLimit = options?.limit || 50;
-  let q = adminDb.collection('invoices').orderBy('issueDate', 'desc').limit(queryLimit);
+  const snapshot = await adminDb.collection('invoices').get();
+  let invoices = snapshot.docs.map((doc) => doc.data() as Invoice);
+
+  invoices.sort((a, b) => (Number(b.issueDate) || 0) - (Number(a.issueDate) || 0));
 
   if (options?.status && (options.status === 'active' || options.status === 'voided')) {
-    q = adminDb
-      .collection('invoices')
-      .where('status', '==', options.status)
-      .orderBy('issueDate', 'desc')
-      .limit(queryLimit);
+    invoices = invoices.filter((inv) => inv.status === options.status);
   }
-
-  const snapshot = await q.get();
-  let invoices = snapshot.docs.map((doc) => doc.data() as Invoice);
 
   if (options?.search?.trim()) {
     const s = options.search.trim().toLowerCase();
     invoices = invoices.filter(
       (inv) =>
-        inv.invoiceNumber.toLowerCase().includes(s) ||
-        inv.orderNumber.toLowerCase().includes(s) ||
-        inv.buyer.fullName.toLowerCase().includes(s)
+        (inv.invoiceNumber && inv.invoiceNumber.toLowerCase().includes(s)) ||
+        (inv.orderNumber && inv.orderNumber.toLowerCase().includes(s)) ||
+        (inv.buyer?.fullName && inv.buyer.fullName.toLowerCase().includes(s))
     );
   }
 
-  return invoices;
+  return invoices.slice(0, queryLimit);
 }

@@ -27,6 +27,7 @@ export async function listCrmCustomers(options?: {
   }>();
 
   try {
+    // Try customers collection first
     const customersSnap = await adminDb.collection('customers').get();
     customersSnap.forEach((doc) => {
       const c = doc.data();
@@ -34,7 +35,7 @@ export async function listCrmCustomers(options?: {
       customerMap.set(uid, {
         uid,
         email: c.email || 'customer@dimsglow.com',
-        displayName: c.displayName || 'Customer',
+        displayName: c.displayName || c.name || 'Customer',
         phone: c.phone || undefined,
         orders: [],
         tags: ['new_shopper'],
@@ -42,6 +43,27 @@ export async function listCrmCustomers(options?: {
     });
   } catch (custErr) {
     console.warn('CRM customers collection query warning:', custErr);
+  }
+
+  // Also check users collection for any registered users not in customers
+  try {
+    const usersSnap = await adminDb.collection('users').get();
+    usersSnap.forEach((doc) => {
+      const u = doc.data();
+      const uid = u.uid || doc.id;
+      if (!customerMap.has(uid)) {
+        customerMap.set(uid, {
+          uid,
+          email: u.email || '',
+          displayName: u.displayName || u.name || 'Customer',
+          phone: u.phone || u.phoneNumber || undefined,
+          orders: [],
+          tags: ['new_shopper'],
+        });
+      }
+    });
+  } catch (usersErr) {
+    console.warn('CRM users collection query warning:', usersErr);
   }
 
   // 2. Query completed orders and aggregate

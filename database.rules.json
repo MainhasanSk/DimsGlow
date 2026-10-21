@@ -2,6 +2,7 @@
   "rules": {
     ".read": false,
     ".write": false,
+
     "presence": {
       "$userId": {
         ".read": "auth != null",
@@ -9,17 +10,29 @@
         ".validate": "newData.hasChildren(['status', 'lastSeen']) && (newData.child('status').val() === 'online' || newData.child('status').val() === 'offline')"
       }
     },
+
     "cart_sync": {
       "$userId": {
         ".read": "auth != null && auth.uid === $userId",
         ".write": "auth != null && auth.uid === $userId"
       }
     },
+
     "notifications": {
       "$userId": {
         ".read": "auth != null && auth.uid === $userId",
-        ".write": false
+        ".write": "auth != null && (auth.token.admin === true || auth.token.role === 'owner' || auth.token.role === 'admin')"
       }
+    },
+
+    "admin_notifications": {
+      ".read": "auth != null && (auth.token.admin === true || auth.token.role === 'owner' || auth.token.role === 'admin' || auth.token.role === 'order_manager' || auth.token.role === 'inventory_manager')",
+      ".write": "auth != null"
+    },
+
+    "live_metrics": {
+      ".read": "auth != null && (auth.token.admin === true || auth.token.role === 'owner' || auth.token.role === 'admin' || auth.token.role === 'analyst_readonly')",
+      ".write": "auth != null && (auth.token.admin === true || auth.token.role === 'owner' || auth.token.role === 'admin')"
     }
   }
 }

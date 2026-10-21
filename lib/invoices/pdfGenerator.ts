@@ -28,7 +28,8 @@ function formatDate(timestamp: number): string {
  */
 function amountInWords(numPaise: number): string {
   const num = Math.floor(numPaise / 100);
-  if (num === 0) return 'Indian Rupees Zero Only';
+  const paise = numPaise % 100;
+  if (num === 0 && paise === 0) return 'Indian Rupees Zero Only';
 
   const ones = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
   const tens = ['', '', 'Twenty ', 'Thirty ', 'Forty ', 'Fifty ', 'Sixty ', 'Seventy ', 'Eighty ', 'Ninety '];
@@ -42,7 +43,14 @@ function amountInWords(numPaise: number): string {
     return convertNumber(Math.floor(n / 10000000)) + 'Crore ' + (n % 10000000 !== 0 ? convertNumber(n % 10000000) : '');
   }
 
-  return `Indian Rupees ${convertNumber(num).trim()} Only`;
+  let words = '';
+  if (num > 0) {
+    words = `Indian Rupees ${convertNumber(num).trim()}`;
+  }
+  if (paise > 0) {
+    words += (words ? ' and ' : 'Indian ') + `${convertNumber(paise).trim()} Paise`;
+  }
+  return `${words} Only`;
 }
 
 /**
@@ -362,11 +370,11 @@ export async function generateInvoicePdf(invoice: Invoice): Promise<Uint8Array> 
   const headerY = cursorY - 12;
   page.drawText('#', { x: 45, y: headerY, size: 8, font: fontBold, color: charcoal });
   page.drawText('ITEM DESCRIPTION', { x: 65, y: headerY, size: 8, font: fontBold, color: charcoal });
-  page.drawText('HSN/SAC', { x: 260, y: headerY, size: 8, font: fontBold, color: charcoal });
-  page.drawText('QTY', { x: 325, y: headerY, size: 8, font: fontBold, color: charcoal });
-  page.drawText('UNIT PRICE', { x: 375, y: headerY, size: 8, font: fontBold, color: charcoal });
-  page.drawText('TAX RATE', { x: 445, y: headerY, size: 8, font: fontBold, color: charcoal });
-  page.drawText('AMOUNT', { x: 505, y: headerY, size: 8, font: fontBold, color: charcoal });
+  page.drawText('HSN/SAC', { x: 235, y: headerY, size: 8, font: fontBold, color: charcoal });
+  page.drawText('QTY', { x: 295, y: headerY, size: 8, font: fontBold, color: charcoal });
+  page.drawText('TAXABLE VAL', { x: 335, y: headerY, size: 8, font: fontBold, color: charcoal });
+  page.drawText('GST (18%)', { x: 420, y: headerY, size: 8, font: fontBold, color: charcoal });
+  page.drawText('TOTAL AMOUNT', { x: 495, y: headerY, size: 8, font: fontBold, color: charcoal });
 
   cursorY -= 24;
 
@@ -380,7 +388,7 @@ export async function generateInvoicePdf(invoice: Invoice): Promise<Uint8Array> 
     const itemTitle = item.variantTitle
       ? `${item.productName} (${item.variantTitle})`
       : item.productName;
-    page.drawText(itemTitle.slice(0, 36), {
+    page.drawText(itemTitle.slice(0, 32), {
       x: 65,
       y: rowY,
       size: 8,
@@ -395,17 +403,27 @@ export async function generateInvoicePdf(invoice: Invoice): Promise<Uint8Array> 
       color: muted,
     });
 
-    page.drawText(defaultHsn, { x: 260, y: rowY, size: 8, font: fontRegular, color: muted });
-    page.drawText(`${item.quantity}`, { x: 330, y: rowY, size: 8, font: fontRegular, color: charcoal });
-    page.drawText(formatRupees(item.unitPricePaise), {
-      x: 365,
+    const lineTotal = item.totalPaise || (item.unitPricePaise * item.quantity);
+    const lineTaxable = Math.round(lineTotal / 1.18);
+    const lineTax = lineTotal - lineTaxable;
+
+    page.drawText(defaultHsn, { x: 235, y: rowY, size: 8, font: fontRegular, color: muted });
+    page.drawText(`${item.quantity}`, { x: 300, y: rowY, size: 8, font: fontRegular, color: charcoal });
+    page.drawText(formatRupees(lineTaxable), {
+      x: 335,
       y: rowY,
       size: 8,
       font: fontRegular,
       color: charcoal,
     });
-    page.drawText('18% GST', { x: 445, y: rowY, size: 8, font: fontRegular, color: muted });
-    page.drawText(formatRupees(item.totalPaise), {
+    page.drawText(formatRupees(lineTax), {
+      x: 420,
+      y: rowY,
+      size: 8,
+      font: fontRegular,
+      color: muted,
+    });
+    page.drawText(formatRupees(lineTotal), {
       x: 495,
       y: rowY,
       size: 8,
@@ -426,14 +444,39 @@ export async function generateInvoicePdf(invoice: Invoice): Promise<Uint8Array> 
   cursorY -= 12;
 
   // 8. Financial Calculation Summary Block (Right)
-  const summaryX = width - 240;
-  const summaryWidth = 200;
+  // Determine accurate statutory decomposition across all invoice records
+  const shippingFeePaise = invoice.shippingFeePaise || 0;
+  const discountPaise = invoice.discountPaise || 0;
+  const totalPaise = invoice.totalPaise;
+
+  const grossItemsPaise =
+    invoice.lineItems?.reduce((sum, item) => sum + (item.totalPaise || (item.unitPricePaise * item.quantity)), 0) ||
+    Math.max(0, totalPaise - shippingFeePaise + discountPaise);
+
+  const netGoodsPaise = Math.max(0, grossItemsPaise - discountPaise);
+
+  const isAlreadySplit =
+    invoice.subtotalPaise + (invoice.taxPaise || 0) + shippingFeePaise === totalPaise &&
+    (invoice.taxPaise || 0) > 0;
+
+  const taxableBasePaise = isAlreadySplit ? invoice.subtotalPaise : Math.round(netGoodsPaise / 1.18);
+  const totalTaxPaise = isAlreadySplit ? invoice.taxPaise : (netGoodsPaise - taxableBasePaise);
+
+  // State check: Assam is state 18 (Intra-state CGST + SGST vs Inter-state IGST)
+  const isIntraState = !invoice.buyer.state || invoice.buyer.state.trim().toLowerCase() === 'assam';
+  const cgstPaise = isIntraState ? Math.round(totalTaxPaise / 2) : 0;
+  const sgstPaise = isIntraState ? (totalTaxPaise - cgstPaise) : 0;
+  const igstPaise = isIntraState ? 0 : totalTaxPaise;
+
+  const summaryX = width - 250;
+  const summaryWidth = 210;
+  const summaryBoxHeight = 120;
 
   page.drawRectangle({
     x: summaryX,
-    y: cursorY - 105,
+    y: cursorY - summaryBoxHeight,
     width: summaryWidth,
-    height: 110,
+    height: summaryBoxHeight,
     color: rgb(0.99, 0.99, 0.99),
     borderColor: borderLight,
     borderWidth: 0.5,
@@ -441,67 +484,106 @@ export async function generateInvoicePdf(invoice: Invoice): Promise<Uint8Array> 
 
   let sumY = cursorY - 14;
 
-  // Subtotal
-  page.drawText('Subtotal (Taxable):', { x: summaryX + 10, y: sumY, size: 8, font: fontRegular, color: muted });
-  page.drawText(formatRupees(invoice.subtotalPaise), {
-    x: summaryX + 110,
+  // Gross Items Value (MRP)
+  page.drawText('Gross Items Value (MRP):', { x: summaryX + 8, y: sumY, size: 7.5, font: fontRegular, color: muted });
+  page.drawText(formatRupees(grossItemsPaise), {
+    x: summaryX + 115,
     y: sumY,
-    size: 8,
+    size: 7.5,
     font: fontRegular,
     color: charcoal,
   });
-  sumY -= 16;
+  sumY -= 14;
 
   // Discount
-  if (invoice.discountPaise > 0) {
-    page.drawText('Discount:', { x: summaryX + 10, y: sumY, size: 8, font: fontRegular, color: muted });
-    page.drawText(`- ${formatRupees(invoice.discountPaise)}`, {
-      x: summaryX + 110,
+  if (discountPaise > 0) {
+    page.drawText('Discount Applied:', { x: summaryX + 8, y: sumY, size: 7.5, font: fontRegular, color: muted });
+    page.drawText(`- ${formatRupees(discountPaise)}`, {
+      x: summaryX + 115,
       y: sumY,
-      size: 8,
+      size: 7.5,
       font: fontRegular,
       color: burgundy,
     });
-    sumY -= 16;
+    sumY -= 14;
+  }
+
+  // Taxable Subtotal
+  page.drawText('Taxable Base Amount:', { x: summaryX + 8, y: sumY, size: 7.5, font: fontBold, color: charcoal });
+  page.drawText(formatRupees(taxableBasePaise), {
+    x: summaryX + 115,
+    y: sumY,
+    size: 7.5,
+    font: fontBold,
+    color: charcoal,
+  });
+  sumY -= 14;
+
+  // Taxes
+  if (isIntraState) {
+    page.drawText('CGST @ 9% (Assam):', { x: summaryX + 8, y: sumY, size: 7.5, font: fontRegular, color: muted });
+    page.drawText(formatRupees(cgstPaise), {
+      x: summaryX + 115,
+      y: sumY,
+      size: 7.5,
+      font: fontRegular,
+      color: charcoal,
+    });
+    sumY -= 14;
+
+    page.drawText('SGST @ 9% (Assam):', { x: summaryX + 8, y: sumY, size: 7.5, font: fontRegular, color: muted });
+    page.drawText(formatRupees(sgstPaise), {
+      x: summaryX + 115,
+      y: sumY,
+      size: 7.5,
+      font: fontRegular,
+      color: charcoal,
+    });
+    sumY -= 14;
+  } else {
+    page.drawText(`IGST @ 18% (${invoice.buyer.state?.slice(0, 10) || 'Inter-State'}):`, {
+      x: summaryX + 8,
+      y: sumY,
+      size: 7.5,
+      font: fontRegular,
+      color: muted,
+    });
+    page.drawText(formatRupees(igstPaise), {
+      x: summaryX + 115,
+      y: sumY,
+      size: 7.5,
+      font: fontRegular,
+      color: charcoal,
+    });
+    sumY -= 14;
   }
 
   // Shipping
-  page.drawText('Shipping Charges:', { x: summaryX + 10, y: sumY, size: 8, font: fontRegular, color: muted });
-  const shippingText = invoice.shippingFeePaise === 0 ? 'FREE' : formatRupees(invoice.shippingFeePaise);
+  page.drawText('Shipping Charges:', { x: summaryX + 8, y: sumY, size: 7.5, font: fontRegular, color: muted });
+  const shippingText = shippingFeePaise === 0 ? 'FREE' : formatRupees(shippingFeePaise);
   page.drawText(shippingText, {
-    x: summaryX + 110,
+    x: summaryX + 115,
     y: sumY,
-    size: 8,
+    size: 7.5,
     font: fontRegular,
-    color: invoice.shippingFeePaise === 0 ? rgb(0.1, 0.6, 0.2) : charcoal,
+    color: shippingFeePaise === 0 ? rgb(0.1, 0.6, 0.2) : charcoal,
   });
   sumY -= 16;
 
-  // Integrated GST Breakdown (18%)
-  page.drawText('GST (18% Included):', { x: summaryX + 10, y: sumY, size: 8, font: fontRegular, color: muted });
-  page.drawText(formatRupees(invoice.taxPaise), {
-    x: summaryX + 110,
-    y: sumY,
-    size: 8,
-    font: fontRegular,
-    color: charcoal,
-  });
-  sumY -= 18;
-
   // Divider
   page.drawLine({
-    start: { x: summaryX + 10, y: sumY + 4 },
-    end: { x: summaryX + summaryWidth - 10, y: sumY + 4 },
+    start: { x: summaryX + 8, y: sumY + 4 },
+    end: { x: summaryX + summaryWidth - 8, y: sumY + 4 },
     thickness: 1,
     color: burgundy,
   });
 
   // Grand Total
-  page.drawText('Total Invoice Value:', { x: summaryX + 10, y: sumY - 6, size: 9, font: fontBold, color: charcoal });
-  page.drawText(formatRupees(invoice.totalPaise), {
+  page.drawText('Total Invoice Value:', { x: summaryX + 8, y: sumY - 7, size: 8.5, font: fontBold, color: charcoal });
+  page.drawText(formatRupees(totalPaise), {
     x: summaryX + 105,
-    y: sumY - 6,
-    size: 10,
+    y: sumY - 7,
+    size: 9.5,
     font: fontBold,
     color: burgundy,
   });

@@ -350,7 +350,7 @@ const restDb = {
 
 // ─── Final exports ─────────────────────────────────────────────────────────────
 
-export const adminAuth = getAppsList().length ? fbAdmin.auth() : ({} as admin.auth.Auth);
+export const adminAuth: any = getAppsList().length ? fbAdmin.auth() : {};
 export const adminDb = (getAppsList().length ? fbAdmin.firestore() : restDb) as unknown as FirebaseFirestore.Firestore;
 
 export const getAdminRtdb = () => {
