@@ -4,19 +4,19 @@ import { generateExcelReport } from '@/lib/reports/reportService';
 import { hasPermission } from '@/lib/auth/roles';
 
 export async function GET(req: NextRequest) {
+  const authHeader = req.headers.get('Authorization');
+  // Also support token as query param for direct browser download links if needed
+  const { searchParams } = new URL(req.url);
+  const tokenQuery = searchParams.get('token');
+  const idToken = authHeader?.startsWith('Bearer ')
+    ? authHeader.split('Bearer ')[1]
+    : tokenQuery;
+
+  if (!idToken) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
-    const authHeader = req.headers.get('Authorization');
-    // Also support token as query param for direct browser download links if needed
-    const { searchParams } = new URL(req.url);
-    const tokenQuery = searchParams.get('token');
-    const idToken = authHeader?.startsWith('Bearer ')
-      ? authHeader.split('Bearer ')[1]
-      : tokenQuery;
-
-    if (!idToken) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
     const session = await verifyServerSession(idToken);
 
     if (session.role === 'customer' || !hasPermission(session.role, 'reports:export')) {
@@ -42,6 +42,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error: any) {
+    if (error?.digest === 'NEXT_PRERENDER_INTERRUPTED') throw error;
     console.error('Error generating Excel report:', error);
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to generate Excel report' },

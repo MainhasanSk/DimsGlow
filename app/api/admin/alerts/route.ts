@@ -21,12 +21,12 @@ export interface LowStockAlert {
 
 /** GET /api/admin/alerts — list low-stock alerts (auto-generated from inventory) */
 export async function GET(req: NextRequest) {
-  try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
 
+  try {
     const idToken = authHeader.split('Bearer ')[1];
     const session = await verifyServerSession(idToken);
 
@@ -55,6 +55,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, alerts, total: alerts.length });
   } catch (error: any) {
+    if (error?.digest === 'NEXT_PRERENDER_INTERRUPTED') throw error;
     console.error('Error fetching low-stock alerts:', error);
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to fetch alerts' },

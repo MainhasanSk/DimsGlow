@@ -4,12 +4,12 @@ import { listPurchaseOrders, createPurchaseOrder } from '@/lib/operations/purcha
 import { hasPermission } from '@/lib/auth/roles';
 
 export async function GET(req: NextRequest) {
-  try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
 
+  try {
     const idToken = authHeader.split('Bearer ')[1];
     const session = await verifyServerSession(idToken);
 
@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
     const purchaseOrders = await listPurchaseOrders(status);
     return NextResponse.json({ success: true, purchaseOrders });
   } catch (error: any) {
+    if (error?.digest === 'NEXT_PRERENDER_INTERRUPTED') throw error;
     console.error('Error fetching purchase orders:', error);
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to fetch purchase orders' },

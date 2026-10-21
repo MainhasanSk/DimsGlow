@@ -4,15 +4,15 @@ import { adminDb } from '@/lib/firebase/admin';
 import type { Order } from '@/lib/schemas/order';
 
 export async function GET(req: NextRequest) {
-  try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return NextResponse.json(
+      { success: false, error: 'Authentication required' },
+      { status: 401 }
+    );
+  }
 
+  try {
     const idToken = authHeader.split('Bearer ')[1];
     const session = await verifyServerSession(idToken);
 
@@ -50,6 +50,7 @@ export async function GET(req: NextRequest) {
       orders,
     });
   } catch (err: any) {
+    if (err?.digest === 'NEXT_PRERENDER_INTERRUPTED') throw err;
     console.error('Error in customer orders GET API:', err);
     return NextResponse.json(
       { success: false, error: err.message || 'Failed to fetch customer orders' },

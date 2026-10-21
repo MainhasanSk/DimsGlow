@@ -4,11 +4,12 @@ import { adminDb } from '@/lib/firebase/admin';
 import type { AuditEvent } from '@/lib/schemas/audit';
 
 export async function GET(req: NextRequest) {
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
 
     const idToken = authHeader.split('Bearer ')[1];
     const session = await verifyServerSession(idToken);
@@ -42,6 +43,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, events });
   } catch (error: any) {
+    if (error?.digest === 'NEXT_PRERENDER_INTERRUPTED') throw error;
     console.error('Error fetching audit events:', error);
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to fetch audit events' },

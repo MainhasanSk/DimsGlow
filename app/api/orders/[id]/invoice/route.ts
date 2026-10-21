@@ -9,17 +9,16 @@ interface RouteParams {
 }
 
 export async function GET(req: NextRequest, { params }: RouteParams) {
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return NextResponse.json(
+      { success: false, error: 'Authentication required to access invoices.' },
+      { status: 401 }
+    );
+  }
+
   try {
     const { id: orderId } = await params;
-    const authHeader = req.headers.get('Authorization');
-
-    // Authentication is MANDATORY — no unauthenticated invoice access
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'Authentication required to access invoices.' },
-        { status: 401 }
-      );
-    }
 
     const idToken = authHeader.split('Bearer ')[1];
     let session;
@@ -70,6 +69,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       },
     });
   } catch (error: any) {
+    if (error?.digest === 'NEXT_PRERENDER_INTERRUPTED') throw error;
     console.error('Error generating invoice PDF:', error);
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to generate tax invoice' },

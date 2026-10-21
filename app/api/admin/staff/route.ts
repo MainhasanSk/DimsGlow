@@ -5,12 +5,12 @@ import { hasPermission, ROLE_DEFAULT_PERMISSIONS, StaffRole, UserAccessRecord } 
 import { logAuditEvent } from '@/lib/audit/auditLogger';
 
 export async function GET(req: NextRequest) {
-  try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
 
+  try {
     const idToken = authHeader.split('Bearer ')[1];
     const session = await verifyServerSession(idToken);
 
@@ -40,6 +40,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, staff: staffList });
   } catch (error: any) {
+    if (error?.digest === 'NEXT_PRERENDER_INTERRUPTED') throw error;
     console.error('Error fetching staff list:', error);
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to fetch staff members' },
