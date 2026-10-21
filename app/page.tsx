@@ -134,7 +134,7 @@ export default function HomePage() {
           {/* 16:9 Aspect Ratio on all devices ensures 100% full banner visibility with zero top, bottom, or side cropping */}
           <Link
             href={curSlideData.ctaLink || '/collections/all'}
-            className="relative block w-full aspect-[16/9] cursor-pointer"
+            className="relative block w-full aspect-video cursor-pointer"
           >
             <Image
               src={curSlideData.imageUrl || 'https://res.cloudinary.com/web8vmww/image/upload/v1792429948/dimsglow/hero/hero_lock_the_shine_banner.jpg'}
@@ -516,19 +516,16 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Exact User Provided Clinical Sunscreen Poster (Cloudinary Loaded - Height Reduced by 25%) */}
+              {/* Exact User Provided Clinical Sunscreen Poster (Cloudinary Loaded - Clean edge-to-edge cover without overlay text) */}
               <div className="flex justify-center">
-                <div className="relative w-full max-w-[210px] sm:max-w-xs md:max-w-sm aspect-square rounded-xl sm:rounded-2xl overflow-hidden border-2 border-[#D4AF37]/50 shadow-xl bg-[#FAF8FA] group p-1.5 sm:p-2">
+                <div className="relative w-full max-w-[260px] sm:max-w-xs md:max-w-sm aspect-[702/1024] rounded-xl sm:rounded-2xl overflow-hidden border-2 border-[#D4AF37]/50 shadow-xl bg-[#FAF8FA] group">
                   <Image
                     src={content.promoClinical.imageUrl || 'https://res.cloudinary.com/web8vmww/image/upload/v1792340975/dimsglow/editorial/dimsglow_sunscreen_poster.jpg'}
                     alt="DIMSGLOW Tinted Sunscreen SPF 50+ Clinical Dark Spot Fading Proof"
                     fill
-                    className="object-contain"
+                    className="object-cover"
                     priority
                   />
-                  <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-[#5B132B]/90 backdrop-blur-md px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#D4AF37]/40 text-white text-[8px] sm:text-xs font-bold shadow-md">
-                    ★ CLINICAL TRIAL
-                  </div>
                 </div>
               </div>
             </div>
@@ -608,7 +605,7 @@ export default function HomePage() {
                 <Link
                   key={look.id || look.title}
                   href={look.href}
-                  className="group relative rounded-[12px] overflow-hidden aspect-3/4 bg-[#14050E] border border-[#E8E2E7] flex flex-col justify-end p-4 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                  className="group relative rounded-xl overflow-hidden aspect-3/4 bg-[#14050E] border border-[#E8E2E7] flex flex-col justify-end p-4 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
                 >
                   {look.imageUrl && (
                     <Image
@@ -729,7 +726,7 @@ export default function HomePage() {
                 {[...(content.testimonials || []), ...(content.testimonials || [])].map((rev, idx) => (
                   <div
                     key={`${rev.id || rev.author}-${idx}`}
-                    className="w-[280px] shrink-0 whitespace-normal p-5 rounded-[10px] bg-[#FAF8FA] border border-[#E8E2E7] flex flex-col justify-between space-y-3 shadow-xs"
+                    className="w-70 shrink-0 whitespace-normal p-5 rounded-[10px] bg-[#FAF8FA] border border-[#E8E2E7] flex flex-col justify-between space-y-3 shadow-xs"
                   >
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">

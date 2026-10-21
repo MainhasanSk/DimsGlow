@@ -20,10 +20,32 @@ export async function createExpense(
 
   const expenseRef = adminDb.collection('expenses').doc();
 
+  const rawDate = (data as any)?.date;
+  let dateTimestamp = Date.now();
+  if (typeof rawDate === 'number' && !isNaN(rawDate)) {
+    dateTimestamp = rawDate;
+  } else if (typeof rawDate === 'string' && rawDate.trim()) {
+    const parsed = new Date(rawDate).getTime();
+    if (!isNaN(parsed)) dateTimestamp = parsed;
+  }
+
+  const rawAmount = (data as any)?.amountPaise;
+  const amountPaise = typeof rawAmount === 'number' && !isNaN(rawAmount)
+    ? Math.round(rawAmount)
+    : Math.round(Number(rawAmount) || 0);
+
+  const notes = typeof data.notes === 'string' && data.notes.trim() ? data.notes.trim() : undefined;
+  const receiptUrl = typeof (data as any)?.receiptUrl === 'string' && (data as any).receiptUrl.trim() ? (data as any).receiptUrl.trim() : undefined;
+
   const validated = ExpenseSchema.parse({
     ...data,
+    amountPaise,
+    date: dateTimestamp,
+    notes,
+    receiptUrl,
     id: expenseRef.id,
     expenseNumber,
+    createdByUid: actorUid || (data as any)?.createdByUid || 'admin_operator',
     createdAt: timestamp,
     updatedAt: timestamp,
   });

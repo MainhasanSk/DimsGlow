@@ -2,12 +2,12 @@ import { describe, it, expect } from 'vitest';
 import {
   ROLE_DEFAULT_PERMISSIONS,
   type StaffRole,
-} from '@/lib/auth/roles';
+} from '../lib/auth/roles';
 import {
   assertPermission,
   assertStaff,
   type VerifiedSession,
-} from '@/lib/auth/serverAuth';
+} from '../lib/auth/serverAuth';
 
 describe('RBAC Roles and Permission Verification', () => {
   it('confirms owner has all core management permissions', () => {

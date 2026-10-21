@@ -8,7 +8,9 @@
  * Firebase Auth user in the canonical Firestore `userAccess/{uid}` document.
  */
 
-import admin from 'firebase-admin';
+import { initializeApp, getApps, cert, applicationDefault } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 import { ROLE_DEFAULT_PERMISSIONS } from '../lib/auth/roles';
 
 async function bootstrapOwner() {
@@ -30,23 +32,23 @@ async function bootstrapOwner() {
     process.exit(1);
   }
 
-  if (!admin.apps.length) {
+  if (!getApps().length) {
     if (hasServiceAccount) {
       const sa = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY!);
-      admin.initializeApp({
-        credential: admin.credential.cert(sa),
+      initializeApp({
+        credential: cert(sa),
         projectId,
       });
     } else {
-      admin.initializeApp({
-        credential: admin.credential.applicationDefault(),
+      initializeApp({
+        credential: applicationDefault(),
         projectId,
       });
     }
   }
 
-  const auth = admin.auth();
-  const db = admin.firestore();
+  const auth = getAuth();
+  const db = getFirestore();
 
   try {
     const user = await auth.getUserByEmail(email.trim().toLowerCase());

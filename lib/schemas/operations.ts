@@ -88,15 +88,19 @@ export type PaymentMode = z.infer<typeof PaymentModeEnum>;
 export const ExpenseSchema = z.object({
   id: z.string().min(1),
   expenseNumber: z.string().min(1), // e.g. EXP-2026-0001
-  title: z.string().min(3, 'Expense title is required'),
+  title: z.string().min(3, 'Expense title must be at least 3 characters'),
   category: ExpenseCategoryEnum,
   amountPaise: z.number().int().positive('Amount in paise must be positive'),
   paymentMode: PaymentModeEnum,
   vendorName: z.string().min(2, 'Vendor/Payee name is required'),
   referenceNumber: z.string().min(1, 'Reference/UTR/Bill number is required'),
-  date: z.number(), // expense incur date timestamp
-  receiptUrl: z.string().url().optional().or(z.literal('')),
-  notes: z.string().optional(),
+  date: z.union([z.number(), z.string()]).transform((val) => {
+    if (typeof val === 'number') return val;
+    const parsed = new Date(val).getTime();
+    return isNaN(parsed) ? Date.now() : parsed;
+  }),
+  receiptUrl: z.string().url().nullable().optional().or(z.literal('')),
+  notes: z.string().nullable().optional(),
   createdByUid: z.string().min(1),
   createdAt: z.number(),
   updatedAt: z.number(),

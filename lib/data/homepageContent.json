@@ -46,20 +46,24 @@
     }
   ],
   "campaignVideo": {
-    "posterUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340978/dimsglow/looks/look_everyday_glow.webp",
-    "subtitle": "High-performing, weightless luxury formulations designed to move with you all day long.",
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-young-woman-applying-makeup-with-a-brush-41484-large.mp4",
-    "ctaLink": "/collections/all",
-    "title": "WE'VE GOT EVERYTHING COVERED",
     "ctaText": "EXPLORE FULL CAMPAIGN",
     "tagline": "THE GO-TO GLAM ROUTINE",
-    "active": true
+    "title": "WE'VE GOT EVERYTHING COVERED",
+    "active": true,
+    "posterUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340978/dimsglow/looks/look_everyday_glow.webp",
+    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-young-woman-applying-makeup-with-a-brush-41484-large.mp4",
+    "ctaLink": "/collections/all",
+    "subtitle": "High-performing, weightless luxury formulations designed to move with you all day long."
   },
   "promoClinical": {
+    "featuredProductPrice": "₹999 (MRP ₹1,299)",
+    "statLabel": "Reduction in Dark Spots",
+    "headline": "CLINICALLY PROVEN FORMULATION • SPF 50+ PA++++",
+    "description": "Formulated with Broad Spectrum UVA/UVB protection, Niacinamide, and Arbutin. Clinically proven to fade stubborn sun tan, reduce dark spots, and restore luminous, even-toned skin within 14 days.",
+    "ctaText": "BUY TINTED SUNSCREEN",
     "featuredProductRating": "★ 4.9 (Clinical Trial Verified)",
-    "statNumber": "95%",
     "imageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340975/dimsglow/editorial/dimsglow_sunscreen_poster.jpg",
-    "active": true,
+    "statNumber": "95%",
     "activeIngredients": [
       "SPF 50+ PA++++",
       "Fades Pigmentation",
@@ -67,13 +71,9 @@
       "Even Tone & Brightness",
       "Dermatologically Tested"
     ],
-    "headline": "CLINICALLY PROVEN FORMULATION • SPF 50+ PA++++",
+    "active": true,
     "ctaLink": "/collections/skin-care",
-    "featuredProductName": "DIMSGLOW Tinted Sunscreen SPF 50+ PA++++",
-    "statLabel": "Reduction in Dark Spots",
-    "featuredProductPrice": "₹999 (MRP ₹1,299)",
-    "ctaText": "BUY TINTED SUNSCREEN",
-    "description": "Formulated with Broad Spectrum UVA/UVB protection, Niacinamide, and Arbutin. Clinically proven to fade stubborn sun tan, reduce dark spots, and restore luminous, even-toned skin within 14 days."
+    "featuredProductName": "DIMSGLOW Tinted Sunscreen SPF 50+ PA++++"
   },
   "routineLooks": [
     {
@@ -116,19 +116,19 @@
   "testimonials": [],
   "faqs": [],
   "sectionsVisibility": {
-    "trustMarquee": true,
+    "testimonials": true,
+    "promoClinical": true,
+    "faqs": true,
+    "routineLooks": true,
+    "beforeAfter": true,
+    "ourPromise": true,
+    "categoryCircles": true,
     "bestsellers": true,
+    "trustMarquee": true,
+    "newArrivals": true,
     "heroCarousel": true,
     "combosBox": true,
-    "routineLooks": true,
-    "categoryCircles": true,
-    "campaignVideo": true,
-    "ourPromise": true,
-    "faqs": true,
-    "beforeAfter": true,
-    "testimonials": true,
-    "newArrivals": true,
-    "promoClinical": true
+    "campaignVideo": true
   },
   "updatedAt": 1792614907963,
   "updatedBy": "admin_banana_sync"

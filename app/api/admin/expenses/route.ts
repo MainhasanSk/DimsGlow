@@ -54,14 +54,23 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const expense = await createExpense(body, session.uid, session.role);
+    const expense = await createExpense({ ...body, createdByUid: session.uid }, session.uid, session.role);
 
     return NextResponse.json({ success: true, expense });
   } catch (error: any) {
+    if (error?.digest === 'NEXT_PRERENDER_INTERRUPTED') throw error;
     console.error('Error recording expense:', error);
+
+    let errorMessage = error.message || 'Failed to record expense';
+    if (error?.issues && Array.isArray(error.issues)) {
+      errorMessage = error.issues.map((i: any) => i.message || `${i.path?.join('.')}: ${i.code}`).join('. ');
+    } else if (error?.errors && Array.isArray(error.errors)) {
+      errorMessage = error.errors.map((e: any) => e.message || `${e.path?.join('.')}: ${e.code}`).join('. ');
+    }
+
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to record expense' },
-      { status: 500 }
+      { success: false, error: errorMessage },
+      { status: 400 }
     );
   }
 }

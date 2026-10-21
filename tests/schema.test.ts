@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { ProductSchema } from '@/lib/schemas/product';
-import { OrderSchema, ShippingAddressSnapshotSchema } from '@/lib/schemas/order';
-import { StockMovementSchema } from '@/lib/schemas/inventory';
-import { InvoiceSchema } from '@/lib/schemas/invoice';
+import { ProductSchema } from '../lib/schemas/product';
+import { OrderSchema, ShippingAddressSnapshotSchema } from '../lib/schemas/order';
+import { StockMovementSchema } from '../lib/schemas/inventory';
+import { InvoiceSchema } from '../lib/schemas/invoice';
 
 describe('Firestore Domain Schemas and Invariants', () => {
   it('validates a correct Product with integer paise and swatches', () => {

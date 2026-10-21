@@ -123,11 +123,34 @@ export default function AdminExpensesPage() {
     setFeedbackMessage(null);
 
     try {
-      const token = await user.getIdToken();
-      const amountPaise = Math.round(parseFloat(newExpense.amountRupees) * 100);
-      if (isNaN(amountPaise) || amountPaise <= 0) {
-        throw new Error('Please enter a valid expense amount');
+      const title = newExpense.title.trim();
+      if (title.length < 3) {
+        throw new Error('Expense title must be at least 3 characters');
       }
+
+      const amountRupees = parseFloat(newExpense.amountRupees);
+      if (isNaN(amountRupees) || amountRupees <= 0) {
+        throw new Error('Please enter a valid expense amount greater than 0');
+      }
+      const amountPaise = Math.round(amountRupees * 100);
+
+      const vendorName = newExpense.vendorName.trim();
+      if (vendorName.length < 2) {
+        throw new Error('Please enter a payee or vendor name (at least 2 characters)');
+      }
+
+      const referenceNumber = newExpense.referenceNumber.trim();
+      if (!referenceNumber) {
+        throw new Error('Please enter a reference, invoice, or UTR number');
+      }
+
+      let expenseTimestamp = Date.now();
+      if (newExpense.date) {
+        const parsed = new Date(newExpense.date).getTime();
+        if (!isNaN(parsed)) expenseTimestamp = parsed;
+      }
+
+      const token = await user.getIdToken();
 
       const res = await fetch('/api/admin/expenses', {
         method: 'POST',
@@ -136,19 +159,20 @@ export default function AdminExpensesPage() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: newExpense.title.trim(),
+          title,
           category: newExpense.category,
           amountPaise,
           paymentMode: newExpense.paymentMode,
-          vendorName: newExpense.vendorName.trim(),
-          referenceNumber: newExpense.referenceNumber.trim(),
-          date: new Date(newExpense.date).getTime(),
+          vendorName,
+          referenceNumber,
+          date: expenseTimestamp,
           notes: newExpense.notes.trim() || undefined,
+          createdByUid: user.uid,
         }),
       });
 
       const data = await res.json();
-      if (!data.success) throw new Error(data.error);
+      if (!data.success) throw new Error(data.error || 'Failed to record expense.');
 
       setFeedbackMessage({
         type: 'success',
@@ -404,6 +428,12 @@ export default function AdminExpensesPage() {
             </div>
 
             <form onSubmit={handleRecordExpense} className="space-y-3 text-xs">
+              {feedbackMessage && feedbackMessage.type === 'error' && (
+                <div className="p-2.5 rounded-md bg-[#FDF0ED] text-[#D9381E] border border-[#F5C6CB] text-xs font-medium">
+                  {feedbackMessage.text}
+                </div>
+              )}
+
               <div>
                 <label className="font-bold text-[#1F161E] block mb-1">Expense Title / Description *</label>
                 <input
