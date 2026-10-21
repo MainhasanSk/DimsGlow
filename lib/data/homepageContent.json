@@ -1,17 +1,6 @@
 {
   "heroSlides": [
     {
-      "id": "slide_1",
-      "imageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792429948/dimsglow/hero/hero_lock_the_shine_banner.jpg",
-      "ctaLink": "/collections/lips",
-      "title": "Transfer-Proof Matte Lipstick",
-      "tagline": "",
-      "subtitle": "",
-      "ctaText": "SHOP NOW",
-      "active": true,
-      "order": 1
-    },
-    {
       "id": "slide_2",
       "imageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792429950/dimsglow/hero/hero_lip_oil_gift_banner.jpg",
       "ctaLink": "/collections/combos",
@@ -43,27 +32,34 @@
       "ctaText": "SHOP NOW",
       "active": true,
       "order": 4
+    },
+    {
+      "id": "slide_1",
+      "imageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792429948/dimsglow/hero/hero_lock_the_shine_banner.jpg",
+      "ctaLink": "/collections/lips",
+      "title": "Transfer-Proof Matte Lipstick",
+      "tagline": "",
+      "subtitle": "",
+      "ctaText": "SHOP NOW",
+      "active": true,
+      "order": 1
     }
   ],
   "campaignVideo": {
+    "posterUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340978/dimsglow/looks/look_everyday_glow.webp",
+    "subtitle": "High-performing, weightless luxury formulations designed to move with you all day long.",
+    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-young-woman-applying-makeup-with-a-brush-41484-large.mp4",
+    "ctaLink": "/collections/all",
+    "title": "WE'VE GOT EVERYTHING COVERED",
     "ctaText": "EXPLORE FULL CAMPAIGN",
     "tagline": "THE GO-TO GLAM ROUTINE",
-    "ctaLink": "/collections/all",
-    "subtitle": "High-performing, weightless luxury formulations designed to move with you all day long.",
-    "posterUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340978/dimsglow/looks/look_everyday_glow.webp",
-    "title": "WE'VE GOT EVERYTHING COVERED",
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-young-woman-applying-makeup-with-a-brush-41484-large.mp4",
     "active": true
   },
   "promoClinical": {
-    "ctaLink": "/collections/skin-care",
-    "featuredProductPrice": "₹999 (MRP ₹1,299)",
+    "featuredProductRating": "★ 4.9 (Clinical Trial Verified)",
     "statNumber": "95%",
-    "active": true,
-    "statLabel": "Reduction in Dark Spots",
-    "description": "Formulated with Broad Spectrum UVA/UVB protection, Niacinamide, and Arbutin. Clinically proven to fade stubborn sun tan, reduce dark spots, and restore luminous, even-toned skin within 14 days.",
     "imageUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792340975/dimsglow/editorial/dimsglow_sunscreen_poster.jpg",
-    "featuredProductName": "DIMSGLOW Tinted Sunscreen SPF 50+ PA++++",
+    "active": true,
     "activeIngredients": [
       "SPF 50+ PA++++",
       "Fades Pigmentation",
@@ -71,9 +67,13 @@
       "Even Tone & Brightness",
       "Dermatologically Tested"
     ],
-    "featuredProductRating": "★ 4.9 (Clinical Trial Verified)",
     "headline": "CLINICALLY PROVEN FORMULATION • SPF 50+ PA++++",
-    "ctaText": "BUY TINTED SUNSCREEN"
+    "ctaLink": "/collections/skin-care",
+    "featuredProductName": "DIMSGLOW Tinted Sunscreen SPF 50+ PA++++",
+    "statLabel": "Reduction in Dark Spots",
+    "featuredProductPrice": "₹999 (MRP ₹1,299)",
+    "ctaText": "BUY TINTED SUNSCREEN",
+    "description": "Formulated with Broad Spectrum UVA/UVB protection, Niacinamide, and Arbutin. Clinically proven to fade stubborn sun tan, reduce dark spots, and restore luminous, even-toned skin within 14 days."
   },
   "routineLooks": [
     {
@@ -116,20 +116,20 @@
   "testimonials": [],
   "faqs": [],
   "sectionsVisibility": {
-    "newArrivals": true,
+    "trustMarquee": true,
     "bestsellers": true,
     "heroCarousel": true,
-    "beforeAfter": true,
-    "campaignVideo": true,
-    "trustMarquee": true,
-    "categoryCircles": true,
+    "combosBox": true,
     "routineLooks": true,
+    "categoryCircles": true,
+    "campaignVideo": true,
     "ourPromise": true,
     "faqs": true,
+    "beforeAfter": true,
     "testimonials": true,
-    "combosBox": true,
+    "newArrivals": true,
     "promoClinical": true
   },
-  "updatedAt": 1792505124768,
+  "updatedAt": 1792614907963,
   "updatedBy": "admin_banana_sync"
 }

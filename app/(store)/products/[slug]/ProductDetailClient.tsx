@@ -7,6 +7,7 @@ import { notFound, useRouter } from 'next/navigation';
 import { StorefrontShell } from '@/components/storefront/StorefrontShell';
 import { ProductCard } from '@/components/storefront/ProductCard';
 import { getProductBySlug, CATALOG_PRODUCTS } from '@/lib/data/catalog';
+import { useProducts } from '@/lib/catalog/productStore';
 import type { Product, ProductVariant } from '@/lib/schemas/product';
 import { formatPricePaise } from '@/lib/utils';
 import {
@@ -100,17 +101,16 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const { products: liveProducts } = useProducts();
+  const currentCatalog = liveProducts.length > 0 ? liveProducts : CATALOG_PRODUCTS;
+
   if (!product && slug) {
-    // Return loading skeleton or handle not found
-    const defaultProduct = CATALOG_PRODUCTS[0];
-    if (defaultProduct && slug !== defaultProduct.slug) {
-      // If slug doesn't match any, show notFound
-      const exists = CATALOG_PRODUCTS.some((p) => p.slug === slug);
-      if (!exists) notFound();
-    }
+    // If slug doesn't match any in catalog, show notFound
+    const exists = currentCatalog.some((p) => p.slug === slug);
+    if (!exists) notFound();
   }
 
-  const activeProduct = product || CATALOG_PRODUCTS[0];
+  const activeProduct = product || currentCatalog.find((p) => p.slug === slug) || currentCatalog[0];
   const activeVar = selectedVariant || activeProduct.variants[0];
 
   const handleCopyCode = (code: string) => {
@@ -164,13 +164,13 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
 
   // Find complementary pair product for the current product
   const pairedProduct =
-    CATALOG_PRODUCTS.find((p) => {
+    currentCatalog.find((p) => {
       if (p.id === activeProduct.id) return false;
       if (activeProduct.categoryIds.includes('face')) return p.categoryIds.includes('lips');
       if (activeProduct.categoryIds.includes('lips')) return p.categoryIds.includes('eyes');
       if (activeProduct.categoryIds.includes('eyes')) return p.categoryIds.includes('face');
       return p.categoryIds.includes('face');
-    }) || CATALOG_PRODUCTS.find((p) => p.id !== activeProduct.id);
+    }) || currentCatalog.find((p) => p.id !== activeProduct.id);
 
   const handleAddComboBoth = () => {
     if (!pairedProduct) return;
@@ -192,17 +192,13 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
     setTimeout(() => setAddingCombo(false), 500);
   };
 
-  const recProducts = CATALOG_PRODUCTS.filter((p) => {
+  const recProducts = currentCatalog.filter((p) => {
     if (p.id === activeProduct.id) return false;
     if (recCategory === 'all') return true;
     return p.categoryIds.includes(recCategory);
   });
 
   const exclusiveCoupons = [
-    { code: 'LIPOIL', title: 'FREE Lip Oil & Lip Color', subtitle: 'On orders above ₹699' },
-    { code: 'CASE', title: 'FREE Lipstick Case', subtitle: 'On orders above ₹599' },
-    { code: 'MASCARA', title: 'FREE Voluminous Mascara', subtitle: 'On orders above ₹499' },
-    { code: 'LIPCREAM', title: 'FREE Lip Cream', subtitle: 'On orders above ₹399' },
     { code: 'EXTRA5', title: 'EXTRA 5% OFF', subtitle: 'On all prepaid orders' },
     { code: 'SHIPFREE', title: 'FREE SHIPPING', subtitle: 'On all orders above ₹399' },
   ];
@@ -226,13 +222,10 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
           {/* Left Column: Product Gallery */}
           <div className="lg:col-span-6 space-y-4">
             <div className="relative aspect-square w-full rounded-xl bg-[#FAF8FA] border border-[#E8E2E7] overflow-hidden flex items-center justify-center p-8 group">
-              {/* Trust & Gift Badges */}
+              {/* Trust Badges */}
               <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
                 <span className="text-[10px] font-extrabold tracking-wider uppercase text-white bg-[#B83B63] px-2.5 py-1 rounded-sm shadow-sm">
                   1 MIRACLE FORMULA SPF 20
-                </span>
-                <span className="text-[10px] font-extrabold tracking-wider uppercase text-[#B83B63] bg-[#FBEAF0] px-2.5 py-1 rounded-sm shadow-xs border border-[#B83B63]/20">
-                  UNLOCK FREE GIFT
                 </span>
               </div>
 

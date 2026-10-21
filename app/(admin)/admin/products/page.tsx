@@ -584,11 +584,6 @@ export default function AdminProductsPage() {
                                   Bestseller
                                 </span>
                               )}
-                              {p.unlockFreeGift && (
-                                <span className="bg-[#FBEAF0] text-[#B83B63] border border-[#B83B63]/20 text-[9px] font-extrabold px-1.5 py-0.2 rounded uppercase">
-                                  Free Gift
-                                </span>
-                              )}
                             </div>
                           </div>
                         </div>

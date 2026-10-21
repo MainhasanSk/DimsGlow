@@ -71,14 +71,7 @@ export function ProductCard({ product, onQuickView, onAddToCart }: ProductCardPr
           <Heart className={`w-4 h-4 ${isFav ? 'fill-[#B83B63] text-[#B83B63]' : ''}`} />
         </button>
 
-        {/* Unlock Free Gift Badge */}
-        {product.unlockFreeGift && (
-          <div className="absolute top-2.5 right-2.5 z-10">
-            <span className="text-[10px] font-extrabold tracking-wider uppercase text-[#B83B63] bg-[#FBEAF0] px-2 py-0.5 rounded-sm shadow-xs border border-[#B83B63]/20">
-              UNLOCK FREE GIFT
-            </span>
-          </div>
-        )}
+
 
         <Link
           href={`/products/${product.slug}`}

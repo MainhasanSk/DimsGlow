@@ -27,16 +27,18 @@
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
+    "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.2.0",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.35",
+    "firebase-tools": "^13.0.0",
     "jsdom": "^26.0.0",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^5.0.5",
-    "firebase-tools": "^13.0.0"
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
   }
 }

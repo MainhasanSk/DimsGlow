@@ -12,10 +12,6 @@ const GIFT_WRAP_FEE_PAISE = 9900; // ₹99
 const VALID_COUPONS: Record<string, { discountPercent?: number; freeShipping?: boolean; minOrderPaise?: number }> = {
   EXTRA5: { discountPercent: 5 },
   SHIPFREE: { freeShipping: true },
-  LIPOIL: { minOrderPaise: 69900 },
-  CASE: { minOrderPaise: 59900 },
-  MASCARA: { minOrderPaise: 49900 },
-  LIPCREAM: { minOrderPaise: 39900 },
 };
 
 export interface CalculateCheckoutInput {

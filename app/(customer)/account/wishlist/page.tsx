@@ -5,14 +5,17 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/lib/cart/CartContext';
 import { CATALOG_PRODUCTS } from '@/lib/data/catalog';
+import { useProducts } from '@/lib/catalog/productStore';
 import { formatPricePaise } from '@/lib/utils';
 import { Heart, ShoppingBag, Trash2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function WishlistPage() {
   const { favorites, toggleFavorite, addToCart } = useCart();
+  const { products: liveProducts } = useProducts();
+  const currentCatalog = liveProducts.length > 0 ? liveProducts : CATALOG_PRODUCTS;
 
-  const favoritedProducts = CATALOG_PRODUCTS.filter((p) =>
+  const favoritedProducts = currentCatalog.filter((p) =>
     favorites.includes(p.id)
   );
 

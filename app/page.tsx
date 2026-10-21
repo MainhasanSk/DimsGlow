@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { StorefrontShell } from '@/components/storefront/StorefrontShell';
 import { ProductCard } from '@/components/storefront/ProductCard';
 import { CATALOG_PRODUCTS } from '@/lib/data/catalog';
+import { useProducts } from '@/lib/catalog/productStore';
 import {
   getHomepageContent,
   DEFAULT_HOMEPAGE_CONTENT,
@@ -105,10 +106,14 @@ export default function HomePage() {
 
   const curSlideData: HeroSlide = activeSlides[currentSlide] || activeSlides[0];
 
+  // Dynamic products synced live from Firestore database
+  const { products: liveProducts } = useProducts();
+  const currentProducts = liveProducts.length > 0 ? liveProducts : CATALOG_PRODUCTS;
+
   // Dynamic Bestsellers Filtering
   const allBestsellers = useMemo(() => {
-    return CATALOG_PRODUCTS.filter((p) => p.bestseller === true);
-  }, []);
+    return currentProducts.filter((p) => p.bestseller === true);
+  }, [currentProducts]);
 
   const displayedBestsellers = useMemo(() => {
     if (bestsellerCategory === 'all') return allBestsellers;
@@ -312,7 +317,7 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-              {CATALOG_PRODUCTS.slice(0, 4).map((product) => (
+              {currentProducts.slice(0, 4).map((product) => (
                 <ProductCard key={`new_${product.id}`} product={product} />
               ))}
             </div>
@@ -342,9 +347,12 @@ export default function HomePage() {
                     </Button>
                   </Link>
                   <Link href="/collections/all?tag=gift">
-                    <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10">
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center font-bold text-sm sm:text-base px-6 py-3 rounded-lg border-2 border-white/70 bg-transparent text-white hover:bg-white/15 hover:border-white transition-all shadow-sm cursor-pointer select-none"
+                    >
                       EXPLORE GIFT COMBOS
-                    </Button>
+                    </button>
                   </Link>
                 </div>
               </div>
@@ -406,9 +414,12 @@ export default function HomePage() {
                     </Button>
                   </Link>
                   <Link href="/collections/bestsellers">
-                    <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10">
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center font-bold text-sm sm:text-base px-6 py-3 rounded-lg border-2 border-white/70 bg-transparent text-white hover:bg-white/15 hover:border-white transition-all shadow-sm cursor-pointer select-none"
+                    >
                       BEST SELLERS
-                    </Button>
+                    </button>
                   </Link>
                 </div>
               </div>
@@ -569,10 +580,10 @@ export default function HomePage() {
 
               {/* Right Column: Interactive Face Comparison Slider (Clean Images With Draggable Arrow Handle) */}
               <RadianceComparisonSlider
-                beforeImage="https://res.cloudinary.com/web8vmww/image/upload/v1792431841/dimsglow/editorial/day1_before_clean_radiance.jpg"
-                afterImage="https://res.cloudinary.com/web8vmww/image/upload/v1792431843/dimsglow/editorial/day14_after_clean_radiance.jpg"
-                beforeAlt="Day 1 Clinical Face Before Radiance Treatment"
-                afterAlt="Day 14 Radiant Glass Skin Clinical Transformation"
+                beforeImage="https://res.cloudinary.com/web8vmww/image/upload/v1792431843/dimsglow/editorial/day14_after_clean_radiance.jpg"
+                afterImage="https://res.cloudinary.com/web8vmww/image/upload/v1792431841/dimsglow/editorial/day1_before_clean_radiance.jpg"
+                beforeAlt="Day 1 Clinical Face with Spots and Blemishes Before Treatment"
+                afterAlt="Day 14 Transformed Radiant Glass Skin After Treatment"
               />
             </div>
           </div>

@@ -40,7 +40,7 @@ export const ProductSchema = z.object({
     })
   ).min(1),
   benefitPill: z.string().optional(), // e.g. "Crème Highlighter Formula", "Infused with Aloe Vera & Vitamin E"
-  unlockFreeGift: z.boolean().default(true),
+  unlockFreeGift: z.boolean().default(false),
   ratingSummary: z.object({
     average: z.number().min(0).max(5).default(5.0),
     reviewCount: z.number().int().nonnegative().default(0),

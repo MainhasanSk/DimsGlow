@@ -23,8 +23,8 @@ describe('UI Primitives and Design System', () => {
   });
 
   it('renders Badge with correct variant content', () => {
-    render(<Badge variant="freeGift">UNLOCK FREE GIFT</Badge>);
-    expect(screen.getByText('UNLOCK FREE GIFT')).toBeDefined();
+    render(<Badge variant="freeGift">SPECIAL OFFER</Badge>);
+    expect(screen.getByText('SPECIAL OFFER')).toBeDefined();
   });
 
   it('renders Input with accessible label and error association', () => {
@@ -57,9 +57,8 @@ describe('RadianceComparisonSlider Component', () => {
     expect(slider).toBeDefined();
     expect(slider.getAttribute('aria-valuenow')).toBe('50');
 
-    // Badges
-    expect(screen.getByText(/day 1 • before/i)).toBeDefined();
-    expect(screen.getByText(/day 14 • radiance/i)).toBeDefined();
+    // Instruction hint
+    expect(screen.getByText(/drag arrow left \/ right to compare/i)).toBeDefined();
 
     // Keyboard navigation
     fireEvent.keyDown(slider, { key: 'ArrowRight' });

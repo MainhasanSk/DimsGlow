@@ -62,7 +62,7 @@ export default function AccountLayout({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Sidebar (4 cols) */}
-            <aside className="lg:col-span-4 bg-white rounded-xl border border-[#E8E2E7] overflow-hidden shadow-xs sticky top-24">
+            <aside className="lg:col-span-4 bg-white rounded-xl border border-[#E8E2E7] overflow-hidden shadow-xs static lg:sticky lg:top-24 z-10">
               {/* User Header Profile */}
               <div className="p-6 bg-linear-to-br from-[#FAF4F7] to-[#FAF8FA] border-b border-[#E8E2E7] flex items-center gap-4">
                 <div className="w-14 h-14 rounded-full bg-[#B83B63] text-white flex items-center justify-center font-serif text-2xl font-bold shadow-xs">

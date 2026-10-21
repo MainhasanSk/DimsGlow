@@ -26,7 +26,7 @@ describe('Firestore Domain Schemas and Invariants', () => {
         },
       ],
       benefitPill: 'Natural Glow, Dewy Finish',
-      unlockFreeGift: true,
+      unlockFreeGift: false,
       ratingSummary: {
         average: 5.0,
         reviewCount: 17,

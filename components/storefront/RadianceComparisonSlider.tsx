@@ -13,10 +13,10 @@ interface RadianceComparisonSliderProps {
 }
 
 export function RadianceComparisonSlider({
-  beforeImage = 'https://res.cloudinary.com/web8vmww/image/upload/v1792431841/dimsglow/editorial/day1_before_clean_radiance.jpg',
-  afterImage = 'https://res.cloudinary.com/web8vmww/image/upload/v1792431843/dimsglow/editorial/day14_after_clean_radiance.jpg',
-  beforeAlt = 'Day 1 Before Radiance Treatment',
-  afterAlt = 'Day 14 After Glass Skin Radiance Treatment',
+  beforeImage = 'https://res.cloudinary.com/web8vmww/image/upload/v1792431843/dimsglow/editorial/day14_after_clean_radiance.jpg',
+  afterImage = 'https://res.cloudinary.com/web8vmww/image/upload/v1792431841/dimsglow/editorial/day1_before_clean_radiance.jpg',
+  beforeAlt = 'Day 1 Clinical Face with Spots and Blemishes Before Treatment',
+  afterAlt = 'Day 14 Transformed Radiant Glass Skin After Treatment',
   className = '',
 }: RadianceComparisonSliderProps) {
   const [sliderPosition, setSliderPosition] = useState<number>(50);
@@ -108,18 +108,7 @@ export function RadianceComparisonSlider({
           />
         </div>
 
-        {/* Floating Badges on Image */}
-        <div className="absolute top-2.5 left-2.5 z-20 pointer-events-none">
-          <span className="bg-black/75 backdrop-blur-md text-[#FAF8FA] border border-white/20 text-[9px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full shadow-md uppercase tracking-wider">
-            Day 1 • Before
-          </span>
-        </div>
 
-        <div className="absolute top-2.5 right-2.5 z-20 pointer-events-none">
-          <span className="bg-[#5B132B]/90 backdrop-blur-md text-[#D4AF37] border border-[#D4AF37]/60 text-[9px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full shadow-md uppercase tracking-wider flex items-center gap-1">
-            <Sparkles className="w-3 h-3 text-[#D4AF37]" /> Day 14 • Radiance
-          </span>
-        </div>
 
         {/* Interactive Vertical Divider Line & Draggable Knob */}
         <div

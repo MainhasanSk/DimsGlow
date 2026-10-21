@@ -108,524 +108,767 @@ export const CATEGORIES: Record<string, CategoryInfo> = {
 // Curated reference products adhering to all schema rules
 export const CATALOG_PRODUCTS: Product[] = [
   {
-    id: 'prod_skin_tint',
-    slug: 'skin-tint-5-in-1',
-    name: 'Skin Tint 5 In 1 Multifunctional Serum Foundation',
-    tagline: 'Lightweight formula with Niacinamide & Rice Water for a natural, hydrated glow',
-    description: 'A revolutionary 5-in-1 powerhouse effortlessly blending the benefits of a primer, foundation, sunscreen, and moisturizer in one step. Enriched with Niacinamide and rice water for breathable, buildable coverage with SPF 20 PA++++ protection.',
-    categoryIds: ['face', 'professional', 'offers', 'all'],
-    status: 'published',
-    pricePaise: 31900,
-    compareAtPricePaise: 39900,
-    currency: 'INR',
-    media: [
-      {
-        publicId: 'dimsglow/products/skin_tint_1',
-        secureUrl: '/products/featured-product.jpeg',
-        altText: 'DIMSGLOW Skin Tint 5 In 1 Serum Foundation',
-        isPrimary: true,
-      },
-      {
-        publicId: 'dimsglow/products/skin_tint_2',
-        secureUrl: '/categories/face.jpg',
-        altText: 'Natural Dewy Skin Coverage & Formula Finish',
-        isPrimary: false,
-      },
-      {
-        publicId: 'dimsglow/products/skin_tint_3',
-        secureUrl: '/categories/skin-care.jpg',
-        altText: 'Active Niacinamide & Rice Water Infusion',
-        isPrimary: false,
-      },
-      {
-        publicId: 'dimsglow/products/skin_tint_4',
-        secureUrl: '/categories/combos.jpg',
-        altText: 'Studio Swatch Shades & Texture',
-        isPrimary: false,
-      },
+    "id": "prod_skin_tint",
+    "slug": "skin-tint-5-in-1",
+    "name": "Skin Tint 5 In 1 Multifunctional Serum Foundation",
+    "tagline": "Lightweight formula with Niacinamide & Rice Water for a natural, hydrated glow",
+    "description": "A revolutionary 5-in-1 powerhouse effortlessly blending primer, foundation, sunscreen, and moisturizer in one step. Enriched with Niacinamide and rice water for breathable, buildable coverage with SPF 20 PA++++ protection.",
+    "categoryIds": [
+      "face",
+      "professional",
+      "offers",
+      "all"
     ],
-    benefitPill: 'Natural Glow, Dewy Finish',
-    unlockFreeGift: true,
-    ratingSummary: { average: 5.0, reviewCount: 17 },
-    trustBadges: ['Toxic Free', 'Dermatologically Tested', 'Vegan', 'SPF 20 PA++++'],
-    variants: [
+    "status": "published",
+    "pricePaise": 31900,
+    "compareAtPricePaise": 39900,
+    "currency": "INR",
+    "media": [
       {
-        id: 'var_whipped_cream',
-        sku: 'DIMS-ST-01',
-        title: 'Whipped Cream',
-        options: [{ name: 'Shade', value: 'Whipped Cream', swatchColor: '#F5E3D3' }],
-        pricePaise: 31900,
-        onHand: 40,
-        reserved: 1,
-        lowStockThreshold: 5,
-        active: true,
+        "publicId": "dimsglow/products/featured_skin_tint",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614527/dimsglow/products/featured_skin_tint.jpg",
+        "altText": "DIMSGLOW Skin Tint 5 In 1 Serum Foundation",
+        "isPrimary": true
       },
       {
-        id: 'var_vanilla_frappe',
-        sku: 'DIMS-ST-02',
-        title: 'Vanilla Frappe',
-        options: [{ name: 'Shade', value: 'Vanilla Frappe', swatchColor: '#E8D0BA' }],
-        pricePaise: 31900,
-        onHand: 35,
-        reserved: 0,
-        lowStockThreshold: 5,
-        active: true,
+        "publicId": "dimsglow/products/category_face_luxury",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614529/dimsglow/products/category_face_luxury.webp",
+        "altText": "Natural Dewy Skin Coverage & Formula Finish",
+        "isPrimary": false
       },
       {
-        id: 'var_latte_please',
-        sku: 'DIMS-ST-03',
-        title: 'Latte Please',
-        options: [{ name: 'Shade', value: 'Latte Please', swatchColor: '#D9B89D' }],
-        pricePaise: 31900,
-        onHand: 28,
-        reserved: 2,
-        lowStockThreshold: 5,
-        active: true,
+        "publicId": "dimsglow/products/category_skincare_luxury",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614530/dimsglow/products/category_skincare_luxury.webp",
+        "altText": "Active Niacinamide & Rice Water Infusion",
+        "isPrimary": false
       },
       {
-        id: 'var_cappucino',
-        sku: 'DIMS-ST-04',
-        title: 'Cappucino',
-        options: [{ name: 'Shade', value: 'Cappucino', swatchColor: '#C49E80' }],
-        pricePaise: 31900,
-        onHand: 20,
-        reserved: 0,
-        lowStockThreshold: 5,
-        active: true,
-      },
-      {
-        id: 'var_chai_chill',
-        sku: 'DIMS-ST-05',
-        title: 'Chai & Chill',
-        options: [{ name: 'Shade', value: 'Chai & Chill', swatchColor: '#B08868' }],
-        pricePaise: 31900,
-        onHand: 15,
-        reserved: 0,
-        lowStockThreshold: 5,
-        active: true,
-      },
-      {
-        id: 'var_filter_coffee',
-        sku: 'DIMS-ST-06',
-        title: 'Filter Coffee',
-        options: [{ name: 'Shade', value: 'Filter Coffee', swatchColor: '#9C7252' }],
-        pricePaise: 31900,
-        onHand: 12,
-        reserved: 0,
-        lowStockThreshold: 5,
-        active: true,
-      },
-      {
-        id: 'var_hazelnut_shot',
-        sku: 'DIMS-ST-07',
-        title: 'Hazelnut Shot',
-        options: [{ name: 'Shade', value: 'Hazelnut Shot', swatchColor: '#825A3B' }],
-        pricePaise: 31900,
-        onHand: 18,
-        reserved: 0,
-        lowStockThreshold: 5,
-        active: true,
-      },
-      {
-        id: 'var_brewtiful',
-        sku: 'DIMS-ST-08',
-        title: 'Brewtiful',
-        options: [{ name: 'Shade', value: 'Brewtiful', swatchColor: '#6B472A' }],
-        pricePaise: 31900,
-        onHand: 10,
-        reserved: 0,
-        lowStockThreshold: 5,
-        active: true,
-      },
+        "publicId": "dimsglow/products/category_combos_luxury",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614531/dimsglow/products/category_combos_luxury.webp",
+        "altText": "Studio Swatch Shades & Texture",
+        "isPrimary": false
+      }
     ],
-    featured: true,
-    bestseller: true,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    "benefitPill": "Natural Glow, Dewy Finish",
+    "unlockFreeGift": false,
+    "ratingSummary": {
+      "average": 5,
+      "reviewCount": 17
+    },
+    "trustBadges": [
+      "Toxic Free",
+      "Dermatologically Tested",
+      "Vegan",
+      "SPF 20 PA++++"
+    ],
+    "variants": [
+      {
+        "id": "var_whipped_cream",
+        "sku": "DIMS-ST-01",
+        "title": "Whipped Cream",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Whipped Cream",
+            "swatchColor": "#F3E5DC"
+          }
+        ],
+        "pricePaise": 31900,
+        "onHand": 45,
+        "reserved": 2,
+        "lowStockThreshold": 5,
+        "active": true
+      },
+      {
+        "id": "var_creamy_vanilla",
+        "sku": "DIMS-ST-02",
+        "title": "Creamy Vanilla",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Creamy Vanilla",
+            "swatchColor": "#EED9C4"
+          }
+        ],
+        "pricePaise": 31900,
+        "onHand": 60,
+        "reserved": 5,
+        "lowStockThreshold": 5,
+        "active": true
+      },
+      {
+        "id": "var_golden_honey",
+        "sku": "DIMS-ST-03",
+        "title": "Golden Honey",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Golden Honey",
+            "swatchColor": "#D8B38E"
+          }
+        ],
+        "pricePaise": 31900,
+        "onHand": 40,
+        "reserved": 0,
+        "lowStockThreshold": 5,
+        "active": true
+      },
+      {
+        "id": "var_warm_caramel",
+        "sku": "DIMS-ST-04",
+        "title": "Warm Caramel",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Warm Caramel",
+            "swatchColor": "#C49666"
+          }
+        ],
+        "pricePaise": 31900,
+        "onHand": 25,
+        "reserved": 1,
+        "lowStockThreshold": 5,
+        "active": true
+      },
+      {
+        "id": "var_deep_toffee",
+        "sku": "DIMS-ST-05",
+        "title": "Deep Toffee",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Deep Toffee",
+            "swatchColor": "#A27046"
+          }
+        ],
+        "pricePaise": 31900,
+        "onHand": 20,
+        "reserved": 0,
+        "lowStockThreshold": 5,
+        "active": true
+      },
+      {
+        "id": "var_rich_cocoa",
+        "sku": "DIMS-ST-06",
+        "title": "Rich Cocoa",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Rich Cocoa",
+            "swatchColor": "#754B2F"
+          }
+        ],
+        "pricePaise": 31900,
+        "onHand": 15,
+        "reserved": 0,
+        "lowStockThreshold": 5,
+        "active": true
+      }
+    ],
+    "featured": true,
+    "bestseller": true,
+    "createdAt": 1773000000000,
+    "updatedAt": 1792614522918
   },
   {
-    id: 'prod_matte_lipstick',
-    slug: '24hrs-non-transfer-matte-lipstick',
-    name: '24 Hrs Non Transfer Matte Lipstick',
-    tagline: 'High pigment creamy matte finish that stays up to 24 hours without cracking',
-    description: 'Rich, transfer-proof matte lip color enriched with Vitamin E and Castor Oil. Glides like silk and dries down to a comfortable, non-drying velvety finish.',
-    categoryIds: ['lips', 'offers', 'all'],
-    status: 'published',
-    pricePaise: 31000,
-    compareAtPricePaise: 39000,
-    currency: 'INR',
-    media: [
-      {
-        publicId: 'dimsglow/products/matte_lipstick_1',
-        secureUrl: '/categories/lips.jpg',
-        altText: 'DIMSGLOW 24 Hrs Non Transfer Matte Lipstick',
-        isPrimary: true,
-      },
-      {
-        publicId: 'dimsglow/products/matte_lipstick_2',
-        secureUrl: '/categories/face.jpg',
-        altText: 'Velvet Matte Lip Wear on Model',
-        isPrimary: false,
-      },
-      {
-        publicId: 'dimsglow/products/matte_lipstick_3',
-        secureUrl: '/categories/combos.jpg',
-        altText: 'Curated Matte Lip Palette Swatches',
-        isPrimary: false,
-      },
-      {
-        publicId: 'dimsglow/products/matte_lipstick_4',
-        secureUrl: '/products/featured-product.jpeg',
-        altText: 'Transfer-proof Packaging & Bullet',
-        isPrimary: false,
-      },
+    "id": "prod_matte_lipstick",
+    "slug": "24hrs-non-transfer-matte-lipstick",
+    "name": "24 Hrs Non Transfer Matte Lipstick",
+    "tagline": "Waterproof, smudge-proof formulation with rich matte payoff that lasts through the day",
+    "description": "Ultra-pigmented velvet matte liquid lipstick that glides effortlessly and sets in 60 seconds without cracking or drying your lips. 100% transfer-proof formulation infused with Vitamin E.",
+    "categoryIds": [
+      "lips",
+      "bestsellers",
+      "all"
     ],
-    benefitPill: 'Transfer & Smudge Proof',
-    unlockFreeGift: true,
-    ratingSummary: { average: 4.8, reviewCount: 42 },
-    trustBadges: ['Toxic Free', 'Dermatologically Tested', 'Vegan'],
-    variants: [
+    "status": "published",
+    "pricePaise": 31000,
+    "compareAtPricePaise": 39000,
+    "currency": "INR",
+    "media": [
       {
-        id: 'var_red_royale',
-        sku: 'DIMS-LP-01',
-        title: 'Red Royale',
-        options: [{ name: 'Shade', value: 'Red Royale', swatchColor: '#9E1B32' }],
-        pricePaise: 31000,
-        onHand: 50,
-        reserved: 3,
-        lowStockThreshold: 5,
-        active: true,
+        "publicId": "dimsglow/products/category_lips_luxury",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614540/dimsglow/products/category_lips_luxury.webp",
+        "altText": "DIMSGLOW 24 Hrs Matte Lipstick",
+        "isPrimary": true
       },
       {
-        id: 'var_berry_bloom',
-        sku: 'DIMS-LP-02',
-        title: 'Berry Bloom',
-        options: [{ name: 'Shade', value: 'Berry Bloom', swatchColor: '#7A1C43' }],
-        pricePaise: 31000,
-        onHand: 45,
-        reserved: 1,
-        lowStockThreshold: 5,
-        active: true,
+        "publicId": "dimsglow/products/category_face_luxury",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614529/dimsglow/products/category_face_luxury.webp",
+        "altText": "Matte Finish Texture & Application",
+        "isPrimary": false
       },
       {
-        id: 'var_nude_crush',
-        sku: 'DIMS-LP-03',
-        title: 'Nude Crush',
-        options: [{ name: 'Shade', value: 'Nude Crush', swatchColor: '#B36D67' }],
-        pricePaise: 31000,
-        onHand: 30,
-        reserved: 0,
-        lowStockThreshold: 5,
-        active: true,
+        "publicId": "dimsglow/products/category_combos_luxury",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614531/dimsglow/products/category_combos_luxury.webp",
+        "altText": "Curated Matte Lip Palette Swatches",
+        "isPrimary": false
       },
       {
-        id: 'var_mauve_magic',
-        sku: 'DIMS-LP-04',
-        title: 'Mauve Magic',
-        options: [{ name: 'Shade', value: 'Mauve Magic', swatchColor: '#8C4F62' }],
-        pricePaise: 31000,
-        onHand: 35,
-        reserved: 0,
-        lowStockThreshold: 5,
-        active: true,
-      },
+        "publicId": "dimsglow/products/featured_skin_tint",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614527/dimsglow/products/featured_skin_tint.jpg",
+        "altText": "Transfer-proof Packaging & Bullet",
+        "isPrimary": false
+      }
     ],
-    featured: true,
-    bestseller: true,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    "benefitPill": "Transfer & Smudge Proof",
+    "unlockFreeGift": false,
+    "ratingSummary": {
+      "average": 4.8,
+      "reviewCount": 42
+    },
+    "trustBadges": [
+      "Toxic Free",
+      "Dermatologically Tested",
+      "Vegan"
+    ],
+    "variants": [
+      {
+        "id": "var_red_royale",
+        "sku": "DIMS-LP-01",
+        "title": "Red Royale",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Red Royale",
+            "swatchColor": "#9E1B32"
+          }
+        ],
+        "pricePaise": 31000,
+        "onHand": 50,
+        "reserved": 3,
+        "lowStockThreshold": 5,
+        "active": true
+      },
+      {
+        "id": "var_berry_bloom",
+        "sku": "DIMS-LP-02",
+        "title": "Berry Bloom",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Berry Bloom",
+            "swatchColor": "#7A1C43"
+          }
+        ],
+        "pricePaise": 31000,
+        "onHand": 45,
+        "reserved": 1,
+        "lowStockThreshold": 5,
+        "active": true
+      },
+      {
+        "id": "var_nude_crush",
+        "sku": "DIMS-LP-03",
+        "title": "Nude Crush",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Nude Crush",
+            "swatchColor": "#B36D67"
+          }
+        ],
+        "pricePaise": 31000,
+        "onHand": 30,
+        "reserved": 0,
+        "lowStockThreshold": 5,
+        "active": true
+      },
+      {
+        "id": "var_rose_wine",
+        "sku": "DIMS-LP-04",
+        "title": "Rose Wine",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Rose Wine",
+            "swatchColor": "#8C3D52"
+          }
+        ],
+        "pricePaise": 31000,
+        "onHand": 35,
+        "reserved": 2,
+        "lowStockThreshold": 5,
+        "active": true
+      }
+    ],
+    "featured": true,
+    "bestseller": true,
+    "createdAt": 1773000000000,
+    "updatedAt": 1792614522918
   },
   {
-    id: 'prod_strobe_cream',
-    slug: 'instant-glass-skin-strobe-cream',
-    name: 'Instant Glass Skin Strobe Cream',
-    tagline: 'Infused with Hyaluronic Acid & Panthenol for a radiant lit-from-within glow',
-    description: 'Achieve the viral Korean glass-skin radiance. Can be worn alone on bare skin, mixed into foundation, or tapped on high points as an ethereal illuminator.',
-    categoryIds: ['face', 'skin-care', 'all'],
-    status: 'published',
-    pricePaise: 39900,
-    compareAtPricePaise: 49900,
-    currency: 'INR',
-    media: [
-      {
-        publicId: 'dimsglow/products/strobe_cream_1',
-        secureUrl: '/brand/dimsglow-logo.jpg',
-        altText: 'DIMSGLOW Strobe Cream',
-        isPrimary: true,
-      },
+    "id": "prod_strobe_cream",
+    "slug": "creamy-to-matte-stick-foundation",
+    "name": "Creamy-to-Matte Stick Foundation",
+    "tagline": "Multi-use foundation stick with buildable coverage and velvet soft-focus finish",
+    "description": "Versatile stick formulation that melts into skin for flawless contouring, spot concealing, or all-over coverage. Infused with Hyaluronic Acid and SPF 50 PA++++ for all-day skin nourishment.",
+    "categoryIds": [
+      "face",
+      "bestsellers",
+      "all"
     ],
-    benefitPill: 'Natural Radiant Glow',
-    unlockFreeGift: true,
-    ratingSummary: { average: 4.9, reviewCount: 26 },
-    trustBadges: ['Toxic Free', 'Dermatologically Tested', 'Vegan'],
-    variants: [
+    "status": "published",
+    "pricePaise": 34900,
+    "compareAtPricePaise": 44900,
+    "currency": "INR",
+    "media": [
       {
-        id: 'var_pink_topaz',
-        sku: 'DIMS-SC-01',
-        title: 'Pink Topaz',
-        options: [{ name: 'Shade', value: 'Pink Topaz', swatchColor: '#F2D5D9' }],
-        pricePaise: 39900,
-        onHand: 30,
-        reserved: 0,
-        lowStockThreshold: 5,
-        active: true,
+        "publicId": "dimsglow/products/category_face_luxury",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614529/dimsglow/products/category_face_luxury.webp",
+        "altText": "Creamy-to-Matte Stick Foundation",
+        "isPrimary": true
       },
       {
-        id: 'var_gold_champagne',
-        sku: 'DIMS-SC-02',
-        title: 'Gold Champagne',
-        options: [{ name: 'Shade', value: 'Gold Champagne', swatchColor: '#F5E2C8' }],
-        pricePaise: 39900,
-        onHand: 25,
-        reserved: 1,
-        lowStockThreshold: 5,
-        active: true,
+        "publicId": "dimsglow/products/featured_skin_tint",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614527/dimsglow/products/featured_skin_tint.jpg",
+        "altText": "Velvet Application & Swatch",
+        "isPrimary": false
       },
+      {
+        "publicId": "dimsglow/products/category_combos_luxury",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614531/dimsglow/products/category_combos_luxury.webp",
+        "altText": "Contour & Conceal Stick Detail",
+        "isPrimary": false
+      }
     ],
-    featured: true,
-    bestseller: true,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    "benefitPill": "Natural Radiant Glow",
+    "unlockFreeGift": false,
+    "ratingSummary": {
+      "average": 4.9,
+      "reviewCount": 26
+    },
+    "trustBadges": [
+      "Toxic Free",
+      "Dermatologically Tested",
+      "Vegan"
+    ],
+    "variants": [
+      {
+        "id": "var_porcelain_glow",
+        "sku": "DIMS-SF-01",
+        "title": "Porcelain Glow",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Porcelain Glow",
+            "swatchColor": "#F5E4D7"
+          }
+        ],
+        "pricePaise": 34900,
+        "onHand": 35,
+        "reserved": 0,
+        "lowStockThreshold": 5,
+        "active": true
+      },
+      {
+        "id": "var_biscuit_beige",
+        "sku": "DIMS-SF-02",
+        "title": "Biscuit Beige",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Biscuit Beige",
+            "swatchColor": "#E2BF9E"
+          }
+        ],
+        "pricePaise": 34900,
+        "onHand": 40,
+        "reserved": 2,
+        "lowStockThreshold": 5,
+        "active": true
+      },
+      {
+        "id": "var_amber_tan",
+        "sku": "DIMS-SF-03",
+        "title": "Amber Tan",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Amber Tan",
+            "swatchColor": "#B68255"
+          }
+        ],
+        "pricePaise": 34900,
+        "onHand": 28,
+        "reserved": 1,
+        "lowStockThreshold": 5,
+        "active": true
+      }
+    ],
+    "featured": true,
+    "bestseller": true,
+    "createdAt": 1773000000000,
+    "updatedAt": 1792614522918
   },
   {
-    id: 'prod_setting_spray',
-    slug: 'super-lock-makeup-setting-spray',
-    name: 'Super Lock Makeup Setting Spray',
-    tagline: 'High-performing with Witch Hazel & Aloe Vera for 24-hour shine control',
-    description: 'An ultra-fine weightless mist that seals makeup for up to 24 hours against heat, humidity, and sweat.',
-    categoryIds: ['face', 'professional', 'offers', 'all'],
-    status: 'published',
-    pricePaise: 24000,
-    compareAtPricePaise: 31000,
-    currency: 'INR',
-    media: [
-      {
-        publicId: 'dimsglow/products/setting_spray_1',
-        secureUrl: '/categories/face.jpg',
-        altText: 'DIMSGLOW Setting Spray',
-        isPrimary: true,
-      },
+    "id": "prod_setting_spray",
+    "slug": "super-lock-makeup-setting-spray",
+    "name": "Super Lock Makeup Setting Spray",
+    "tagline": "Micro-fine mist lock with Green Tea extract keeping makeup fresh up to 16 hours",
+    "description": "Weightless micro-mist setting spray that locks foundation, eyeshadow, and blush in place for up to 16 hours. Controls shine without drying skin.",
+    "categoryIds": [
+      "face",
+      "all"
     ],
-    benefitPill: 'Smudge-Proof & Long Lasting',
-    unlockFreeGift: true,
-    ratingSummary: { average: 4.7, reviewCount: 38 },
-    trustBadges: ['Toxic Free', 'Dermatologically Tested', 'Vegan'],
-    variants: [
+    "status": "published",
+    "pricePaise": 29900,
+    "compareAtPricePaise": 38000,
+    "currency": "INR",
+    "media": [
       {
-        id: 'var_default_spray',
-        sku: 'DIMS-SS-100',
-        title: '100ml Matte Lock',
-        options: [{ name: 'Size', value: '100ml' }],
-        pricePaise: 24000,
-        onHand: 60,
-        reserved: 4,
-        lowStockThreshold: 5,
-        active: true,
+        "publicId": "dimsglow/products/brand_dimsglow_emblem",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614560/dimsglow/products/brand_dimsglow_emblem.jpg",
+        "altText": "Super Lock Makeup Setting Spray",
+        "isPrimary": true
       },
+      {
+        "publicId": "dimsglow/products/category_face_luxury",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614529/dimsglow/products/category_face_luxury.webp",
+        "altText": "Micro-mist Nozzle & Green Tea Formula",
+        "isPrimary": false
+      }
     ],
-    featured: true,
-    bestseller: true,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    "benefitPill": "Smudge-Proof & Long Lasting",
+    "unlockFreeGift": false,
+    "ratingSummary": {
+      "average": 4.7,
+      "reviewCount": 38
+    },
+    "trustBadges": [
+      "Toxic Free",
+      "Dermatologically Tested",
+      "Vegan"
+    ],
+    "variants": [
+      {
+        "id": "var_matte_finish",
+        "sku": "DIMS-SS-01",
+        "title": "Matte Finish 100ml",
+        "options": [
+          {
+            "name": "Finish",
+            "value": "Matte",
+            "swatchColor": "#2B2B2B"
+          }
+        ],
+        "pricePaise": 29900,
+        "onHand": 40,
+        "reserved": 0,
+        "lowStockThreshold": 5,
+        "active": true
+      },
+      {
+        "id": "var_dewy_finish",
+        "sku": "DIMS-SS-02",
+        "title": "Dewy Glow 100ml",
+        "options": [
+          {
+            "name": "Finish",
+            "value": "Dewy Glow",
+            "swatchColor": "#E8A598"
+          }
+        ],
+        "pricePaise": 29900,
+        "onHand": 35,
+        "reserved": 1,
+        "lowStockThreshold": 5,
+        "active": true
+      }
+    ],
+    "featured": true,
+    "bestseller": false,
+    "createdAt": 1773000000000,
+    "updatedAt": 1792614522918
   },
   {
-    id: 'prod_studio_kajal',
-    slug: 'studio-kajal-24hrs',
-    name: 'Studio Kajal 24 Hours Smudge-Proof',
-    tagline: 'Intense jet black finish with nourishing Vitamin E & Chamomile',
-    description: 'Single-stroke bold black kajal that glides with zero tugging and lasts 24 hours without smudging or fading.',
-    categoryIds: ['eyes', 'professional', 'all'],
-    status: 'published',
-    pricePaise: 22000,
-    compareAtPricePaise: 29000,
-    currency: 'INR',
-    media: [
-      {
-        publicId: 'dimsglow/products/kajal_1',
-        secureUrl: '/categories/eyes.jpg',
-        altText: 'DIMSGLOW Studio Kajal',
-        isPrimary: true,
-      },
+    "id": "prod_studio_kajal",
+    "slug": "studio-kajal-24hrs",
+    "name": "Studio Kajal 24 Hours Smudge-Proof",
+    "tagline": "One-stroke intense black kajal enriched with Almond Oil & Vitamin E",
+    "description": "Intense jet black kohl pencil with waterproof and smudge-proof formula tested to stay put for 24 hours. Safe for waterline and contact lens wearers.",
+    "categoryIds": [
+      "eyes",
+      "all"
     ],
-    benefitPill: '24 HRS Smudge-Proof',
-    unlockFreeGift: true,
-    ratingSummary: { average: 4.8, reviewCount: 56 },
-    trustBadges: ['Ophthalmologically Tested', 'Toxic Free', 'Vegan'],
-    variants: [
+    "status": "published",
+    "pricePaise": 19900,
+    "compareAtPricePaise": 25000,
+    "currency": "INR",
+    "media": [
       {
-        id: 'var_jet_black',
-        sku: 'DIMS-KJ-01',
-        title: 'Jet Black',
-        options: [{ name: 'Color', value: 'Jet Black', swatchColor: '#0A0A0A' }],
-        pricePaise: 22000,
-        onHand: 70,
-        reserved: 5,
-        lowStockThreshold: 10,
-        active: true,
+        "publicId": "dimsglow/products/category_eyes_luxury",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614542/dimsglow/products/category_eyes_luxury.webp",
+        "altText": "DIMSGLOW Studio Kajal 24 Hours",
+        "isPrimary": true
       },
+      {
+        "publicId": "dimsglow/products/brand_dimsglow_emblem",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614560/dimsglow/products/brand_dimsglow_emblem.jpg",
+        "altText": "Intense Black Pigment & Smooth Glide",
+        "isPrimary": false
+      }
     ],
-    featured: true,
-    bestseller: true,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    "benefitPill": "24 HRS Smudge-Proof",
+    "unlockFreeGift": false,
+    "ratingSummary": {
+      "average": 4.8,
+      "reviewCount": 56
+    },
+    "trustBadges": [
+      "Ophthalmologically Tested",
+      "Toxic Free",
+      "Vegan"
+    ],
+    "variants": [
+      {
+        "id": "var_jet_black",
+        "sku": "DIMS-KJ-01",
+        "title": "Jet Black 0.35g",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Jet Black",
+            "swatchColor": "#0A0A0A"
+          }
+        ],
+        "pricePaise": 19900,
+        "onHand": 70,
+        "reserved": 4,
+        "lowStockThreshold": 10,
+        "active": true
+      }
+    ],
+    "featured": false,
+    "bestseller": false,
+    "createdAt": 1773000000000,
+    "updatedAt": 1792614522919
   },
   {
-    id: 'prod_nail_polish',
-    slug: 'one-coat-high-shine-nail-polish',
-    name: 'One Coat High Shine Nail Polish',
-    tagline: '70% water-based breathable formula free from 10 toxic chemicals',
-    description: 'Quick-drying, chip-resistant luxury nail enamel delivering opaque vibrant color payoff in just one smooth stroke.',
-    categoryIds: ['nails', 'all'],
-    status: 'published',
-    pricePaise: 6000,
-    compareAtPricePaise: 9000,
-    currency: 'INR',
-    media: [
-      {
-        publicId: 'dimsglow/products/nail_polish_1',
-        secureUrl: '/categories/nails.jpg',
-        altText: 'DIMSGLOW Nail Polish',
-        isPrimary: true,
-      },
+    "id": "prod_nail_polish",
+    "slug": "one-coat-high-shine-nail-polish",
+    "name": "One Coat High Shine Nail Polish",
+    "tagline": "Chip-resistant, non-yellowing formula with salon gel-like gloss in one stroke",
+    "description": "Revolutionary 10-toxic free nail lacquer delivering high-gloss salon shine in a single coat. Infused with Calcium and Biotin to strengthen brittle nails.",
+    "categoryIds": [
+      "nails",
+      "all"
     ],
-    benefitPill: '10-Toxic Free Formula',
-    unlockFreeGift: true,
-    ratingSummary: { average: 4.7, reviewCount: 31 },
-    trustBadges: ['Toxic Free', 'Safe-Cert', 'Vegan'],
-    variants: [
+    "status": "published",
+    "pricePaise": 14900,
+    "compareAtPricePaise": 19900,
+    "currency": "INR",
+    "media": [
       {
-        id: 'var_crimson_glow',
-        sku: 'DIMS-NL-01',
-        title: 'Crimson Glow',
-        options: [{ name: 'Shade', value: 'Crimson Glow', swatchColor: '#A81C2E' }],
-        pricePaise: 6000,
-        onHand: 80,
-        reserved: 2,
-        lowStockThreshold: 10,
-        active: true,
+        "publicId": "dimsglow/products/category_nails_luxury",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614543/dimsglow/products/category_nails_luxury.webp",
+        "altText": "One Coat High Shine Nail Polish",
+        "isPrimary": true
       },
       {
-        id: 'var_rose_pastel',
-        sku: 'DIMS-NL-02',
-        title: 'Rose Pastel',
-        options: [{ name: 'Shade', value: 'Rose Pastel', swatchColor: '#EAA9BA' }],
-        pricePaise: 6000,
-        onHand: 65,
-        reserved: 0,
-        lowStockThreshold: 10,
-        active: true,
-      },
-      {
-        id: 'var_twilight_gold',
-        sku: 'DIMS-NL-03',
-        title: 'Twilight Gold',
-        options: [{ name: 'Shade', value: 'Twilight Gold', swatchColor: '#D4AF37' }],
-        pricePaise: 6000,
-        onHand: 40,
-        reserved: 1,
-        lowStockThreshold: 10,
-        active: true,
-      },
+        "publicId": "dimsglow/products/category_combos_luxury",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614531/dimsglow/products/category_combos_luxury.webp",
+        "altText": "High Gloss Nail Swatches & Brush",
+        "isPrimary": false
+      }
     ],
-    featured: true,
-    bestseller: false,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    "benefitPill": "10-Toxic Free Formula",
+    "unlockFreeGift": false,
+    "ratingSummary": {
+      "average": 4.7,
+      "reviewCount": 31
+    },
+    "trustBadges": [
+      "Toxic Free",
+      "Safe-Cert",
+      "Vegan"
+    ],
+    "variants": [
+      {
+        "id": "var_crimson_gloss",
+        "sku": "DIMS-NP-01",
+        "title": "Crimson Gloss",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Crimson Gloss",
+            "swatchColor": "#A81C2E"
+          }
+        ],
+        "pricePaise": 14900,
+        "onHand": 30,
+        "reserved": 0,
+        "lowStockThreshold": 5,
+        "active": true
+      },
+      {
+        "id": "var_rose_petal",
+        "sku": "DIMS-NP-02",
+        "title": "Rose Petal",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Rose Petal",
+            "swatchColor": "#D9899A"
+          }
+        ],
+        "pricePaise": 14900,
+        "onHand": 25,
+        "reserved": 1,
+        "lowStockThreshold": 5,
+        "active": true
+      },
+      {
+        "id": "var_golden_nude",
+        "sku": "DIMS-NP-03",
+        "title": "Golden Nude",
+        "options": [
+          {
+            "name": "Shade",
+            "value": "Golden Nude",
+            "swatchColor": "#CBB295"
+          }
+        ],
+        "pricePaise": 14900,
+        "onHand": 35,
+        "reserved": 0,
+        "lowStockThreshold": 5,
+        "active": true
+      }
+    ],
+    "featured": false,
+    "bestseller": false,
+    "createdAt": 1773000000000,
+    "updatedAt": 1792614522919
   },
   {
-    id: 'prod_perfume_combo',
-    slug: 'eau-de-parfum-set-pack-of-4',
-    name: 'Eau De Parfum Luxury Discovery Set - Pack of 4',
-    tagline: 'Four signature scents crafted with fine French fragrance oils lasting up to 18 hours',
-    description: 'An enchanting discovery wardrobe featuring four bestselling DIMSGLOW Eau De Parfums: Chic Rose, Amber Velvet, Citrus Bloom, and Midnight Oud.',
-    categoryIds: ['perfumes', 'combos', 'all'],
-    status: 'published',
-    pricePaise: 64900,
-    compareAtPricePaise: 89900,
-    currency: 'INR',
-    media: [
-      {
-        publicId: 'dimsglow/products/perfume_set_1',
-        secureUrl: '/categories/perfumes.jpg',
-        altText: 'DIMSGLOW Eau De Parfum Set',
-        isPrimary: true,
-      },
+    "id": "prod_perfume_combo",
+    "slug": "eau-de-parfum-set-pack-of-4",
+    "name": "Eau De Parfum Luxury Discovery Set - Pack of 4",
+    "tagline": "Four artisanal fragrances crafted in Grasse with long-lasting sensual notes",
+    "description": "A curated discovery wardrobe of four 15ml artisanal EDP perfumes: Velvet Oud, Rose Royale, Vanilla Smoke, and Citrus Breeze. Formulated with IFRA-certified fine fragrance oils.",
+    "categoryIds": [
+      "perfumes",
+      "combos",
+      "all"
     ],
-    benefitPill: 'Fragrance Lasts Upto 18Hrs',
-    unlockFreeGift: true,
-    ratingSummary: { average: 4.9, reviewCount: 20 },
-    trustBadges: ['Cruelty Free', 'Long Lasting 18h', 'Luxury Blend'],
-    variants: [
+    "status": "published",
+    "pricePaise": 99900,
+    "compareAtPricePaise": 149900,
+    "currency": "INR",
+    "media": [
       {
-        id: 'var_discovery_4x15ml',
-        sku: 'DIMS-EDP-4X15',
-        title: 'Pack of 4 (4x15ml)',
-        options: [{ name: 'Edition', value: '4 x 15ml Discovery' }],
-        pricePaise: 64900,
-        onHand: 30,
-        reserved: 2,
-        lowStockThreshold: 5,
-        active: true,
+        "publicId": "dimsglow/products/category_perfumes_luxury",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614557/dimsglow/products/category_perfumes_luxury.webp",
+        "altText": "Eau De Parfum Luxury Discovery Set",
+        "isPrimary": true
       },
+      {
+        "publicId": "dimsglow/products/brand_dimsglow_emblem",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614560/dimsglow/products/brand_dimsglow_emblem.jpg",
+        "altText": "Artisanal Perfume Bottles Presentation",
+        "isPrimary": false
+      }
     ],
-    featured: true,
-    bestseller: true,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    "benefitPill": "Fragrance Lasts Upto 18Hrs",
+    "unlockFreeGift": false,
+    "ratingSummary": {
+      "average": 4.9,
+      "reviewCount": 20
+    },
+    "trustBadges": [
+      "Cruelty Free",
+      "Long Lasting 18h",
+      "Luxury Blend"
+    ],
+    "variants": [
+      {
+        "id": "var_discovery_set",
+        "sku": "DIMS-PF-SET",
+        "title": "Set of 4 x 15ml",
+        "options": [
+          {
+            "name": "Size",
+            "value": "4 x 15ml",
+            "swatchColor": "#AA771C"
+          }
+        ],
+        "pricePaise": 99900,
+        "onHand": 25,
+        "reserved": 2,
+        "lowStockThreshold": 5,
+        "active": true
+      }
+    ],
+    "featured": true,
+    "bestseller": false,
+    "createdAt": 1773000000000,
+    "updatedAt": 1792614522919
   },
   {
-    id: 'prod_sheet_mask',
-    slug: 'rice-water-face-mask-sheet',
-    name: 'Rice Water Glow Face Mask Sheet (Pack of 5)',
-    tagline: 'Deep detox & intense hydration infused with Niacinamide & fermented Rice Water',
-    description: 'Biodegradable sheet mask delivering 15 minutes of intensive skin hydration, blemish reduction, and instant glass-skin radiance.',
-    categoryIds: ['skin-care', 'face', 'all'],
-    status: 'published',
-    pricePaise: 22500,
-    compareAtPricePaise: 30000,
-    currency: 'INR',
-    media: [
-      {
-        publicId: 'dimsglow/products/sheet_mask_1',
-        secureUrl: '/categories/skin-care.jpg',
-        altText: 'DIMSGLOW Rice Water Face Mask Sheet',
-        isPrimary: true,
-      },
-      {
-        publicId: 'dimsglow/products/sheet_mask_2',
-        secureUrl: '/categories/face.jpg',
-        altText: 'Glass Glow Hydrated Complexion Results',
-        isPrimary: false,
-      },
-      {
-        publicId: 'dimsglow/products/sheet_mask_3',
-        secureUrl: '/products/featured-product.jpeg',
-        altText: '5-pack Mask Box & Serum Texture',
-        isPrimary: false,
-      },
+    "id": "prod_sheet_mask",
+    "slug": "rice-water-face-mask-sheet",
+    "name": "Rice Water Glow Face Mask Sheet (Pack of 5)",
+    "tagline": "Infused with fermented Rice Water, Ceramides and Hyaluronic Acid for instant glass skin radiance",
+    "description": "Biodegradable cellulose sheet masks packed with 25ml of concentrated fermented rice water serum per sheet. Plumps fine lines, replenishes moisture barrier, and evens out tone in 15 minutes.",
+    "categoryIds": [
+      "skin-care",
+      "offers",
+      "all"
     ],
-    benefitPill: 'Deep Detox & Intense Hydration',
-    unlockFreeGift: true,
-    ratingSummary: { average: 4.8, reviewCount: 39 },
-    trustBadges: ['Biodegradable', 'Dermatologically Tested', 'Vegan'],
-    variants: [
+    "status": "published",
+    "pricePaise": 39900,
+    "compareAtPricePaise": 59900,
+    "currency": "INR",
+    "media": [
       {
-        id: 'var_mask_pack_5',
-        sku: 'DIMS-MSK-05',
-        title: 'Pack of 5',
-        options: [{ name: 'Pack', value: '5 Sheets' }],
-        pricePaise: 22500,
-        onHand: 100,
-        reserved: 4,
-        lowStockThreshold: 15,
-        active: true,
+        "publicId": "dimsglow/products/category_skincare_luxury",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614530/dimsglow/products/category_skincare_luxury.webp",
+        "altText": "Rice Water Glow Face Mask Sheet Pack of 5",
+        "isPrimary": true
       },
+      {
+        "publicId": "dimsglow/products/category_face_luxury",
+        "secureUrl": "https://res.cloudinary.com/web8vmww/image/upload/v1792614529/dimsglow/products/category_face_luxury.webp",
+        "altText": "Fermented Rice Water Glass Skin Treatment",
+        "isPrimary": false
+      }
     ],
-    featured: true,
-    bestseller: false,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  },
+    "benefitPill": "Deep Detox & Intense Hydration",
+    "unlockFreeGift": false,
+    "ratingSummary": {
+      "average": 4.8,
+      "reviewCount": 39
+    },
+    "trustBadges": [
+      "Biodegradable",
+      "Dermatologically Tested",
+      "Vegan"
+    ],
+    "variants": [
+      {
+        "id": "var_pack_of_5",
+        "sku": "DIMS-SM-05",
+        "title": "Pack of 5 Sheets",
+        "options": [
+          {
+            "name": "Pack",
+            "value": "5 Sheets",
+            "swatchColor": "#E6DCD4"
+          }
+        ],
+        "pricePaise": 39900,
+        "onHand": 60,
+        "reserved": 3,
+        "lowStockThreshold": 10,
+        "active": true
+      }
+    ],
+    "featured": false,
+    "bestseller": false,
+    "createdAt": 1773000000000,
+    "updatedAt": 1792614522919
+  }
 ];
 
 /**

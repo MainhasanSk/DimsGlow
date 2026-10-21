@@ -7,6 +7,7 @@ import { useSearchParams, notFound } from 'next/navigation';
 import { StorefrontShell } from '@/components/storefront/StorefrontShell';
 import { ProductCard } from '@/components/storefront/ProductCard';
 import { CATEGORIES, CATALOG_PRODUCTS } from '@/lib/data/catalog';
+import { useProducts } from '@/lib/catalog/productStore';
 import { getCategoryHeroes, DEFAULT_CATEGORY_HEROES } from '@/lib/content/contentService';
 import type { Product, ProductVariant } from '@/lib/schemas/product';
 import type { CategoryHero } from '@/lib/schemas/content';
@@ -115,13 +116,17 @@ export function CollectionClient({ slug }: CollectionClientProps) {
   const [filterInStockOnly, setFilterInStockOnly] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
+  // Dynamic live products from Firestore database
+  const { products: liveProducts } = useProducts();
+  const currentCatalog = liveProducts.length > 0 ? liveProducts : CATALOG_PRODUCTS;
+
   // Quick-view / Choose options state
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [quickViewSelectedVariant, setQuickViewSelectedVariant] = useState<ProductVariant | null>(null);
 
   // Filter products by category, tag, and stock
   const filteredProducts = useMemo(() => {
-    let list = [...CATALOG_PRODUCTS];
+    let list = [...currentCatalog];
 
     if (isBestsellerView) {
       list = list.filter((p) => p.bestseller === true);
@@ -131,7 +136,6 @@ export function CollectionClient({ slug }: CollectionClientProps) {
       list = list.filter(
         (p) =>
           p.categoryIds.includes('offers') ||
-          p.unlockFreeGift === true ||
           Boolean(p.compareAtPricePaise && p.compareAtPricePaise > p.pricePaise)
       );
     } else if (isProfessionalView) {
@@ -146,8 +150,8 @@ export function CollectionClient({ slug }: CollectionClientProps) {
     }
 
     // Additional query param filters
-    if (tagParam === 'gift') {
-      list = list.filter((p) => p.unlockFreeGift === true);
+    if (tagParam === 'gift' || tagParam === 'bundle') {
+      list = list.filter((p) => p.categoryIds.includes('combos') || p.categoryIds.includes('offers'));
     }
 
     if (filterInStockOnly) {
@@ -324,8 +328,8 @@ export function CollectionClient({ slug }: CollectionClientProps) {
               <ProductCard
                 key={product.id}
                 product={product}
-                onQuickView={(p, v) => handleOpenQuickView(p, v)}
-                onAddToCart={(p, v) => handleAddToCart(p, v)}
+                onQuickView={(p: Product, v?: ProductVariant) => handleOpenQuickView(p, v)}
+                onAddToCart={(p: Product, v?: ProductVariant) => handleAddToCart(p, v)}
               />
             ))}
           </div>
@@ -350,7 +354,7 @@ export function CollectionClient({ slug }: CollectionClientProps) {
                 className="w-4 h-4 rounded border-[#E8E2E7] text-[#541235] focus:ring-[#541235]"
               />
               <span className="text-xs text-[#2A1810] group-hover:text-[#541235] transition">
-                In Stock Only ({CATALOG_PRODUCTS.filter((p) => p.variants.some((v) => v.onHand > v.reserved)).length})
+                In Stock Only ({currentCatalog.filter((p) => p.variants.some((v) => v.onHand > v.reserved)).length})
               </span>
             </label>
           </div>

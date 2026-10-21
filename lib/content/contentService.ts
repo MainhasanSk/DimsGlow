@@ -29,7 +29,7 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
     tagline: 'EXCLUSIVE WEBSITE OFFER • ABOVE ₹699',
     title: 'FREE LIP OIL & LIPSTICK',
     subtitle: 'Complimentary full-size Peptide Lip Oil & Matte Lipstick gift with every order above ₹699. Limited period offer.',
-    ctaText: 'UNLOCK FREE GIFT',
+    ctaText: 'SHOP EXCLUSIVE OFFER',
     ctaLink: '/collections/combos',
     imageUrl: 'https://res.cloudinary.com/web8vmww/image/upload/v1792429045/dimsglow/hero/hero_lip_oil_offer.jpg',
     bgGradient: 'from-[#3A0F24] via-[#751B47] to-[#240815]',

@@ -30,11 +30,17 @@ const FREE_SHIPPING_THRESHOLD_PAISE = 39900; // ₹399
 const STANDARD_SHIPPING_FEE_PAISE = 4900; // ₹49
 const GIFT_WRAP_FEE_PAISE = 9900; // ₹99
 
-const AVAILABLE_COUPONS = [
+interface CouponDefinition {
+  code: string;
+  description: string;
+  discountPercent?: number;
+  freeShipping?: boolean;
+  minOrderPaise?: number;
+}
+
+const AVAILABLE_COUPONS: CouponDefinition[] = [
   { code: 'EXTRA5', discountPercent: 5, description: 'Extra 5% off on all orders' },
   { code: 'SHIPFREE', freeShipping: true, description: 'Free shipping on any order' },
-  { code: 'LIPOIL', freeGift: 'Free Lip Oil', minOrderPaise: 69900, description: 'Free Lip Oil on orders above ₹699' },
-  { code: 'CASE', freeGift: 'Free Lipstick Case', minOrderPaise: 59900, description: 'Free Lipstick Case on orders above ₹599' },
 ];
 
 export default function CartPage() {

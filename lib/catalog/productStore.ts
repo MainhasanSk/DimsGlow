@@ -1,5 +1,4 @@
-'use client';
-
+import { useState, useEffect } from 'react';
 import { CATALOG_PRODUCTS } from '@/lib/data/catalog';
 import { db } from '@/lib/firebase/client';
 import {
@@ -213,3 +212,53 @@ function notifyCatalogUpdated() {
     window.dispatchEvent(new CustomEvent('dimsglow_catalog_updated'));
   }
 }
+
+/**
+ * React hook that provides dynamic, live synced catalog products from Firestore & Cloudinary.
+ */
+export function useProducts(): { products: Product[]; loading: boolean } {
+  const [products, setProducts] = useState<Product[]>(() => getAllProducts());
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Initial sync
+    setProducts(getAllProducts());
+
+    const handleUpdate = () => {
+      setProducts([...getAllProducts()]);
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('dimsglow_catalog_updated', handleUpdate);
+    }
+
+    // Proactively fetch latest catalog from API (Firestore backend)
+    fetch('/api/products')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.products && Array.isArray(data.products) && data.products.length > 0) {
+          memoryProducts = data.products;
+          setProducts(data.products);
+        }
+      })
+      .catch((err) => console.warn('useProducts Firestore sync error:', err));
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('dimsglow_catalog_updated', handleUpdate);
+      }
+    };
+  }, []);
+
+  return { products, loading };
+}
+
+/**
+ * React hook for a single live product by slug.
+ */
+export function useProduct(slug: string): { product: Product | null; loading: boolean } {
+  const { products, loading } = useProducts();
+  const product = products.find((p) => p.slug === slug) || null;
+  return { product, loading };
+}
+
