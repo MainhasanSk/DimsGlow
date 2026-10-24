@@ -30,6 +30,25 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
+interface HeroSlide {
+  src: string;
+  alt: string;
+  buttonText: string;
+}
+
+const HERO_SLIDES: HeroSlide[] = [
+  {
+    src: '/product/hero-banner-wide.png',
+    alt: 'DIMSGLOW Tinted Sunscreen SPF 50+ - Your Daily Glow Essential',
+    buttonText: 'SHOP NOW',
+  },
+  {
+    src: '/product/hero-banner-wide-2.png',
+    alt: 'DIMSGLOW Sun Protection for a Brighter You - Tinted Sunscreen SPF 50+',
+    buttonText: 'ORDER NOW',
+  },
+];
+
 interface ProductImage {
   src: string;
   alt: string;
@@ -179,13 +198,32 @@ const FAQS = [
 export default function HomePage() {
   const router = useRouter();
   const { addToCart, setIsCartDrawerOpen } = useCart();
+  const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
+  const [isHeroSlidePaused, setIsHeroSlidePaused] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isSlidePaused, setIsSlidePaused] = useState(false);
   const [selectedPack, setSelectedPack] = useState<PackOption>(PACK_OPTIONS[0]);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isAdding, setIsAdding] = useState(false);
 
-  // Auto-slide image timer (every 4 seconds, pauses on hover)
+  // Auto-slide hero banner timer (every 5 seconds, pauses on hover)
+  useEffect(() => {
+    if (isHeroSlidePaused) return;
+    const timer = setInterval(() => {
+      setCurrentHeroSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [isHeroSlidePaused]);
+
+  const handlePrevHeroSlide = () => {
+    setCurrentHeroSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+  };
+
+  const handleNextHeroSlide = () => {
+    setCurrentHeroSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+  };
+
+  // Auto-slide product image timer (every 4 seconds, pauses on hover)
   useEffect(() => {
     if (isSlidePaused) return;
     const timer = setInterval(() => {
@@ -232,25 +270,82 @@ export default function HomePage() {
 
   return (
     <StorefrontShell>
-      {/* 1. FULL-WIDTH PANORAMIC HERO BANNER */}
-      <section className="relative w-full bg-[#FFF0F4] overflow-hidden border-b border-[#F0EBF0]">
-        <div className="relative w-full aspect-[1024/384] max-h-[640px] select-none group shadow-inner">
-          <Link href="#shop" className="block relative w-full h-full cursor-pointer">
-            <Image
-              src="/product/hero-banner-wide.png"
-              alt="DIMSGLOW Tinted Sunscreen SPF 50+ - Your Daily Glow Essential"
-              fill
-              priority
-              className="object-cover w-full h-full"
-            />
-            {/* Clickable Floating Shop Now Button Overlay */}
-            <div className="absolute left-[5.5%] bottom-[12%] hidden sm:flex items-center gap-2">
-              <span className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#B83B63] hover:bg-[#9E2E52] text-white font-extrabold text-xs uppercase tracking-wider shadow-xl hover:scale-105 transition-all">
-                <span>SHOP NOW</span>
-                <ArrowRight className="w-4 h-4" />
-              </span>
-            </div>
-          </Link>
+      {/* 1. FULL-WIDTH PANORAMIC HERO SLIDING BANNER */}
+      <section
+        className="relative w-full bg-[#FFF0F4] overflow-hidden border-b border-[#F0EBF0]"
+        onMouseEnter={() => setIsHeroSlidePaused(true)}
+        onMouseLeave={() => setIsHeroSlidePaused(false)}
+      >
+        <div
+          className="relative w-full aspect-[1024/384] max-h-[640px] select-none group shadow-inner overflow-hidden"
+          style={{ aspectRatio: '1024 / 384' }}
+        >
+          {/* Sliding Track */}
+          <div
+            className="flex h-full w-full transition-transform duration-700 ease-in-out"
+            style={{ transform: `translateX(-${currentHeroSlide * 100}%)` }}
+          >
+            {HERO_SLIDES.map((slide, idx) => (
+              <div key={slide.src} className="relative min-w-full h-full">
+                <Link href="#shop" className="block relative w-full h-full cursor-pointer">
+                  <Image
+                    src={slide.src}
+                    alt={slide.alt}
+                    fill
+                    priority={idx === 0}
+                    className="object-cover w-full h-full"
+                    sizes="100vw"
+                  />
+                  {/* Clickable Floating CTA Button Overlay for Slide 2 (Slide 1 has built-in CTA) */}
+                  {idx === 1 && (
+                    <div className="absolute left-[5.5%] bottom-[12%] hidden sm:flex items-center gap-2">
+                      <span className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#B83B63] hover:bg-[#9E2E52] text-white font-extrabold text-xs uppercase tracking-wider shadow-xl hover:scale-105 transition-all">
+                        <span>{slide.buttonText}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </span>
+                    </div>
+                  )}
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          {/* Left Navigation Chevron */}
+          <button
+            type="button"
+            onClick={handlePrevHeroSlide}
+            aria-label="Previous hero banner"
+            className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/85 hover:bg-white text-[#19161A] hover:text-[#B83B63] shadow-lg border border-white/50 flex items-center justify-center transition-all opacity-85 sm:opacity-0 group-hover:opacity-100 hover:scale-110 cursor-pointer z-20 backdrop-blur-xs"
+          >
+            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+          </button>
+
+          {/* Right Navigation Chevron */}
+          <button
+            type="button"
+            onClick={handleNextHeroSlide}
+            aria-label="Next hero banner"
+            className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/85 hover:bg-white text-[#19161A] hover:text-[#B83B63] shadow-lg border border-white/50 flex items-center justify-center transition-all opacity-85 sm:opacity-0 group-hover:opacity-100 hover:scale-110 cursor-pointer z-20 backdrop-blur-xs"
+          >
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+          </button>
+
+          {/* Slide Indicator Dots */}
+          <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/35 backdrop-blur-md px-3 py-1.5 rounded-full z-20">
+            {HERO_SLIDES.map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setCurrentHeroSlide(idx)}
+                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                  currentHeroSlide === idx
+                    ? 'w-7 bg-[#B83B63]'
+                    : 'w-2 bg-white/70 hover:bg-white'
+                }`}
+                aria-label={`Go to banner slide ${idx + 1}`}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
