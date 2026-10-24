@@ -1,5 +1,13 @@
 import React from 'react';
-import { Routes, Route, Navigate, useParams } from 'react-router-dom';
+import { Routes, Route, Navigate, useParams, useLocation } from 'react-router-dom';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [pathname]);
+  return null;
+}
 
 // Storefront Pages
 import HomePage from '@/app/page';
@@ -31,15 +39,19 @@ function ProductRoute() {
 
 export default function App() {
   return (
-    <Routes>
-      {/* Storefront Routes */}
-      <Route path="/" element={<HomePage />} />
-      <Route path="/cart" element={<CartPage />} />
-      <Route path="/checkout" element={<CheckoutPage />} />
-      <Route path="/checkout/success" element={<OrderSuccessClient />} />
-      <Route path="/order-success" element={<OrderSuccessClient />} />
-      <Route path="/track-order" element={<TrackOrderPage />} />
-      <Route path="/products/:slug" element={<ProductRoute />} />
+    <>
+      <ScrollToTop />
+      <Routes>
+        {/* Storefront Routes */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/checkout/success" element={<OrderSuccessClient />} />
+        <Route path="/order-success" element={<OrderSuccessClient />} />
+        <Route path="/track-order" element={<TrackOrderPage />} />
+        <Route path="/products" element={<Navigate to="/products/tinted-sunscreen-spf50" replace />} />
+        <Route path="/shop" element={<Navigate to="/products/tinted-sunscreen-spf50" replace />} />
+        <Route path="/products/:slug" element={<ProductRoute />} />
 
       {/* Auth Routes */}
       <Route path="/sign-in" element={<SignInPage />} />
@@ -102,5 +114,6 @@ export default function App() {
       {/* Catch-all redirect to storefront */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   );
 }

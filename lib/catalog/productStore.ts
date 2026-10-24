@@ -65,7 +65,16 @@ if (typeof window !== 'undefined' && !isFirestoreInitialized) {
  * Returns merged active catalog products directly from database state.
  */
 export function getAllProducts(): Product[] {
-  return memoryProducts.length > 0 ? memoryProducts : CATALOG_PRODUCTS;
+  // Always ensure default flagship CATALOG_PRODUCTS (like tinted-sunscreen-spf50) are present,
+  // overlaid with any live Firestore updates by slug or ID
+  const map = new Map<string, Product>();
+  for (const p of CATALOG_PRODUCTS) {
+    map.set(p.slug, p);
+  }
+  for (const p of memoryProducts) {
+    map.set(p.slug, p);
+  }
+  return Array.from(map.values());
 }
 
 /**

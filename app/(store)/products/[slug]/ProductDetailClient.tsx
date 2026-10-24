@@ -102,16 +102,23 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
   }, []);
 
   const { products: liveProducts } = useProducts();
-  const currentCatalog = liveProducts.length > 0 ? liveProducts : CATALOG_PRODUCTS;
+  const currentCatalog = React.useMemo(() => {
+    const map = new Map<string, Product>();
+    for (const p of CATALOG_PRODUCTS) {
+      map.set(p.slug, p);
+    }
+    for (const p of liveProducts) {
+      map.set(p.slug, p);
+    }
+    return Array.from(map.values());
+  }, [liveProducts]);
 
-  if (!product && slug) {
-    // If slug doesn't match any in catalog, show notFound
-    const exists = currentCatalog.some((p) => p.slug === slug);
-    if (!exists) notFound();
-  }
-
-  const activeProduct = product || currentCatalog.find((p) => p.slug === slug) || currentCatalog[0];
-  const activeVar = selectedVariant || activeProduct.variants[0];
+  const activeProduct =
+    product ||
+    currentCatalog.find((p) => p.slug === slug) ||
+    CATALOG_PRODUCTS.find((p) => p.slug === slug) ||
+    currentCatalog[0];
+  const activeVar = selectedVariant || activeProduct?.variants?.[0];
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code);
@@ -225,7 +232,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
               {/* Trust Badges */}
               <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
                 <span className="text-[10px] font-extrabold tracking-wider uppercase text-white bg-[#B83B63] px-2.5 py-1 rounded-sm shadow-sm">
-                  1 MIRACLE FORMULA SPF 20
+                  SPF 50+ PA++++ • CLINICAL GLOW
                 </span>
               </div>
 
