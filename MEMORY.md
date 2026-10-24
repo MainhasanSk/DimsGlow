@@ -169,6 +169,7 @@ Do not guess legal/tax/shipping/payment/return/staff permissions. Ask the owner 
   - **Single Product Buy Box:** Simplified buy box to single-product pricing (Launch price ₹999, original MRP ₹1,299).
   - **Hero Section 2K Images:** Updated hero carousel with user's uncompressed 2K assets (`hero-section-img1.png` and `hero-section-img2.png`) in `public/product/` with hardware-accelerated `-webkit-optimize-contrast`.
   - **Navigation Clean-Up:** Removed "CLINICAL BENEFITS", "REVIEWS 4.9", and "TRACK ORDER" links from desktop navbar and mobile drawer in `components/storefront/StorefrontHeader.tsx`.
+  - **Single Product Admin & Catalog Cleanup:** Removed all 8 legacy demo placeholder products from `lib/data/catalog.ts` and `lib/catalog/productStore.ts`. Admin Products, Inventory, and Storefront strictly feature only `DIMSGLOW Tinted Sunscreen SPF 50+ PA++++` (₹999 Launch Price / ₹1,299 MRP).
   - **Deployment:** Production build verified with `vite build` (1.28s) and pushed to GitHub `https://github.com/MainhasanSk/DimsGlow.git` on branch `main`.
 
 ## Update protocol
