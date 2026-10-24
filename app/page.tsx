@@ -583,7 +583,7 @@ export default function HomePage() {
       </section>
 
       {/* INTERACTIVE CLINICAL RESULTS: COVERAGE THAT LOOKS LIKE SKIN */}
-      <section className="py-14 sm:py-20 bg-linear-to-b from-white via-[#FFF9FA] to-white border-b border-[#F0EBF0]">
+      <section id="results" className="py-14 sm:py-20 bg-linear-to-b from-white via-[#FFF9FA] to-white border-b border-[#F0EBF0] scroll-mt-20 sm:scroll-mt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <div className="space-y-1">
             <span className="text-xs font-bold uppercase tracking-widest text-[#B83B63]">
@@ -670,7 +670,7 @@ export default function HomePage() {
       </section>
 
       {/* 3. BEFORE & AFTER TRANSFORMATION SHOWCASE */}
-      <section id="results" className="py-14 sm:py-20 bg-linear-to-b from-[#FFF5F8] to-white border-y border-[#F0EBF0]">
+      <section id="proven-transformation" className="py-14 sm:py-20 bg-linear-to-b from-[#FFF5F8] to-white border-y border-[#F0EBF0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
             <span className="text-xs font-bold text-[#B83B63] uppercase tracking-widest">
