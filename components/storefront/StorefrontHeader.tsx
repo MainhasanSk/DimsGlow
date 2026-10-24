@@ -15,7 +15,6 @@ import {
   ArrowRight,
   ShieldCheck,
   Truck,
-  Star,
   CheckCircle2,
 } from 'lucide-react';
 import { Modal } from '@/components/ui/modal';
@@ -87,28 +86,6 @@ export function StorefrontHeader() {
                 className="hover:text-[#B83B63] transition-colors"
               >
                 BEFORE & AFTER
-              </Link>
-              <Link
-                href="/#benefits"
-                className="hover:text-[#B83B63] transition-colors"
-              >
-                CLINICAL BENEFITS
-              </Link>
-              <Link
-                href="/#reviews"
-                className="hover:text-[#B83B63] transition-colors flex items-center gap-1 text-[#19161A]"
-              >
-                <span>REVIEWS</span>
-                <span className="flex items-center text-[#E5A93C] text-xs">
-                  <Star className="w-3.5 h-3.5 fill-current" />
-                  <span className="font-bold text-[#19161A] ml-0.5">4.9</span>
-                </span>
-              </Link>
-              <Link
-                href="/track-order"
-                className="hover:text-[#B83B63] text-[#6D6670] transition-colors"
-              >
-                TRACK ORDER
               </Link>
             </nav>
 
@@ -336,27 +313,6 @@ export function StorefrontHeader() {
                   className="block py-2 text-sm font-medium text-[#19161A] hover:text-[#B83B63] border-b border-[#F0EBF0]"
                 >
                   Before & After Results
-                </Link>
-                <Link
-                  href="/#benefits"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block py-2 text-sm font-medium text-[#19161A] hover:text-[#B83B63] border-b border-[#F0EBF0]"
-                >
-                  Clinical Benefits
-                </Link>
-                <Link
-                  href="/#reviews"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block py-2 text-sm font-medium text-[#19161A] hover:text-[#B83B63] border-b border-[#F0EBF0]"
-                >
-                  Verified Reviews (4.9★)
-                </Link>
-                <Link
-                  href="/track-order"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block py-2 text-sm font-medium text-[#6D6670] hover:text-[#19161A] border-b border-[#F0EBF0]"
-                >
-                  Track Order
                 </Link>
                 <Link
                   href="/contact"
