@@ -72,8 +72,8 @@ export default function AdminProductsPage() {
   const [formTagline, setFormTagline] = useState('');
   const [formDescription, setFormDescription] = useState('');
   const [formBenefitPill, setFormBenefitPill] = useState('Natural Glow, Dewy Finish');
-  const [formPrice, setFormPrice] = useState('319');
-  const [formComparePrice, setFormComparePrice] = useState('399');
+  const [formPrice, setFormPrice] = useState('999');
+  const [formComparePrice, setFormComparePrice] = useState('1299');
   const [formCategories, setFormCategories] = useState<string[]>(['face']);
   const [formStatus, setFormStatus] = useState<'published' | 'draft' | 'archived'>('published');
   const [formUnlockGift, setFormUnlockGift] = useState(true);

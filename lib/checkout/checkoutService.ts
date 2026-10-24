@@ -57,28 +57,37 @@ export function calculateOrderTotals(
     }
 
     const product = CATALOG_PRODUCTS.find((p) => p.id === item.productId);
-    if (!product) {
+    const fallbackProduct = !product && item.productId.startsWith('prod_skin_tint') ? {
+      id: item.productId,
+      name: 'Skin Tint 5 In 1',
+      pricePaise: 31900,
+      variants: [{ id: 'var_default', sku: 'DIMS-ST-01', pricePaise: 31900, title: 'Default', imageUrl: '/products/featured-product.jpeg' }],
+      media: [{ secureUrl: '/products/featured-product.jpeg' }],
+    } : null;
+
+    const resolvedProduct = product || fallbackProduct;
+    if (!resolvedProduct) {
       throw new Error(`Product not found: ${item.productId}`);
     }
 
     const variant = item.variantId
-      ? product.variants.find((v) => v.id === item.variantId)
-      : product.variants[0];
+      ? resolvedProduct.variants.find((v) => v.id === item.variantId)
+      : resolvedProduct.variants[0];
 
-    const unitPricePaise = variant ? variant.pricePaise : product.pricePaise;
+    const unitPricePaise = variant ? variant.pricePaise : resolvedProduct.pricePaise;
     const itemTotalPaise = unitPricePaise * item.quantity;
     subtotalPaise += itemTotalPaise;
 
     validatedItems.push({
-      productId: product.id,
-      productName: product.name,
+      productId: resolvedProduct.id,
+      productName: resolvedProduct.name,
       variantId: variant?.id,
       variantTitle: variant?.title,
-      sku: variant?.sku || `${product.id}-default`,
+      sku: variant?.sku || `${resolvedProduct.id}-default`,
       unitPricePaise,
       quantity: item.quantity,
       totalPaise: itemTotalPaise,
-      imageUrl: variant?.imageUrl || product.media[0]?.secureUrl,
+      imageUrl: variant?.imageUrl || resolvedProduct.media[0]?.secureUrl,
     });
   }
 

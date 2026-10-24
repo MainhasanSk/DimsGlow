@@ -12,6 +12,17 @@ import {
 } from 'firebase/firestore';
 import type { Product, ProductVariant } from '@/lib/schemas/product';
 
+const LEGACY_DEMO_IDS = new Set([
+  'prod_skin_tint',
+  'prod_lipstick',
+  'prod_stick_foundation',
+  'prod_setting_spray',
+  'prod_kajal',
+  'prod_nail_polish',
+  'prod_perfume_set',
+  'prod_face_mask',
+]);
+
 let memoryProducts: Product[] = [...CATALOG_PRODUCTS];
 let isFirestoreInitialized = false;
 
@@ -26,7 +37,10 @@ if (typeof window !== 'undefined' && !isFirestoreInitialized) {
         if (!snapshot.empty) {
           const list: Product[] = [];
           snapshot.forEach((d) => {
-            list.push(d.data() as Product);
+            const data = d.data() as Product;
+            if (!LEGACY_DEMO_IDS.has(data.id) && !LEGACY_DEMO_IDS.has(d.id)) {
+              list.push(data);
+            }
           });
           memoryProducts = list;
           window.dispatchEvent(new CustomEvent('dimsglow_catalog_updated'));
@@ -69,10 +83,14 @@ export function getAllProducts(): Product[] {
   // overlaid with any live Firestore updates by slug or ID
   const map = new Map<string, Product>();
   for (const p of CATALOG_PRODUCTS) {
-    map.set(p.slug, p);
+    if (!LEGACY_DEMO_IDS.has(p.id)) {
+      map.set(p.slug, p);
+    }
   }
   for (const p of memoryProducts) {
-    map.set(p.slug, p);
+    if (!LEGACY_DEMO_IDS.has(p.id)) {
+      map.set(p.slug, p);
+    }
   }
   return Array.from(map.values());
 }
