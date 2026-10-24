@@ -31,6 +31,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { FAQAccordion } from '../../faq/page';
+import { RadianceComparisonSlider } from '@/components/storefront/RadianceComparisonSlider';
 import { useCart } from '@/lib/cart/CartContext';
 import { useAuth } from '@/lib/auth/AuthContext';
 
@@ -49,7 +50,6 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
   const [pincodeMessage, setPincodeMessage] = useState<string | null>(null);
   const [copiedCoupon, setCopiedCoupon] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'desc' | 'faq'>('desc');
-  const [beforeAfterSlider, setBeforeAfterSlider] = useState(50);
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [recCategory, setRecCategory] = useState<string>('all');
   const [addingCombo, setAddingCombo] = useState(false);
@@ -529,55 +529,12 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
               </p>
             </div>
 
-            <div className="max-w-2xl mx-auto relative aspect-4/3 rounded-2xl overflow-hidden border border-[#E8E2E7] shadow-lg select-none">
-              {/* After Layer (Background) */}
-              <div className="absolute inset-0 bg-[#E8D0BA] flex items-center justify-center text-[#19161A] p-6 text-center">
-                <div className="space-y-2">
-                  <span className="text-xs font-bold uppercase tracking-widest bg-[#18794E] text-white px-3 py-1 rounded-full">
-                    AFTER: RADIANT & FLAWLESS
-                  </span>
-                  <p className="text-xs text-[#19161A]/80 font-medium max-w-sm mx-auto">
-                    Even complexion, blurred pores, glowing skin texture, zero cakey residue.
-                  </p>
-                </div>
-              </div>
-
-              {/* Before Layer (Foreground clipped by slider percentage) */}
-              <div
-                className="absolute inset-0 bg-[#FAF8FA] border-r-2 border-white shadow-2xl flex items-center justify-center text-[#6D6670] p-6 text-center overflow-hidden"
-                style={{ width: `${beforeAfterSlider}%` }}
-              >
-                <div className="space-y-2">
-                  <span className="text-xs font-bold uppercase tracking-widest bg-[#6D6670] text-white px-3 py-1 rounded-full">
-                    BEFORE: NATURAL BARE SKIN
-                  </span>
-                  <p className="text-xs text-[#6D6670] font-medium max-w-sm mx-auto">
-                    Uneven tones, visible pores, redness, and dark circles.
-                  </p>
-                </div>
-              </div>
-
-              {/* Slider Input Controller */}
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={beforeAfterSlider}
-                onChange={(e) => setBeforeAfterSlider(Number(e.target.value))}
-                className="absolute inset-0 opacity-0 cursor-ew-resize w-full h-full z-20"
-                aria-label="Before and after coverage comparison slider"
-              />
-
-              {/* Visual Split Handle */}
-              <div
-                className="absolute top-0 bottom-0 w-1 bg-white shadow-md z-10 pointer-events-none"
-                style={{ left: `${beforeAfterSlider}%` }}
-              >
-                <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white shadow-lg border border-[#E8E2E7] flex items-center justify-center text-[10px] font-black text-[#19161A]">
-                  ↔
-                </div>
-              </div>
-            </div>
+            <RadianceComparisonSlider
+              beforeImage="/product/skin-before.jpg"
+              afterImage="/product/skin-after.jpg"
+              beforeAlt="Before DIMSGLOW Tinted Sunscreen - Natural Bare Skin"
+              afterAlt="After DIMSGLOW Tinted Sunscreen - Radiant & Flawless Glass Skin"
+            />
           </section>
 
           {/* Section 3: Ingredients Callout (Rice Water + Niacinamide) */}

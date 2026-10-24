@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import Image from 'next/image';
-import { Sparkles } from 'lucide-react';
 
 interface RadianceComparisonSliderProps {
   beforeImage?: string;
@@ -13,46 +12,28 @@ interface RadianceComparisonSliderProps {
 }
 
 export function RadianceComparisonSlider({
-  beforeImage = 'https://res.cloudinary.com/web8vmww/image/upload/v1792431843/dimsglow/editorial/day14_after_clean_radiance.jpg',
-  afterImage = 'https://res.cloudinary.com/web8vmww/image/upload/v1792431841/dimsglow/editorial/day1_before_clean_radiance.jpg',
-  beforeAlt = 'Day 1 Clinical Face with Spots and Blemishes Before Treatment',
-  afterAlt = 'Day 14 Transformed Radiant Glass Skin After Treatment',
+  beforeImage = '/product/skin-before.jpg',
+  afterImage = '/product/skin-after.jpg',
+  beforeAlt = 'Before DIMSGLOW Tinted Sunscreen - Natural Bare Skin',
+  afterAlt = 'After DIMSGLOW Tinted Sunscreen - Radiant & Flawless Glass Skin',
   className = '',
 }: RadianceComparisonSliderProps) {
   const [sliderPosition, setSliderPosition] = useState<number>(50);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const updatePosition = useCallback((clientX: number) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    setSliderPosition(Math.round(percentage));
-  }, []);
-
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(true);
-    e.currentTarget.setPointerCapture(e.pointerId);
-    updatePosition(e.clientX);
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSliderPosition(Number(e.target.value));
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging) return;
-    updatePosition(e.clientX);
+    if (e.buttons !== 1) return; // Only drag when primary button is pressed
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    setSliderPosition(Math.round(percentage));
   };
 
-  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (isDragging) {
-      setIsDragging(false);
-      try {
-        e.currentTarget.releasePointerCapture(e.pointerId);
-      } catch {}
-    }
-  };
-
-  // Keyboard accessibility
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'ArrowLeft') {
       setSliderPosition((prev) => Math.max(0, prev - 5));
@@ -62,14 +43,11 @@ export function RadianceComparisonSlider({
   };
 
   return (
-    <div className={`space-y-3 ${className}`}>
-      {/* Interactive Face Comparison Container */}
+    <div className={`space-y-4 ${className}`}>
+      {/* Interactive Comparison Container */}
       <div
         ref={containerRef}
-        onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
         onKeyDown={handleKeyDown}
         tabIndex={0}
         role="slider"
@@ -77,21 +55,30 @@ export function RadianceComparisonSlider({
         aria-valuenow={sliderPosition}
         aria-valuemin={0}
         aria-valuemax={100}
-        className="relative aspect-square w-full max-w-[260px] sm:max-w-sm lg:max-w-md mx-auto rounded-xl sm:rounded-2xl overflow-hidden border-2 border-[#D4AF37]/60 shadow-2xl bg-[#FAF8FA] select-none cursor-ew-resize touch-none focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+        className="relative aspect-4/3 sm:aspect-16/10 w-full max-w-2xl mx-auto rounded-2xl overflow-hidden border border-[#E8E2E7] shadow-xl bg-[#FAF8FA] select-none touch-none focus:outline-none focus:ring-2 focus:ring-[#B83B63] group"
       >
-        {/* Layer 1: DAY 14 AFTER RADIANCE (Bottom Full Layer - visible on the right) */}
+        {/* Layer 1: AFTER (Bottom Base Layer - visible on the right) */}
         <div className="absolute inset-0">
           <Image
             src={afterImage}
             alt={afterAlt}
             fill
-            sizes="(max-width: 640px) 260px, (max-width: 1024px) 384px, 448px"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 700px, 800px"
             className="object-cover object-center pointer-events-none"
             priority
           />
+          {/* After Floating Badge (Anchored Bottom-Right) */}
+          <div className="absolute bottom-4 right-4 z-10 pointer-events-none text-right max-w-[200px] sm:max-w-[260px]">
+            <span className="inline-block text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-[#18794E]/90 text-white px-3 py-1 rounded-full shadow-md backdrop-blur-xs border border-white/20">
+              AFTER: RADIANT & FLAWLESS
+            </span>
+            <p className="text-[10px] sm:text-xs text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] font-semibold mt-1 hidden sm:block">
+              Glowing skin texture, blurred pores, zero cakey residue.
+            </p>
+          </div>
         </div>
 
-        {/* Layer 2: DAY 1 BEFORE (Top Layer clipped dynamically from 0 to sliderPosition - visible on the left) */}
+        {/* Layer 2: BEFORE (Top Clipped Layer - visible on the left) */}
         <div
           className="absolute inset-0 will-change-[clip-path]"
           style={{
@@ -102,56 +89,66 @@ export function RadianceComparisonSlider({
             src={beforeImage}
             alt={beforeAlt}
             fill
-            sizes="(max-width: 640px) 260px, (max-width: 1024px) 384px, 448px"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 700px, 800px"
             className="object-cover object-center pointer-events-none"
             priority
           />
-        </div>
-
-
-
-        {/* Interactive Vertical Divider Line & Draggable Knob */}
-        <div
-          className="absolute top-0 bottom-0 w-0.5 sm:w-1 bg-white shadow-[0_0_12px_rgba(0,0,0,0.8)] z-30 pointer-events-none"
-          style={{ left: `${sliderPosition}%` }}
-        >
-          {/* Arrow Divider Knob */}
-          <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#5B132B] border-2 border-[#D4AF37] text-white flex items-center justify-center text-xs sm:text-sm font-extrabold shadow-2xl transition-transform active:scale-110 pointer-events-auto cursor-ew-resize">
-            <span className="text-[#D4AF37] tracking-tighter">◀ ‖ ▶</span>
+          {/* Before Floating Badge (Anchored Bottom-Left) */}
+          <div className="absolute bottom-4 left-4 z-10 pointer-events-none text-left max-w-[200px] sm:max-w-[260px]">
+            <span className="inline-block text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-black/75 text-white px-3 py-1 rounded-full shadow-md backdrop-blur-xs border border-white/20">
+              BEFORE: NATURAL BARE SKIN
+            </span>
+            <p className="text-[10px] sm:text-xs text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] font-semibold mt-1 hidden sm:block">
+              Uneven tones, visible pores, redness, and dark spots.
+            </p>
           </div>
         </div>
 
-        {/* Subtle drag instruction hint */}
-        <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 pointer-events-none opacity-80 hover:opacity-100 transition-opacity">
-          <span className="bg-black/60 backdrop-blur-xs text-white/90 text-[8px] sm:text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap shadow-xs">
-            Drag arrow left / right to compare
-          </span>
+        {/* Vertical Split Line */}
+        <div
+          className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_12px_rgba(0,0,0,0.7)] z-20 pointer-events-none"
+          style={{ left: `${sliderPosition}%` }}
+        >
+          {/* Center Handle Knob */}
+          <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white border-2 border-[#D4AF37] text-[#19161A] flex items-center justify-center text-xs sm:text-sm font-black shadow-2xl transition-transform group-hover:scale-105">
+            <span className="text-[#B83B63] select-none tracking-tighter font-extrabold">◀ ‖ ▶</span>
+          </div>
         </div>
-      </div>
 
-      {/* External Position Indicators */}
-      <div className="flex justify-between items-center px-1 max-w-[260px] sm:max-w-sm lg:max-w-md mx-auto">
-        <span className="text-[9px] sm:text-xs font-bold text-[#6D6670] uppercase">
-          ◀ Day 1 (Before)
-        </span>
-        <span className="text-[9px] sm:text-xs font-bold text-[#5B132B] uppercase">
-          Day 14 (Radiant) ▶
-        </span>
-      </div>
-
-      {/* Synchronized Slider Range Input */}
-      <div className="flex items-center gap-2 max-w-[260px] sm:max-w-sm lg:max-w-md mx-auto">
-        <span className="text-[9px] sm:text-[11px] font-bold text-[#6D6670] uppercase shrink-0">Day 1</span>
+        {/* Native Touch & Range Controller covering container for instant frictionless swipe */}
         <input
           type="range"
           min="0"
           max="100"
           value={sliderPosition}
-          onChange={(e) => setSliderPosition(Number(e.target.value))}
-          aria-label="Radiance transformation slider"
-          className="w-full accent-[#5B132B] cursor-pointer h-1.5 sm:h-2"
+          onChange={handleSliderChange}
+          aria-label="Before and after transformation slider"
+          className="absolute inset-0 opacity-0 cursor-ew-resize w-full h-full z-30"
         />
-        <span className="text-[9px] sm:text-[11px] font-bold text-[#5B132B] uppercase shrink-0">Day 14</span>
+
+        {/* Subtle drag instruction hint */}
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 pointer-events-none opacity-85 group-hover:opacity-100 transition-opacity">
+          <span className="bg-black/60 backdrop-blur-xs text-white text-[9px] sm:text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap shadow-md border border-white/10">
+            Drag arrow left / right to compare
+          </span>
+        </div>
+      </div>
+
+      {/* External Synchronized Slider Bar */}
+      <div className="max-w-md mx-auto space-y-1.5 px-4">
+        <div className="flex justify-between items-center text-xs font-bold">
+          <span className="text-[#6D6670] uppercase">◀ Before: Bare Skin</span>
+          <span className="text-[#18794E] uppercase">After: Radiant Glow ▶</span>
+        </div>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value={sliderPosition}
+          onChange={handleSliderChange}
+          aria-label="Radiance transformation slider track"
+          className="w-full accent-[#B83B63] cursor-pointer h-2 bg-[#E8E2E7] rounded-lg"
+        />
       </div>
     </div>
   );
