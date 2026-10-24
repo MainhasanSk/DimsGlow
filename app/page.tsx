@@ -38,14 +38,14 @@ interface HeroSlide {
 
 const HERO_SLIDES: HeroSlide[] = [
   {
-    src: '/product/hero-banner-wide.png',
-    alt: 'DIMSGLOW Tinted Sunscreen SPF 50+ - Your Daily Glow Essential',
-    buttonText: 'SHOP NOW',
-  },
-  {
-    src: '/product/hero-banner-wide-2.png',
+    src: '/product/hero-section-img1.png',
     alt: 'DIMSGLOW Sun Protection for a Brighter You - Tinted Sunscreen SPF 50+',
     buttonText: 'ORDER NOW',
+  },
+  {
+    src: '/product/hero-section-img2.png',
+    alt: 'DIMSGLOW Tinted Sunscreen SPF 50+ - Your Daily Glow Essential',
+    buttonText: 'SHOP NOW',
   },
 ];
 
@@ -255,15 +255,6 @@ export default function HomePage() {
                     className="object-cover w-full h-full"
                     sizes="100vw"
                   />
-                  {/* Clickable Floating CTA Button Overlay for Slide 2 (Slide 1 has built-in CTA) */}
-                  {idx === 1 && (
-                    <div className="absolute left-[5.5%] bottom-[12%] hidden sm:flex items-center gap-2">
-                      <span className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#B83B63] hover:bg-[#9E2E52] text-white font-extrabold text-xs uppercase tracking-wider shadow-xl hover:scale-105 transition-all">
-                        <span>{slide.buttonText}</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </span>
-                    </div>
-                  )}
                 </Link>
               </div>
             ))}
