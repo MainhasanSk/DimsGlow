@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { RadianceComparisonSlider } from '@/components/storefront/RadianceComparisonSlider';
 
 interface HeroSlide {
   src: string;
@@ -578,6 +579,30 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* INTERACTIVE CLINICAL RESULTS: COVERAGE THAT LOOKS LIKE SKIN */}
+      <section className="py-14 sm:py-20 bg-linear-to-b from-white via-[#FFF9FA] to-white border-b border-[#F0EBF0]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+          <div className="space-y-1">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#B83B63]">
+              CLINICAL RESULTS
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold font-serif-brand text-[#19161A]">
+              COVERAGE THAT LOOKS LIKE SKIN
+            </h2>
+            <p className="text-xs sm:text-sm text-[#6D6670] max-w-xl mx-auto">
+              Drag the interactive slider to see how DIMSGLOW blurs imperfections while preserving real skin texture.
+            </p>
+          </div>
+
+          <RadianceComparisonSlider
+            beforeImage="/product/skin-before.jpg"
+            afterImage="/product/skin-after.jpg"
+            beforeAlt="Before DIMSGLOW Tinted Sunscreen - Natural Bare Skin"
+            afterAlt="After DIMSGLOW Tinted Sunscreen - Radiant & Flawless Glass Skin"
+          />
         </div>
       </section>
 
