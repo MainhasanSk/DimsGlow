@@ -1,891 +1,987 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { StorefrontShell } from '@/components/storefront/StorefrontShell';
-import { ProductCard } from '@/components/storefront/ProductCard';
-import { CATALOG_PRODUCTS } from '@/lib/data/catalog';
-import { useProducts } from '@/lib/catalog/productStore';
+import { useCart } from '@/lib/cart/CartContext';
 import {
-  getHomepageContent,
-  DEFAULT_HOMEPAGE_CONTENT,
-} from '@/lib/content/contentService';
-import type { HomepageContent, HeroSlide } from '@/lib/schemas/content';
-import {
-  ChevronLeft,
-  ChevronRight,
   Sparkles,
   ShieldCheck,
-  Heart,
-  Award,
   Star,
-  ArrowRight,
-  Leaf,
   CheckCircle2,
-  Package,
-  Gift,
+  Truck,
+  Droplets,
+  Sun,
+  Clock,
+  Heart,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ShoppingBag,
+  ArrowRight,
+  Zap,
+  Award,
+  Layers,
   HelpCircle,
-  Plus,
-  Minus,
-  Mail,
-  SlidersHorizontal,
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
+  Percent,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { RadianceComparisonSlider } from '@/components/storefront/RadianceComparisonSlider';
+
+interface ProductImage {
+  src: string;
+  alt: string;
+  title: string;
+}
+
+const PRODUCT_IMAGES: ProductImage[] = [
+  {
+    src: '/product/sunscreen-bottle-offer.jpg',
+    alt: 'DIMSGLOW Tinted Sunscreen SPF 50+ Bottle Offer',
+    title: 'Flagship Sunscreen Bottle',
+  },
+  {
+    src: '/product/sunscreen-magazine-model.jpg',
+    alt: 'DIMSGLOW Sunscreen Featured on Beauty Today Magazine',
+    title: 'As Featured in Beauty Today',
+  },
+  {
+    src: '/product/sunscreen-before-after.jpg',
+    alt: 'DIMSGLOW Sunscreen Before & After Results',
+    title: 'Before & After Results',
+  },
+  {
+    src: '/product/sunscreen-split-glow.jpg',
+    alt: 'Fades Tan & Pigmentation - DIMSGLOW',
+    title: 'Fades Tan & Pigmentation',
+  },
+];
+
+interface PackOption {
+  id: string;
+  sku: string;
+  name: string;
+  subtitle: string;
+  badge?: string;
+  pricePaise: number;
+  compareAtPricePaise: number;
+  quantity: number;
+}
+
+const PACK_OPTIONS: PackOption[] = [
+  {
+    id: 'var_sunscreen_50ml',
+    sku: 'DIMS-SUN-50',
+    name: '1 x Single Bottle (50 ml)',
+    subtitle: '1.69 FL. OZ. • 45-60 Days Supply',
+    pricePaise: 99900,
+    compareAtPricePaise: 129900,
+    quantity: 1,
+  },
+  {
+    id: 'var_sunscreen_duo',
+    sku: 'DIMS-SUN-DUO',
+    name: '2 x Glow Duo Pack (Twin Pack)',
+    subtitle: '2x 50 ml • Save ₹799 • Free Priority Delivery',
+    badge: 'MOST POPULAR',
+    pricePaise: 179900,
+    compareAtPricePaise: 259800,
+    quantity: 2,
+  },
+  {
+    id: 'var_sunscreen_trio',
+    sku: 'DIMS-SUN-TRIO',
+    name: '3 x Glow Trio Family Pack',
+    subtitle: '3x 50 ml • Maximum Value & Savings',
+    badge: 'BEST VALUE',
+    pricePaise: 249900,
+    compareAtPricePaise: 389700,
+    quantity: 3,
+  },
+];
+
+const REVIEWS = [
+  {
+    id: 'r1',
+    name: 'Priyanka Sharma',
+    city: 'Mumbai',
+    rating: 5,
+    title: 'Finally, zero white cast on my warm skin!',
+    comment:
+      'I was so skeptical because most Indian sunscreens leave an ashy white layer. DIMSGLOW tinted formula literally melted into my skin like a primer. It blurred my pigmentation and gave this dewy glass skin glow. Wearing it every single day now!',
+    tag: 'Zero White Cast',
+    date: '3 days ago',
+  },
+  {
+    id: 'r2',
+    name: 'Ananya Deshmukh',
+    city: 'Bengaluru',
+    rating: 5,
+    title: 'My stubborn dark spots started fading in 2 weeks',
+    comment:
+      'The combination of SPF 50+ with active brightening ingredients actually works. My post-acne marks on my cheeks have visibly softened. It is not oily at all, perfect under Bangalore humidity.',
+    tag: 'Fades Dark Spots',
+    date: '1 week ago',
+  },
+  {
+    id: 'r3',
+    name: 'Dr. Meera Iyer',
+    city: 'Delhi NCR',
+    rating: 5,
+    title: 'Dermatologically well-balanced formulation',
+    comment:
+      'Broad spectrum UVA/UVB PA++++ with blue light defense in a non-comedogenic base. Doesn’t clog pores and gives a radiant, clean tint. Highly recommended for daily outdoor protection.',
+    tag: 'Dermatologist Verified',
+    date: '2 weeks ago',
+  },
+  {
+    id: 'r4',
+    name: 'Sneha Patel',
+    city: 'Ahmedabad',
+    rating: 5,
+    title: 'Replaced my daily foundation completely!',
+    comment:
+      'Gives just enough natural tint to even out my complexion, redness, and sun tan without feeling like heavy makeup. My skin breathes, stays hydrated, and looks radiant all day.',
+    tag: 'Natural Glow Finish',
+    date: '2 weeks ago',
+  },
+];
+
+const FAQS = [
+  {
+    q: 'Does DIMSGLOW Tinted Sunscreen leave a white cast?',
+    a: 'No, absolutely not. DIMSGLOW Tinted Sunscreen is formulated with micro-sheer pigments that adapt universally across all Indian skin tones. It blends into a weightless, invisible, dewy glow with zero chalkiness or white residue.',
+  },
+  {
+    q: 'How does it help fade dark spots and pigmentation?',
+    a: 'It combines broad-spectrum SPF 50+ PA++++ with clinical brightening actives. By blocking 98% of UVA/UVB and HEV blue light, it prevents melanin overproduction, allowing active brightening ingredients to visibly fade existing sun spots and acne marks over 14–21 days.',
+  },
+  {
+    q: 'Is it suitable for oily, combination, or acne-prone skin?',
+    a: 'Yes! It is dermatologically tested, non-comedogenic (won’t clog pores), and crafted with an oil-free, breathable hydrating finish that controls excess shine while keeping skin plump.',
+  },
+  {
+    q: 'Can I use it as a makeup primer?',
+    a: 'Yes, it works beautifully as a 2-in-1 hydrating primer and UV shield. It creates a smooth, luminous base that holds makeup or looks stunning worn completely on its own.',
+  },
+  {
+    q: 'How long does one 50 ml bottle last?',
+    a: 'With recommended daily morning application (2 finger-lengths for face and neck), a 50 ml bottle typically lasts 45 to 60 days.',
+  },
+  {
+    q: 'What payment methods do you support?',
+    a: 'We accept Cash on Delivery (COD) across India, alongside all major UPI options (GPay, PhonePe, Paytm), credit/debit cards, and net banking with 100% secure encrypted checkout.',
+  },
+];
 
 export default function HomePage() {
-  const [content, setContent] = useState<HomepageContent>(DEFAULT_HOMEPAGE_CONTENT);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [bestsellerCategory, setBestsellerCategory] = useState<'all' | 'face' | 'lips' | 'eyes' | 'skin-care'>('all');
-  const [openFaqId, setOpenFaqId] = useState<string | null>('faq_1');
-  const [sliderPosition, setSliderPosition] = useState(50);
-  const [newsletterEmail, setNewsletterEmail] = useState('');
-  const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
+  const router = useRouter();
+  const { addToCart, setIsCartDrawerOpen } = useCart();
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isSlidePaused, setIsSlidePaused] = useState(false);
+  const [selectedPack, setSelectedPack] = useState<PackOption>(PACK_OPTIONS[0]);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [isAdding, setIsAdding] = useState(false);
 
-  // Campaign Video Player State
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
-  const [isVideoMuted, setIsVideoMuted] = useState(true);
-
-  const togglePlayPause = () => {
-    if (!videoRef.current) return;
-    if (videoRef.current.paused) {
-      videoRef.current.play();
-      setIsVideoPlaying(true);
-    } else {
-      videoRef.current.pause();
-      setIsVideoPlaying(false);
-    }
-  };
-
-  const toggleMute = () => {
-    if (!videoRef.current) return;
-    videoRef.current.muted = !videoRef.current.muted;
-    setIsVideoMuted(videoRef.current.muted);
-  };
-
-  // Fetch dynamic content from Firestore
+  // Auto-slide image timer (every 4 seconds, pauses on hover)
   useEffect(() => {
-    async function fetchContent() {
-      try {
-        const data = await getHomepageContent();
-        setContent(data);
-      } catch (err) {
-        console.warn('Using default content:', err);
-      }
-    }
-    fetchContent();
-  }, []);
-
-  const activeSlides = useMemo(() => {
-    const list = (content.heroSlides || []).filter((s) => s.active);
-    return list.length > 0 ? list : DEFAULT_HOMEPAGE_CONTENT.heroSlides;
-  }, [content.heroSlides]);
-
-  // Auto-advance hero carousel timer (every 5 seconds, pauses on hover)
-  useEffect(() => {
-    if (isPaused || activeSlides.length <= 1) return;
-
+    if (isSlidePaused) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % activeSlides.length);
-    }, 5000);
-
+      setActiveImageIndex((prev) => (prev + 1) % PRODUCT_IMAGES.length);
+    }, 4000);
     return () => clearInterval(timer);
-  }, [isPaused, activeSlides.length]);
+  }, [isSlidePaused]);
 
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % activeSlides.length);
-  const prevSlide = () =>
-    setCurrentSlide((prev) => (prev - 1 + activeSlides.length) % activeSlides.length);
+  const handlePrevSlide = () => {
+    setActiveImageIndex((prev) => (prev - 1 + PRODUCT_IMAGES.length) % PRODUCT_IMAGES.length);
+  };
 
-  const curSlideData: HeroSlide = activeSlides[currentSlide] || activeSlides[0];
+  const handleNextSlide = () => {
+    setActiveImageIndex((prev) => (prev + 1) % PRODUCT_IMAGES.length);
+  };
 
-  // Dynamic products synced live from Firestore database
-  const { products: liveProducts } = useProducts();
-  const currentProducts = liveProducts.length > 0 ? liveProducts : CATALOG_PRODUCTS;
+  const handleAddToCart = async (goToCheckout = false) => {
+    setIsAdding(true);
+    try {
+      await addToCart({
+        id: `prod_tinted_sunscreen_spf50_${selectedPack.id}`,
+        productId: 'prod_tinted_sunscreen_spf50',
+        variantId: selectedPack.id,
+        productName: `DIMSGLOW Tinted Sunscreen SPF 50+ (${selectedPack.name})`,
+        variantTitle: selectedPack.name,
+        quantity: 1,
+        unitPricePaise: selectedPack.pricePaise,
+        compareAtPricePaise: selectedPack.compareAtPricePaise,
+        imageUrl: PRODUCT_IMAGES[0].src,
+        slug: 'tinted-sunscreen-spf50',
+      });
 
-  // Dynamic Bestsellers Filtering
-  const allBestsellers = useMemo(() => {
-    return currentProducts.filter((p) => p.bestseller === true);
-  }, [currentProducts]);
-
-  const displayedBestsellers = useMemo(() => {
-    if (bestsellerCategory === 'all') return allBestsellers;
-    return allBestsellers.filter((p) => p.categoryIds.includes(bestsellerCategory));
-  }, [allBestsellers, bestsellerCategory]);
-
-  const visibility = content.sectionsVisibility || DEFAULT_HOMEPAGE_CONTENT.sectionsVisibility;
+      if (goToCheckout) {
+        router.push('/checkout');
+      } else {
+        setIsCartDrawerOpen(true);
+      }
+    } catch (err) {
+      console.error('Failed to add to bag:', err);
+    } finally {
+      setIsAdding(false);
+    }
+  };
 
   return (
     <StorefrontShell>
-      {/* 1. Dynamic Auto-Moving Hero Carousel (Flawless Parity across Mobile, Tablet, and Desktop) */}
-      {visibility.heroCarousel && (
-        <section
-          className="relative w-full overflow-hidden select-none bg-[#14050E]"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-        >
-          {/* 16:9 Aspect Ratio on all devices ensures 100% full banner visibility with zero top, bottom, or side cropping */}
-          <Link
-            href={curSlideData.ctaLink || '/collections/all'}
-            className="relative block w-full aspect-video cursor-pointer"
-          >
+      {/* 1. FULL-WIDTH PANORAMIC HERO BANNER */}
+      <section className="relative w-full bg-[#FFF0F4] overflow-hidden border-b border-[#F0EBF0]">
+        <div className="relative w-full aspect-[1024/384] max-h-[640px] select-none group shadow-inner">
+          <Link href="#shop" className="block relative w-full h-full cursor-pointer">
             <Image
-              src={curSlideData.imageUrl || 'https://res.cloudinary.com/web8vmww/image/upload/v1792429948/dimsglow/hero/hero_lock_the_shine_banner.jpg'}
-              alt={curSlideData.title || 'DIMSGLOW Luxury Hero Banner'}
+              src="/product/hero-banner-wide.png"
+              alt="DIMSGLOW Tinted Sunscreen SPF 50+ - Your Daily Glow Essential"
               fill
-              className="object-cover object-center transition-transform duration-1000 ease-out"
               priority
-              sizes="100vw"
+              className="object-cover w-full h-full"
             />
-          </Link>
-
-          {/* Carousel Nav Arrows */}
-          <button
-            type="button"
-            onClick={prevSlide}
-            aria-label="Previous slide"
-            className="absolute left-1.5 sm:left-4 lg:left-6 top-1/2 -translate-y-1/2 w-6 h-6 sm:w-9 sm:h-9 lg:w-11 lg:h-11 rounded-full bg-black/40 hover:bg-black/75 text-white backdrop-blur-md flex items-center justify-center transition-all cursor-pointer opacity-85 hover:opacity-100 z-20 shadow-lg"
-          >
-            <ChevronLeft className="w-3.5 h-3.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
-          </button>
-          <button
-            type="button"
-            onClick={nextSlide}
-            aria-label="Next slide"
-            className="absolute right-1.5 sm:right-4 lg:right-6 top-1/2 -translate-y-1/2 w-6 h-6 sm:w-9 sm:h-9 lg:w-11 lg:h-11 rounded-full bg-black/40 hover:bg-black/75 text-white backdrop-blur-md flex items-center justify-center transition-all cursor-pointer opacity-85 hover:opacity-100 z-20 shadow-lg"
-          >
-            <ChevronRight className="w-3.5 h-3.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
-          </button>
-
-          {/* Slide Indicator Dots */}
-          <div className="absolute bottom-1.5 sm:bottom-3 lg:bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 sm:gap-2 z-20">
-            {activeSlides.map((_, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => setCurrentSlide(idx)}
-                aria-label={`Go to slide ${idx + 1}`}
-                className={`rounded-full transition-all duration-300 cursor-pointer shadow-md ${
-                  currentSlide === idx ? 'w-5 sm:w-7 lg:w-9 h-1.5 sm:h-2 lg:h-2.5 bg-[#D4AF37]' : 'w-1.5 sm:w-2 lg:w-2.5 h-1.5 sm:h-2 lg:h-2.5 bg-white/50 hover:bg-white/90'
-                }`}
-              />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* 2. Category Quick Browse Circles */}
-      {visibility.categoryCircles && (
-        <section className="py-12 border-b border-[#E8E2E7] bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 sm:gap-6 text-center">
-              {[
-                { name: 'Face', href: '/collections/face', tag: 'Base & Primers', image: '/categories/face.jpg' },
-                { name: 'Eyes', href: '/collections/eyes', tag: 'Kajal & Mascara', image: '/categories/eyes.jpg' },
-                { name: 'Lips', href: '/collections/lips', tag: 'Matte & Gloss', image: '/categories/lips.jpg' },
-                { name: 'Nails', href: '/collections/nails', tag: 'Toxic-Free Color', image: '/categories/nails.jpg' },
-                { name: 'Skin Care', href: '/collections/skin-care', tag: 'Active Serums', image: '/categories/skin-care.jpg' },
-                { name: 'Perfumes', href: '/collections/perfumes', tag: 'Eau De Parfum', image: '/categories/perfumes.jpg' },
-              ].map((cat) => (
-                <Link
-                  key={cat.name}
-                  href={cat.href}
-                  className="group flex flex-col items-center space-y-2.5 p-2 transition-transform hover:-translate-y-1.5"
-                >
-                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-[#E8E2E7] group-hover:border-[#B83B63] overflow-hidden transition-all shadow-sm group-hover:shadow-md bg-[#FAF8FA]">
-                    <Image
-                      src={cat.image}
-                      alt={cat.name}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                      sizes="(max-width: 640px) 80px, 96px"
-                    />
-                  </div>
-                  <div>
-                    <h4 className="text-xs sm:text-sm font-bold text-[#19161A] group-hover:text-[#B83B63] transition-colors">
-                      {cat.name}
-                    </h4>
-                    <p className="text-[10px] text-[#6D6670] hidden sm:block font-medium">{cat.tag}</p>
-                  </div>
-                </Link>
-              ))}
+            {/* Clickable Floating Shop Now Button Overlay */}
+            <div className="absolute left-[5.5%] bottom-[12%] hidden sm:flex items-center gap-2">
+              <span className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#B83B63] hover:bg-[#9E2E52] text-white font-extrabold text-xs uppercase tracking-wider shadow-xl hover:scale-105 transition-all">
+                <span>SHOP NOW</span>
+                <ArrowRight className="w-4 h-4" />
+              </span>
             </div>
-          </div>
-        </section>
-      )}
+          </Link>
+        </div>
+      </section>
 
-      {/* 3. Bestsellers Showcase with Interactive Category Switcher */}
-      {visibility.bestsellers && (
-        <section className="py-14 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#E8E2E7] pb-4">
-              <div>
-                <span className="text-xs font-bold tracking-widest uppercase text-[#B83B63]">
-                  Customer Favorites
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-bold font-serif-brand text-[#19161A]">
-                  BEST SELLERS
-                </h2>
+      {/* 2. VALUE PROPOSITION TRUST STRIP */}
+      <div className="bg-[#19161A] text-white py-2.5 sm:py-3 px-3 sm:px-4 border-b border-[#2D1B24] overflow-hidden">
+        {/* Desktop View: Centered Row */}
+        <div className="hidden md:flex max-w-7xl mx-auto items-center justify-around gap-4 text-xs font-semibold">
+          <div className="flex items-center gap-2">
+            <Truck className="w-4 h-4 text-[#D4AF37]" />
+            <span>FREE EXPRESS DELIVERY PAN-INDIA</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-[#B83B63]" />
+            <span>CASH ON DELIVERY & UPI ACCEPTED</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
+            <span>DERMATOLOGICALLY TESTED FOR ALL SKIN TYPES</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#B83B63]" />
+            <span>SPECIAL LAUNCH OFFER: FLAT ₹300 OFF</span>
+          </div>
+        </div>
+
+        {/* Mobile View: Clean Single-Line Continuous Ticker */}
+        <div className="md:hidden overflow-hidden whitespace-nowrap">
+          <div className="inline-flex items-center gap-6 animate-marquee text-[10.5px] font-bold tracking-wider">
+            <span className="inline-flex items-center gap-1.5 shrink-0">
+              <Truck className="w-3.5 h-3.5 text-[#D4AF37]" />
+              FREE EXPRESS DELIVERY PAN-INDIA
+            </span>
+            <span className="text-[#D4AF37] opacity-60">•</span>
+            <span className="inline-flex items-center gap-1.5 shrink-0">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#B83B63]" />
+              CASH ON DELIVERY & UPI ACCEPTED
+            </span>
+            <span className="text-[#D4AF37] opacity-60">•</span>
+            <span className="inline-flex items-center gap-1.5 shrink-0">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
+              DERMATOLOGICALLY TESTED FOR ALL SKIN TYPES
+            </span>
+            <span className="text-[#D4AF37] opacity-60">•</span>
+            {/* Seamless repetition for infinite continuous loop */}
+            <span className="inline-flex items-center gap-1.5 shrink-0">
+              <Truck className="w-3.5 h-3.5 text-[#D4AF37]" />
+              FREE EXPRESS DELIVERY PAN-INDIA
+            </span>
+            <span className="text-[#D4AF37] opacity-60">•</span>
+            <span className="inline-flex items-center gap-1.5 shrink-0">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#B83B63]" />
+              CASH ON DELIVERY & UPI ACCEPTED
+            </span>
+            <span className="text-[#D4AF37] opacity-60">•</span>
+            <span className="inline-flex items-center gap-1.5 shrink-0">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
+              DERMATOLOGICALLY TESTED FOR ALL SKIN TYPES
+            </span>
+            <span className="text-[#D4AF37] opacity-60">•</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. PRODUCT DETAIL & BUY BOX SECTION */}
+      <section id="shop" className="bg-linear-to-b from-[#FFF5F8] via-[#FFF9FA] to-white py-8 sm:py-14 border-b border-[#F0EBF0] scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            {/* Left: Product Images Sliding Gallery - Perfectly Visible in Mobile & Desktop */}
+            <div className="lg:col-span-6 space-y-4">
+              <div
+                className="relative aspect-[702/1024] w-full max-w-[460px] mx-auto rounded-2xl overflow-hidden bg-white border border-[#E8E2E7] shadow-xl group select-none"
+                style={{ aspectRatio: '702 / 1024' }}
+                onMouseEnter={() => setIsSlidePaused(true)}
+                onMouseLeave={() => setIsSlidePaused(false)}
+              >
+                {/* Sliding Image Track */}
+                <div
+                  className="flex h-full w-full transition-transform duration-500 ease-out"
+                  style={{ transform: `translateX(-${activeImageIndex * 100}%)` }}
+                >
+                  {PRODUCT_IMAGES.map((img, idx) => (
+                    <div
+                      key={img.src}
+                      className="relative min-w-full h-full flex items-center justify-center bg-white"
+                    >
+                      <Image
+                        src={img.src}
+                        alt={img.alt}
+                        fill
+                        priority={idx === 0}
+                        className="object-contain w-full h-full"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Left & Right Chevron Buttons */}
+                <button
+                  type="button"
+                  onClick={handlePrevSlide}
+                  aria-label="Previous slide"
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-[#19161A] hover:text-[#B83B63] shadow-md border border-[#E8E2E7] flex items-center justify-center transition-all opacity-80 sm:opacity-0 group-hover:opacity-100 hover:scale-110 cursor-pointer z-20"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleNextSlide}
+                  aria-label="Next slide"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-[#19161A] hover:text-[#B83B63] shadow-md border border-[#E8E2E7] flex items-center justify-center transition-all opacity-80 sm:opacity-0 group-hover:opacity-100 hover:scale-110 cursor-pointer z-20"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+
+                {/* Slide Indicator Dots */}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full z-10">
+                  {PRODUCT_IMAGES.map((_, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setActiveImageIndex(idx)}
+                      className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                        activeImageIndex === idx
+                          ? 'w-6 bg-[#B83B63]'
+                          : 'w-2 bg-white/70 hover:bg-white'
+                      }`}
+                      aria-label={`Go to slide ${idx + 1}`}
+                    />
+                  ))}
+                </div>
               </div>
 
-              {/* Category Filter Pills on Homepage */}
-              <div className="flex flex-wrap items-center gap-1.5">
-                {[
-                  { id: 'all', label: 'All Bestsellers' },
-                  { id: 'face', label: 'Face' },
-                  { id: 'lips', label: 'Lips' },
-                  { id: 'eyes', label: 'Eyes' },
-                  { id: 'skin-care', label: 'Skincare' },
-                ].map((tab) => (
+              {/* Synchronized 4 Thumbnails */}
+              <div className="grid grid-cols-4 gap-2.5 max-w-[460px] mx-auto px-1 sm:px-0">
+                {PRODUCT_IMAGES.map((img, idx) => (
                   <button
-                    key={tab.id}
+                    key={img.src}
                     type="button"
-                    onClick={() => setBestsellerCategory(tab.id as any)}
-                    className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                      bestsellerCategory === tab.id
-                        ? 'bg-[#5B132B] text-white shadow-xs'
-                        : 'bg-[#FAF8FA] text-[#6D6670] hover:text-[#19161A] border border-[#E8E2E7]'
+                    onClick={() => setActiveImageIndex(idx)}
+                    className={`relative aspect-[702/1024] rounded-xl overflow-hidden bg-white border-2 transition-all p-0.5 cursor-pointer ${
+                      activeImageIndex === idx
+                        ? 'border-[#B83B63] ring-2 ring-[#B83B63]/25 scale-102 shadow-sm'
+                        : 'border-[#E8E2E7] hover:border-[#B83B63]/50 opacity-75 hover:opacity-100'
                     }`}
                   >
-                    {tab.label}
+                    <Image
+                      src={img.src}
+                      alt={img.alt}
+                      fill
+                      className="object-contain"
+                    />
                   </button>
                 ))}
               </div>
 
-              <Link
-                href="/collections/bestsellers"
-                className="text-xs font-bold text-[#B83B63] hover:text-[#982D50] flex items-center gap-1 group whitespace-nowrap"
-              >
-                VIEW ALL BESTSELLERS{' '}
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-
-            {displayedBestsellers.length === 0 ? (
-              <div className="text-center py-12 bg-[#FAF8FA] rounded-[10px] border border-[#E8E2E7]">
-                <p className="text-sm font-semibold text-[#19161A]">No bestsellers in this category yet</p>
-                <button
-                  type="button"
-                  onClick={() => setBestsellerCategory('all')}
-                  className="mt-2 text-xs text-[#B83B63] underline font-bold cursor-pointer"
-                >
-                  View all bestsellers
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                {displayedBestsellers.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-      )}
-
-      {/* NEW ARRIVALS Section */}
-      {visibility.newArrivals !== false && (
-        <section className="py-14 bg-[#FAF8FA] border-b border-[#E8E2E7]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#E8E2E7] pb-4">
-              <div>
-                <span className="text-xs font-bold tracking-widest uppercase text-[#B83B63] flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> JUST DROPPED
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-bold font-serif-brand text-[#19161A]">
-                  NEW ARRIVALS
-                </h2>
-                <p className="text-xs text-[#6D6670] mt-0.5">
-                  The latest trending additions to your makeup & skincare vanity
-                </p>
-              </div>
-
-              <Link
-                href="/collections/new-arrivals"
-                className="text-xs font-bold text-[#B83B63] hover:text-[#982D50] flex items-center gap-1 group whitespace-nowrap"
-              >
-                VIEW ALL NEW ARRIVALS{' '}
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-              {currentProducts.slice(0, 4).map((product) => (
-                <ProductCard key={`new_${product.id}`} product={product} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 4. Routine Combos & "Buy 3 for ₹699" Value Spotlight (From Reference PDF) */}
-      {visibility.combosBox && (
-        <section className="py-14 bg-linear-to-r from-[#200B15] via-[#4A0E2A] to-[#14060E] text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-10">
-              <div className="space-y-4">
-                <span className="text-xs font-bold tracking-[0.25em] text-[#D4AF37] uppercase flex items-center gap-1.5">
-                  <Gift className="w-4 h-4 text-[#D4AF37]" /> SPECIAL VALUE BUNDLES
-                </span>
-                <h2 className="text-3xl sm:text-5xl font-black font-serif-brand leading-tight">
-                  BUY ANY 3 PRODUCTS AT <span className="text-[#D4AF37]">₹699</span>
-                </h2>
-                <p className="text-xs sm:text-sm text-white/80 leading-relaxed font-light">
-                  Mix and match your choice of 24HR Matte Lipstick, Smudge-Proof Eye Kajal, and Hydrating Strobe Cream. Handcrafted luxury routine kits at unbeatable direct-to-consumer savings.
-                </p>
-                <div className="pt-2 flex flex-wrap gap-3">
-                  <Link href="/collections/combos">
-                    <Button variant="primary" size="lg" className="bg-[#D4AF37] hover:bg-[#c29d2b] text-black font-bold">
-                      BUILD YOUR 3-PIECE SET <ArrowRight className="w-4 h-4 ml-1.5" />
-                    </Button>
-                  </Link>
-                  <Link href="/collections/all?tag=gift">
-                    <button
-                      type="button"
-                      className="inline-flex items-center justify-center font-bold text-sm sm:text-base px-6 py-3 rounded-lg border-2 border-white/70 bg-transparent text-white hover:bg-white/15 hover:border-white transition-all shadow-sm cursor-pointer select-none"
-                    >
-                      EXPLORE GIFT COMBOS
-                    </button>
-                  </Link>
+              {/* Verified Trust Strip */}
+              <div className="grid grid-cols-3 gap-2 pt-2 text-center text-[11px] font-semibold text-[#6D6670]">
+                <div className="p-2.5 rounded-xl bg-[#FAF8FA] border border-[#E8E2E7]">
+                  <ShieldCheck className="w-4 h-4 mx-auto mb-1 text-[#B83B63]" />
+                  <span>Dermatologically Tested</span>
                 </div>
-              </div>
-
-              {/* Value Cards Showcase */}
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { title: 'Everyday Glow Trio', price: '₹699', was: '₹958', save: 'Save 27%' },
-                  { title: 'Glam Restock Kit', price: '₹799', was: '₹1,099', save: 'Save 30%' },
-                  { title: 'Transfer-Proof Set', price: '₹699', was: '₹920', save: 'Save 24%' },
-                  { title: 'Glass Skin Routine', price: '₹899', was: '₹1,218', save: 'Save 35%' },
-                ].map((set) => (
-                  <div
-                    key={set.title}
-                    className="p-5 rounded-xl bg-white/10 border border-white/20 backdrop-blur-xs space-y-2 hover:bg-white/15 transition-all"
-                  >
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#D4AF37] text-black uppercase">
-                      {set.save}
-                    </span>
-                    <h4 className="text-sm font-bold text-white pt-1">{set.title}</h4>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-base font-black text-white">{set.price}</span>
-                      <span className="text-xs text-white/50 line-through">{set.was}</span>
-                    </div>
-                    <Link
-                      href="/collections/combos"
-                      className="block text-[11px] font-bold text-[#D4AF37] hover:underline pt-1"
-                    >
-                      Shop bundle →
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Campaign Video Player Section (Screenshot 2: "WE'VE GOT EVERYTHING COVERED") */}
-      {visibility.campaignVideo !== false && (
-        <section className="relative overflow-hidden bg-linear-to-r from-[#200B15] via-[#4A0E2A] to-[#14060E] text-white py-14 lg:py-20 border-b border-[#3B2C3A]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-              <div className="lg:col-span-5 space-y-4 text-center lg:text-left">
-                <span className="inline-block text-[11px] sm:text-xs font-bold tracking-[0.25em] text-[#D4AF37] uppercase">
-                  {content.campaignVideo?.tagline || 'THE GO-TO GLAM ROUTINE'}
-                </span>
-                <h2 className="text-3xl sm:text-5xl font-black font-serif-brand leading-tight">
-                  {content.campaignVideo?.title || "WE'VE GOT EVERYTHING COVERED"}
-                </h2>
-                <p className="text-xs sm:text-sm text-white/80 leading-relaxed font-light">
-                  {content.campaignVideo?.subtitle ||
-                    'High-performing, weightless luxury formulations designed to move with you all day long.'}
-                </p>
-                <div className="pt-2 flex flex-wrap gap-3 justify-center lg:justify-start">
-                  <Link href={content.campaignVideo?.ctaLink || '/collections/all'}>
-                    <Button variant="primary" size="lg" className="bg-[#D4AF37] hover:bg-[#c29d2b] text-black font-bold">
-                      {content.campaignVideo?.ctaText || 'EXPLORE FULL CAMPAIGN'} <ArrowRight className="w-4 h-4 ml-1.5" />
-                    </Button>
-                  </Link>
-                  <Link href="/collections/bestsellers">
-                    <button
-                      type="button"
-                      className="inline-flex items-center justify-center font-bold text-sm sm:text-base px-6 py-3 rounded-lg border-2 border-white/70 bg-transparent text-white hover:bg-white/15 hover:border-white transition-all shadow-sm cursor-pointer select-none"
-                    >
-                      BEST SELLERS
-                    </button>
-                  </Link>
+                <div className="p-2.5 rounded-xl bg-[#FAF8FA] border border-[#E8E2E7]">
+                  <Sun className="w-4 h-4 mx-auto mb-1 text-[#D4AF37]" />
+                  <span>Blue Light Shield</span>
                 </div>
-              </div>
-
-              {/* Video Player Box with Controls */}
-              <div className="lg:col-span-7">
-                <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-[#D4AF37]/30 aspect-video bg-black/60 group/video">
-                  <video
-                    src={content.campaignVideo?.videoUrl || 'https://assets.mixkit.co/videos/preview/mixkit-young-woman-applying-makeup-with-a-brush-41484-large.mp4'}
-                    poster={content.campaignVideo?.posterUrl || '/categories/face.jpg'}
-                    autoPlay
-                    loop
-                    muted={isVideoMuted}
-                    playsInline
-                    className="w-full h-full object-cover"
-                    ref={videoRef}
-                  />
-
-                  {/* Gradient Overlay for Cinematic Effect */}
-                  <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-
-                  {/* Floating Video Controls */}
-                  <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 z-20">
-                    <button
-                      type="button"
-                      onClick={togglePlayPause}
-                      className="p-1 text-white/90 hover:text-white transition-colors cursor-pointer"
-                      title={isVideoPlaying ? 'Pause' : 'Play'}
-                      aria-label={isVideoPlaying ? 'Pause video' : 'Play video'}
-                    >
-                      {isVideoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-current" />}
-                    </button>
-                    <span className="w-px h-3 bg-white/20" />
-                    <button
-                      type="button"
-                      onClick={toggleMute}
-                      className="p-1 text-white/90 hover:text-white transition-colors cursor-pointer"
-                      title={isVideoMuted ? 'Unmute' : 'Mute'}
-                      aria-label={isVideoMuted ? 'Unmute video' : 'Mute video'}
-                    >
-                      {isVideoMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                    </button>
-                  </div>
+                <div className="p-2.5 rounded-xl bg-[#FAF8FA] border border-[#E8E2E7]">
+                  <Droplets className="w-4 h-4 mx-auto mb-1 text-[#B83B63]" />
+                  <span>Zero White Cast</span>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-      )}
 
-      {/* 5. Editorial Highlight Banner: 95% Reduction in Dark Spots (Firestore & Cloudinary Managed) */}
-      {visibility.promoClinical && (
-        <section className="py-10 sm:py-14 bg-[#FBEAF0] border-y border-[#F5D8E4]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Same Row on Mobile and Desktop: grid-cols-2 */}
-            <div className="grid grid-cols-2 items-center gap-3 sm:gap-8 lg:gap-10">
-              <div className="space-y-2 sm:space-y-4">
-                <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-[#B83B63] flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#D4AF37]" />
-                  {content.promoClinical.headline || 'CLINICALLY PROVEN • SPF 50+'}
-                </span>
-                <h2 className="text-lg sm:text-3xl lg:text-4xl font-black font-serif-brand text-[#19161A] leading-tight">
-                  <span className="text-[#B83B63] text-xl sm:text-4xl lg:text-5xl">{content.promoClinical.statNumber}</span>{' '}
-                  {content.promoClinical.statLabel}
-                </h2>
-                <p className="text-[10px] sm:text-xs lg:text-sm text-[#6D6670] leading-snug line-clamp-3 sm:line-clamp-none">
-                  {content.promoClinical.description}
-                </p>
-                <div className="flex flex-wrap gap-1 sm:gap-2 pt-1">
-                  {(content.promoClinical.activeIngredients || []).slice(0, 3).map((ing) => (
-                    <span
-                      key={ing}
-                      className="text-[9px] sm:text-xs bg-white text-[#B83B63] border border-[#B83B63]/25 font-bold px-2 py-0.5 rounded-full shadow-2xs whitespace-nowrap"
-                    >
-                      ✓ {ing}
-                    </span>
-                  ))}
+            {/* Right: High-Converting Buy Box */}
+            <div className="lg:col-span-6 space-y-6">
+              {/* Category & Rating */}
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#B83B63]/10 text-[#B83B63] text-xs font-bold tracking-wider uppercase">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>DIMSGLOW SUNSCREEN • SKINCARE REDEFINED</span>
                 </div>
-                <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                  <Link href={content.promoClinical.ctaLink || '/collections/skin-care'}>
-                    <Button variant="primary" size="sm" className="shadow-md bg-[#5B132B] hover:bg-[#781838] text-[10px] sm:text-xs px-3 py-1.5 h-auto">
-                      {content.promoClinical.ctaText || 'BUY NOW'}
-                    </Button>
-                  </Link>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-xs sm:text-base font-black text-[#5B132B]">
-                      {content.promoClinical.featuredProductPrice || '₹999'}
-                    </span>
-                    <span className="text-[10px] sm:text-xs line-through text-[#6D6670]">₹1,299</span>
-                    <span className="text-[8px] sm:text-[10px] font-bold px-1 rounded bg-emerald-100 text-emerald-800">
-                      23% OFF
-                    </span>
-                  </div>
-                </div>
-              </div>
 
-              {/* Exact User Provided Clinical Sunscreen Poster (Cloudinary Loaded - Clean edge-to-edge cover without overlay text) */}
-              <div className="flex justify-center">
-                <div className="relative w-full max-w-[260px] sm:max-w-xs md:max-w-sm aspect-[702/1024] rounded-xl sm:rounded-2xl overflow-hidden border-2 border-[#D4AF37]/50 shadow-xl bg-[#FAF8FA] group">
-                  <Image
-                    src={content.promoClinical.imageUrl || 'https://res.cloudinary.com/web8vmww/image/upload/v1792340975/dimsglow/editorial/dimsglow_sunscreen_poster.jpg'}
-                    alt="DIMSGLOW Tinted Sunscreen SPF 50+ Clinical Dark Spot Fading Proof"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
+                <h1 className="text-3xl sm:text-4xl font-extrabold font-serif-brand text-[#19161A] tracking-tight leading-tight">
+                  Fade Dark Spots. Reveal Your Glow.
+                </h1>
 
-      {/* 6. Interactive Before & After Formulation Radiance Slider (Positioned in Same Row with Text for Each Device) */}
-      {visibility.beforeAfter && (
-        <section className="py-10 sm:py-14 bg-white border-b border-[#E8E2E7]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 items-center gap-3 sm:gap-8 lg:gap-12">
-              {/* Left Column: Text, Information & Metrics */}
-              <div className="space-y-2 sm:space-y-4">
-                <span className="text-[9px] sm:text-xs font-bold tracking-widest uppercase text-[#B83B63] flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#D4AF37]" /> Visible Clinical Results
-                </span>
-                <h2 className="text-lg sm:text-3xl lg:text-4xl font-bold font-serif-brand text-[#19161A] leading-tight">
-                  Day 1 vs Day 14 Radiance Transformation
-                </h2>
-                <p className="text-[10px] sm:text-xs lg:text-sm text-[#6D6670] leading-snug line-clamp-3 sm:line-clamp-none">
-                  Drag the interactive slider to inspect visible clinical reduction in dark spots, sun tan, and skin texture restoration in 14 days.
+                <p className="text-sm sm:text-base font-semibold text-[#B83B63]">
+                  DIMSGLOW Tinted Sunscreen SPF 50+ PA++++
                 </p>
 
-                {/* Clinical Verification Metrics */}
-                <div className="grid grid-cols-3 gap-1.5 sm:gap-3 pt-1 text-center">
-                  <div className="p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl bg-[#FAF8FA] border border-[#E8E2E7]">
-                    <p className="text-sm sm:text-xl font-black text-[#B83B63]">95%</p>
-                    <p className="text-[8px] sm:text-[11px] text-[#6D6670] font-semibold">Dark Spots</p>
-                  </div>
-                  <div className="p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl bg-[#FAF8FA] border border-[#E8E2E7]">
-                    <p className="text-sm sm:text-xl font-black text-[#B83B63]">98%</p>
-                    <p className="text-[8px] sm:text-[11px] text-[#6D6670] font-semibold">Radiance</p>
-                  </div>
-                  <div className="p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl bg-[#FAF8FA] border border-[#E8E2E7]">
-                    <p className="text-sm sm:text-xl font-black text-[#B83B63]">24H</p>
-                    <p className="text-[8px] sm:text-[11px] text-[#6D6670] font-semibold">SPF 50+</p>
-                  </div>
-                </div>
+                <p className="text-xs sm:text-sm text-[#6D6670] leading-relaxed">
+                  Your daily glow essential! Advanced UV protection meets clinical skin tone correction.
+                  Reduces tanning, fades stubborn dark spots & pigmentation, and guards against blue light with an ultra-hydrating, zero-white-cast radiant finish.
+                </p>
 
-                <div className="pt-1 hidden sm:block">
-                  <Link href="/collections/skin-care">
-                    <Button variant="primary" size="sm" className="shadow-md bg-[#5B132B] hover:bg-[#781838] text-xs px-4 py-2">
-                      EXPLORE SKINCARE
-                    </Button>
-                  </Link>
+                {/* Star rating summary */}
+                <div className="flex items-center gap-3 pt-1">
+                  <div className="flex items-center text-[#E5A93C]">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-current" />
+                    ))}
+                  </div>
+                  <span className="text-xs font-bold text-[#19161A]">4.9 / 5.0</span>
+                  <span className="text-xs text-[#9A939E]">• 1,420+ Verified Customers</span>
                 </div>
               </div>
 
-              {/* Right Column: Interactive Face Comparison Slider (Clean Images With Draggable Arrow Handle) */}
-              <RadianceComparisonSlider
-                beforeImage="https://res.cloudinary.com/web8vmww/image/upload/v1792431843/dimsglow/editorial/day14_after_clean_radiance.jpg"
-                afterImage="https://res.cloudinary.com/web8vmww/image/upload/v1792431841/dimsglow/editorial/day1_before_clean_radiance.jpg"
-                beforeAlt="Day 1 Clinical Face with Spots and Blemishes Before Treatment"
-                afterAlt="Day 14 Transformed Radiant Glass Skin After Treatment"
-              />
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 7. "Get The Look!" Editorial Grid */}
-      {visibility.routineLooks && (
-        <section className="py-14 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-            <div className="text-center space-y-1">
-              <h2 className="text-2xl sm:text-3xl font-bold font-serif-brand text-[#19161A]">
-                Get The Look!
-              </h2>
-              <p className="text-xs text-[#6D6670]">
-                Curated beauty routines designed for day, night, festive, and red carpet elegance
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {(content.routineLooks || []).map((look) => (
-                <Link
-                  key={look.id || look.title}
-                  href={look.href}
-                  className="group relative rounded-xl overflow-hidden aspect-3/4 bg-[#14050E] border border-[#E8E2E7] flex flex-col justify-end p-4 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-                >
-                  {look.imageUrl && (
-                    <Image
-                      src={look.imageUrl}
-                      alt={look.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-108"
-                      sizes="(max-width: 640px) 50vw, 25vw"
-                    />
-                  )}
-                  {/* Subtle luxury gradient for readable text */}
-                  <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/35 to-transparent z-10 transition-opacity group-hover:opacity-95" />
-                  <div className="relative z-20 space-y-1.5 text-white">
-                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#D4AF37] text-black uppercase tracking-wider inline-block shadow-xs">
-                      {look.badge || 'ROUTINE'}
+              {/* Price Banner */}
+              <div className="p-4 rounded-2xl bg-white border border-[#E8E2E7] shadow-xs flex items-baseline justify-between">
+                <div>
+                  <span className="text-xs font-bold text-[#6D6670] uppercase tracking-wider block">
+                    Special Launch Offer
+                  </span>
+                  <div className="flex items-baseline gap-3 mt-1">
+                    <span className="text-3xl sm:text-4xl font-black text-[#B83B63]">
+                      ₹{(selectedPack.pricePaise / 100).toLocaleString('en-IN')}
                     </span>
-                    <h3 className="text-xs sm:text-sm font-bold tracking-wider group-hover:text-[#D4AF37] transition-colors drop-shadow-xs">
-                      {look.title}
-                    </h3>
-                    <p className="text-[10px] text-white/80 line-clamp-1">{look.desc}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 8. "Our Promise" Trust Grid */}
-      {visibility.ourPromise && (
-        <section className="py-14 bg-[#FAF8FA] border-y border-[#E8E2E7]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
-            <div className="max-w-2xl mx-auto space-y-2">
-              <h2 className="text-2xl sm:text-3xl font-bold font-serif-brand text-[#19161A]">
-                Our Promise
-              </h2>
-              <p className="text-xs text-[#6D6670] leading-relaxed">
-                At DIMSGLOW, we believe beauty should be safe, accessible, and empowering. Every product is developed with quality ingredients, strict safety standards, and ethical practices so you can enjoy makeup that looks great and feels confident on your skin.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-              {[
-                { icon: ShieldCheck, title: 'Dermatologically Tested', desc: 'Clinically verified safety' },
-                { icon: Leaf, title: '100% Vegan', desc: 'No animal ingredients' },
-                { icon: Heart, title: 'Cruelty Free', desc: 'PETA Certified' },
-                { icon: Award, title: 'Paraben Free', desc: 'Clean beauty formulation' },
-                { icon: CheckCircle2, title: 'Safe-Cert Verified', desc: 'Bureau Veritas certified' },
-              ].map((promise) => {
-                const Icon = promise.icon;
-                return (
-                  <div
-                    key={promise.title}
-                    className="p-5 rounded-[10px] bg-white border border-[#E8E2E7] text-center space-y-2 shadow-xs"
-                  >
-                    <Icon className="w-8 h-8 mx-auto text-[#B83B63]" />
-                    <h4 className="text-xs font-bold text-[#19161A]">{promise.title}</h4>
-                    <p className="text-[10px] text-[#6D6670]">{promise.desc}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 9. Verified Customer Testimonials */}
-      {visibility.testimonials && (
-        <section className="py-14 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-            <div className="text-center space-y-1">
-              <h2 className="text-2xl sm:text-3xl font-bold font-serif-brand text-[#19161A]">
-                Hear It Directly From Our Customers
-              </h2>
-              <p className="text-xs text-[#6D6670]">Real reviews from verified DIMSGLOW customers</p>
-            </div>
-
-            {/* Desktop / Tablet Grid View */}
-            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {(content.testimonials || []).map((rev) => (
-                <div
-                  key={rev.id || rev.author}
-                  className="p-5 rounded-[10px] bg-[#FAF8FA] border border-[#E8E2E7] flex flex-col justify-between space-y-3"
-                >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="text-xs font-bold text-[#19161A]">{rev.author}</h4>
-                        <span className="text-[10px] text-[#18794E] font-medium">✓ Verified buyer</span>
-                      </div>
-                      <div className="flex text-[#D4AF37]">
-                        {[...Array(rev.rating || 5)].map((_, i) => (
-                          <Star key={i} className="w-3.5 h-3.5 fill-current" />
-                        ))}
-                      </div>
-                    </div>
-                    <p className="text-xs text-[#6D6670] leading-relaxed italic">&ldquo;{rev.review}&rdquo;</p>
-                  </div>
-
-                  <div className="pt-2 border-t border-[#E8E2E7] flex items-center justify-between">
-                    <span className="text-[11px] font-semibold text-[#19161A] truncate max-w-37.5">
-                      {rev.productName}
+                    <span className="text-base line-through text-[#9A939E]">
+                      ₹{(selectedPack.compareAtPricePaise / 100).toLocaleString('en-IN')}
                     </span>
-                    <Link href={rev.productLink} className="text-[10px] font-bold text-[#B83B63] hover:underline">
-                      View product →
-                    </Link>
+                    <span className="text-xs font-bold text-[#B83B63] bg-[#B83B63]/10 px-2 py-0.5 rounded-full">
+                      SAVE ₹{((selectedPack.compareAtPricePaise - selectedPack.pricePaise) / 100).toLocaleString('en-IN')}
+                    </span>
                   </div>
                 </div>
-              ))}
-            </div>
 
-            {/* Mobile View: Single Row Continuous Loop (Moving Left to Right) */}
-            <div className="block md:hidden relative w-full overflow-hidden">
-              <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-white to-transparent z-10" />
-              <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-linear-to-l from-white to-transparent z-10" />
+                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                  In Stock • Dispatches in 24h
+                </span>
+              </div>
 
-              <div className="animate-marquee-ltr flex items-stretch gap-4 py-1">
-                {[...(content.testimonials || []), ...(content.testimonials || [])].map((rev, idx) => (
-                  <div
-                    key={`${rev.id || rev.author}-${idx}`}
-                    className="w-70 shrink-0 whitespace-normal p-5 rounded-[10px] bg-[#FAF8FA] border border-[#E8E2E7] flex flex-col justify-between space-y-3 shadow-xs"
-                  >
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h4 className="text-xs font-bold text-[#19161A]">{rev.author}</h4>
-                          <span className="text-[10px] text-[#18794E] font-medium">✓ Verified buyer</span>
+              {/* Pack Selector */}
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-[#19161A] uppercase tracking-wider block">
+                  Select Pack Size:
+                </label>
+
+                <div className="space-y-2.5">
+                  {PACK_OPTIONS.map((pack) => {
+                    const isSelected = selectedPack.id === pack.id;
+                    const savings = (pack.compareAtPricePaise - pack.pricePaise) / 100;
+                    return (
+                      <div
+                        key={pack.id}
+                        onClick={() => setSelectedPack(pack)}
+                        className={`p-3.5 rounded-xl border-2 cursor-pointer transition-all flex items-center justify-between ${
+                          isSelected
+                            ? 'border-[#B83B63] bg-[#FFF5F8] shadow-sm'
+                            : 'border-[#E8E2E7] hover:border-[#B83B63]/40 bg-white'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                              isSelected ? 'border-[#B83B63]' : 'border-gray-300'
+                            }`}
+                          >
+                            {isSelected && (
+                              <div className="w-2 h-2 rounded-full bg-[#B83B63]" />
+                            )}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs sm:text-sm font-bold text-[#19161A]">
+                                {pack.name}
+                              </span>
+                              {pack.badge && (
+                                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-[#D4AF37] text-[#19161A]">
+                                  {pack.badge}
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[11px] text-[#6D6670] block">
+                              {pack.subtitle}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex text-[#D4AF37]">
-                          {[...Array(rev.rating || 5)].map((_, i) => (
-                            <Star key={i} className="w-3.5 h-3.5 fill-current" />
-                          ))}
+
+                        <div className="text-right">
+                          <span className="text-sm sm:text-base font-extrabold text-[#19161A] block">
+                            ₹{(pack.pricePaise / 100).toLocaleString('en-IN')}
+                          </span>
+                          <span className="text-[10px] text-[#B83B63] font-bold">
+                            Save ₹{savings.toLocaleString('en-IN')}
+                          </span>
                         </div>
                       </div>
-                      <p className="text-xs text-[#6D6670] leading-relaxed italic">&ldquo;{rev.review}&rdquo;</p>
-                    </div>
+                    );
+                  })}
+                </div>
+              </div>
 
-                    <div className="pt-2 border-t border-[#E8E2E7] flex items-center justify-between">
-                      <span className="text-[11px] font-semibold text-[#19161A] truncate max-w-36">
-                        {rev.productName}
-                      </span>
-                      <Link href={rev.productLink} className="text-[10px] font-bold text-[#B83B63] hover:underline">
-                        View product →
-                      </Link>
-                    </div>
-                  </div>
-                ))}
+              {/* Action Buttons */}
+              <div className="space-y-2.5 pt-2">
+                <Button
+                  onClick={() => handleAddToCart(false)}
+                  disabled={isAdding}
+                  className="w-full py-4 text-sm sm:text-base font-bold bg-[#19161A] hover:bg-black text-white rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+                >
+                  <ShoppingBag className="w-5 h-5" />
+                  <span>{isAdding ? 'ADDING TO BAG...' : 'ADD TO BAG • ₹' + (selectedPack.pricePaise / 100).toLocaleString('en-IN')}</span>
+                </Button>
+
+                <Button
+                  onClick={() => handleAddToCart(true)}
+                  disabled={isAdding}
+                  className="w-full py-4 text-sm sm:text-base font-bold bg-linear-to-r from-[#B83B63] to-[#881337] hover:brightness-110 text-white rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <Zap className="w-5 h-5 fill-current" />
+                  <span>BUY NOW (CASH ON DELIVERY AVAILABLE)</span>
+                </Button>
+              </div>
+
+              {/* Bulleted Guarantees */}
+              <div className="pt-2 border-t border-[#E8E2E7] grid grid-cols-2 gap-2 text-xs text-[#6D6670]">
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Free Express Delivery</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Cash on Delivery Available</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>100% Genuine Direct from Brand</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Safe for All Skin Types</span>
+                </div>
               </div>
             </div>
           </div>
-        </section>
-      )}
-
-      {/* Infinite Moving Trust Marquee Ticker: 'Better standards, because you deserve the best.' */}
-      {visibility.trustMarquee && (
-        <section className="bg-[#141215] text-white py-5 overflow-hidden border-y border-[#3B2C3A]">
-          <div className="text-center mb-2.5">
-            <p className="text-[11px] sm:text-xs font-bold tracking-[0.25em] text-[#D4AF37] uppercase">
-              Better standards, because you deserve the best.
-            </p>
-          </div>
-          <div className="relative w-full overflow-hidden whitespace-nowrap">
-            <div className="animate-marquee flex items-center gap-10 text-xs text-white/80 font-bold tracking-wider uppercase">
-              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> DERMATOLOGICALLY TESTED</span>
-              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> 100% VEGAN & CLEAN</span>
-              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> PETA CERTIFIED CRUELTY FREE</span>
-              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> PARABEN & TOXIC FREE</span>
-              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> SAFE-CERT VERIFIED</span>
-              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> CASH ON DELIVERY AVAILABLE</span>
-              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> 7-DAY HASSLE-FREE RETURNS</span>
-              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> PROUDLY MADE IN INDIA</span>
-              {/* Seamless repeating loop elements */}
-              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> DERMATOLOGICALLY TESTED</span>
-              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> 100% VEGAN & CLEAN</span>
-              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> PETA CERTIFIED CRUELTY FREE</span>
-              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> PARABEN & TOXIC FREE</span>
-              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> SAFE-CERT VERIFIED</span>
-              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> CASH ON DELIVERY AVAILABLE</span>
-              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> 7-DAY HASSLE-FREE RETURNS</span>
-              <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> PROUDLY MADE IN INDIA</span>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 10. Storefront FAQ Section */}
-      {visibility.faqs && (content.faqs || []).length > 0 && (
-        <section className="py-14 bg-[#FAF8FA] border-t border-[#E8E2E7]">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            <div className="text-center space-y-1">
-              <span className="text-xs font-bold uppercase tracking-widest text-[#B83B63]">
-                Got Questions?
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-bold font-serif-brand text-[#19161A]">
-                Frequently Asked Questions
-              </h2>
-              <p className="text-xs text-[#6D6670]">
-                Everything you need to know about our formulations, orders, and free gifts
-              </p>
-            </div>
-
-            <div className="space-y-3 pt-2">
-              {content.faqs.map((faq) => {
-                const isOpen = openFaqId === faq.id;
-                return (
-                  <div
-                    key={faq.id}
-                    className="border border-[#E8E2E7] rounded-[10px] bg-white overflow-hidden shadow-2xs"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => setOpenFaqId(isOpen ? null : faq.id)}
-                      className="w-full p-4 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-[#FDFBF7] transition-colors"
-                    >
-                      <span className="text-xs sm:text-sm font-bold text-[#19161A]">
-                        {faq.question}
-                      </span>
-                      <span className="text-[#B83B63] shrink-0">
-                        {isOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                      </span>
-                    </button>
-                    {isOpen && (
-                      <div className="px-4 pb-4 pt-1 text-xs text-[#6D6670] leading-relaxed border-t border-[#F5F2F5] animate-in fade-in duration-150">
-                        {faq.answer}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 11. VIP Newsletter & Discount Code Club */}
-      <section className="py-12 bg-[#5B132B] text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-          <span className="text-[11px] font-bold tracking-[0.25em] text-[#D4AF37] uppercase">
-            JOIN THE DIMSGLOW CLUB
-          </span>
-          <h2 className="text-2xl sm:text-4xl font-bold font-serif-brand">
-            Unlock 10% Off Your First Order
-          </h2>
-          <p className="text-xs text-white/80 max-w-xl mx-auto leading-relaxed">
-            Subscribe for exclusive launch access, secret flash deals, and beauty masterclasses.
-          </p>
-
-          {newsletterSubscribed ? (
-            <div className="p-4 rounded-xl bg-white/10 border border-[#D4AF37]/50 max-w-md mx-auto text-center space-y-1">
-              <p className="text-xs font-bold text-[#D4AF37]">🎉 Welcome to the Club!</p>
-              <p className="text-xs text-white">Use code <strong className="font-mono text-[#D4AF37]">GLOW10</strong> at checkout for 10% off!</p>
-            </div>
-          ) : (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (newsletterEmail) setNewsletterSubscribed(true);
-              }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-2 max-w-md mx-auto pt-2"
-            >
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                value={newsletterEmail}
-                onChange={(e) => setNewsletterEmail(e.target.value)}
-                required
-                className="w-full sm:flex-1 px-4 py-2.5 rounded-lg text-xs bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:border-[#D4AF37]"
-              />
-              <Button
-                type="submit"
-                variant="primary"
-                size="md"
-                className="w-full sm:w-auto bg-[#D4AF37] hover:bg-[#c29d2b] text-black font-bold whitespace-nowrap"
-              >
-                Claim 10% Off
-              </Button>
-            </form>
-          )}
         </div>
       </section>
+
+      {/* 2. FOUR CORE CLINICAL PILLARS */}
+      <section id="benefits" className="py-14 sm:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
+            <span className="text-xs font-bold text-[#B83B63] uppercase tracking-widest">
+              More Than Just Sunscreen
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold font-serif-brand text-[#19161A]">
+              Why Choose DIMSGLOW Tinted Sunscreen?
+            </h2>
+            <p className="text-xs sm:text-sm text-[#6D6670]">
+              Formulated specifically for Indian skin to fight UV damage, stubborn tanning, and digital photoaging in one daily step.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Pillar 1 */}
+            <div className="p-6 rounded-2xl bg-[#FFF9FA] border border-[#F5D8E4] hover:shadow-md transition-shadow space-y-3">
+              <div className="w-12 h-12 rounded-xl bg-white border border-[#F0D0DC] flex items-center justify-center text-[#B83B63] shadow-xs">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-[#19161A]">Brightening Care</h3>
+              <p className="text-xs text-[#6D6670] leading-relaxed">
+                Targets dark spots, pigmentation, and uneven sun tan. Gently accelerates cell turnover for a luminous, clarified glow.
+              </p>
+            </div>
+
+            {/* Pillar 2 */}
+            <div className="p-6 rounded-2xl bg-[#FFF9FA] border border-[#F5D8E4] hover:shadow-md transition-shadow space-y-3">
+              <div className="w-12 h-12 rounded-xl bg-white border border-[#F0D0DC] flex items-center justify-center text-[#B83B63] shadow-xs">
+                <Clock className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-[#19161A]">Anti-Ageing Care</h3>
+              <p className="text-xs text-[#6D6670] leading-relaxed">
+                Shields skin collagen from photo-breakdown, helping to prevent and visibly soften fine lines, wrinkles, and loss of firmness.
+              </p>
+            </div>
+
+            {/* Pillar 3 */}
+            <div className="p-6 rounded-2xl bg-[#FFF9FA] border border-[#F5D8E4] hover:shadow-md transition-shadow space-y-3">
+              <div className="w-12 h-12 rounded-xl bg-white border border-[#F0D0DC] flex items-center justify-center text-[#B83B63] shadow-xs">
+                <Sun className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-[#19161A]">Daily Skin Protection</h3>
+              <p className="text-xs text-[#6D6670] leading-relaxed">
+                High-potency SPF 50+ PA++++ broad-spectrum UVA & UVB defense combined with digital Blue Light protection against screen rays.
+              </p>
+            </div>
+
+            {/* Pillar 4 */}
+            <div className="p-6 rounded-2xl bg-[#FFF9FA] border border-[#F5D8E4] hover:shadow-md transition-shadow space-y-3">
+              <div className="w-12 h-12 rounded-xl bg-white border border-[#F0D0DC] flex items-center justify-center text-[#B83B63] shadow-xs">
+                <Droplets className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-[#19161A]">Hydrating Finish</h3>
+              <p className="text-xs text-[#6D6670] leading-relaxed">
+                Non-comedogenic, weightless formula that locks in continuous moisture with an adaptive sheer tint and zero greasy white cast.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. BEFORE & AFTER TRANSFORMATION SHOWCASE */}
+      <section id="results" className="py-14 sm:py-20 bg-linear-to-b from-[#FFF5F8] to-white border-y border-[#F0EBF0]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
+            <span className="text-xs font-bold text-[#B83B63] uppercase tracking-widest">
+              Proven Real Results
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold font-serif-brand text-[#19161A]">
+              Fades Tan & Pigmentation — For a Brighter, Even-Toned You
+            </h2>
+            <p className="text-xs sm:text-sm text-[#6D6670]">
+              Because your skin deserves more. Witness visible transformation with daily morning application.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Visual Graphic */}
+            <div className="lg:col-span-6 flex items-center justify-center">
+              <div className="w-full max-w-[420px] mx-auto rounded-xl overflow-hidden bg-white border border-[#E8E2E7] shadow-xl">
+                <Image
+                  src="/product/sunscreen-before-after.jpg"
+                  alt="DIMSGLOW Sunscreen Before and After Results"
+                  width={702}
+                  height={1024}
+                  className="w-full h-auto block object-contain"
+                  sizes="(max-width: 640px) 90vw, (max-width: 1024px) 420px, 460px"
+                />
+              </div>
+            </div>
+
+            {/* Clinical Highlights & Statistics */}
+            <div className="lg:col-span-6 space-y-6">
+              <div className="space-y-4">
+                <div className="p-4 rounded-xl bg-white border border-[#E8E2E7] shadow-xs flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-[#B83B63]/10 text-[#B83B63] flex items-center justify-center font-black text-lg shrink-0">
+                    95%
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-[#19161A]">Dark Spot Reduction</h4>
+                    <p className="text-xs text-[#6D6670]">
+                      Observed visible fading of stubborn post-acne and sun pigmentation in 14 days.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-white border border-[#E8E2E7] shadow-xs flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-[#D4AF37]/15 text-[#AA771C] flex items-center justify-center font-black text-lg shrink-0">
+                    98%
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-[#19161A]">Zero White Cast</h4>
+                    <p className="text-xs text-[#6D6670]">
+                      Agreed the sheer universal tint absorbed cleanly across light, medium, and deep Indian complexions.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-white border border-[#E8E2E7] shadow-xs flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-[#B83B63]/10 text-[#B83B63] flex items-center justify-center font-black text-lg shrink-0">
+                    92%
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-[#19161A]">Tanning Defense</h4>
+                    <p className="text-xs text-[#6D6670]">
+                      Reported complete protection against tanning and sunburn even during peak afternoon hours.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Instant Purchase CTA */}
+              <div className="pt-2">
+                <Button
+                  onClick={() => handleAddToCart(false)}
+                  className="w-full sm:w-auto px-8 py-3.5 bg-[#B83B63] hover:bg-[#9E2E52] text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+                >
+                  <span>CLAIM LAUNCH OFFER (₹999)</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. MAGAZINE EDITORIAL SPOTLIGHT */}
+      <section className="py-14 sm:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl bg-linear-to-r from-[#19161A] to-[#2D1B24] text-white p-6 sm:p-10 lg:p-12 shadow-xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-5 w-full max-w-[360px] sm:max-w-[400px] mx-auto flex items-center justify-center">
+              <div className="w-full relative shadow-2xl rounded-lg overflow-hidden border border-white/20 bg-black/40">
+                <Image
+                  src="/product/sunscreen-magazine-model.jpg"
+                  alt="Beauty Today Magazine Feature - Your Daily Glow Essential"
+                  width={682}
+                  height={1024}
+                  priority
+                  className="w-full h-auto block object-contain"
+                  sizes="(max-width: 640px) 90vw, (max-width: 1024px) 360px, 400px"
+                />
+              </div>
+            </div>
+
+            <div className="lg:col-span-7 space-y-4 sm:pl-4">
+              <span className="text-[11px] font-bold text-[#D4AF37] tracking-widest uppercase">
+                As Featured in Beauty Today
+              </span>
+
+              <h2 className="text-2xl sm:text-4xl font-extrabold font-serif-brand leading-tight">
+                Your Daily Glow Essential
+              </h2>
+
+              <p className="text-sm text-white/80 leading-relaxed">
+                “DIMSGLOW Skincare Redefined delivers powerful sun defense with skin tone transformation.
+                More than just a sunscreen — it gives brighter skin, a younger look, and all-day confidence.”
+              </p>
+
+              <div className="pt-2 grid grid-cols-2 gap-3 text-xs text-white/90">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-[#D4AF37]" />
+                  <span>Remove Darkspots & Pigmentation</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-[#D4AF37]" />
+                  <span>Blue Light Defense</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-[#D4AF37]" />
+                  <span>Remove Wrinkles</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-[#D4AF37]" />
+                  <span>Keep Skin Hydrated</span>
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <Link
+                  href="/products/tinted-sunscreen-spf50"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-[#19161A] font-bold text-xs uppercase tracking-wider hover:bg-[#FFF0F4] transition-colors"
+                >
+                  <span>Experience The Glow</span>
+                  <ArrowRight className="w-4 h-4 text-[#B83B63]" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. SIMPLE 3-STEP DAILY ROUTINE */}
+      <section className="py-14 sm:py-18 bg-[#FFF9FA] border-t border-[#F0EBF0]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
+            <span className="text-xs font-bold text-[#B83B63] uppercase tracking-widest">
+              Simple Application
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold font-serif-brand text-[#19161A]">
+              How to Use for Best Results
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6 rounded-2xl bg-white border border-[#E8E2E7] text-center space-y-2">
+              <div className="w-10 h-10 rounded-full bg-[#B83B63] text-white font-black text-sm flex items-center justify-center mx-auto mb-3">
+                1
+              </div>
+              <h3 className="font-bold text-sm text-[#19161A]">Dispense</h3>
+              <p className="text-xs text-[#6D6670] leading-relaxed">
+                Pump two finger-lengths of DIMSGLOW Tinted Sunscreen onto your fingertips.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-white border border-[#E8E2E7] text-center space-y-2">
+              <div className="w-10 h-10 rounded-full bg-[#B83B63] text-white font-black text-sm flex items-center justify-center mx-auto mb-3">
+                2
+              </div>
+              <h3 className="font-bold text-sm text-[#19161A]">Dot & Spread</h3>
+              <p className="text-xs text-[#6D6670] leading-relaxed">
+                Dot evenly across your face, neck, and exposed areas 15 minutes before stepping out.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-white border border-[#E8E2E7] text-center space-y-2">
+              <div className="w-10 h-10 rounded-full bg-[#B83B63] text-white font-black text-sm flex items-center justify-center mx-auto mb-3">
+                3
+              </div>
+              <h3 className="font-bold text-sm text-[#19161A]">Blend & Glow</h3>
+              <p className="text-xs text-[#6D6670] leading-relaxed">
+                Blend smoothly with gentle circular motions for an instant, tinted radiant glow. Reapply every 3-4 hours.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. VERIFIED CUSTOMER REVIEWS */}
+      <section id="reviews" className="py-14 sm:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+            <div>
+              <span className="text-xs font-bold text-[#B83B63] uppercase tracking-widest block">
+                Loved by 1,420+ Women Across India
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold font-serif-brand text-[#19161A] mt-1">
+                Real Customer Reviews
+              </h2>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="flex text-[#E5A93C]">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-current" />
+                ))}
+              </div>
+              <span className="text-sm font-bold text-[#19161A]">4.9 Overall Rating</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {REVIEWS.map((review) => (
+              <div
+                key={review.id}
+                className="p-5 rounded-2xl bg-[#FFF9FA] border border-[#F0EBF0] flex flex-col justify-between space-y-3"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex text-[#E5A93C]">
+                      {[...Array(review.rating)].map((_, i) => (
+                        <Star key={i} className="w-3.5 h-3.5 fill-current" />
+                      ))}
+                    </div>
+                    <span className="text-[10px] text-[#9A939E]">{review.date}</span>
+                  </div>
+
+                  <h3 className="text-xs font-bold text-[#19161A] leading-snug">
+                    {review.title}
+                  </h3>
+
+                  <p className="text-[11px] text-[#6D6670] leading-relaxed">
+                    “{review.comment}”
+                  </p>
+                </div>
+
+                <div className="pt-2 border-t border-[#E8E2E7] flex items-center justify-between text-[11px]">
+                  <div>
+                    <span className="font-bold text-[#19161A] block">{review.name}</span>
+                    <span className="text-[10px] text-[#9A939E]">{review.city}</span>
+                  </div>
+                  <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                    Verified Buyer
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 7. FREQUENTLY ASKED QUESTIONS */}
+      <section id="faq" className="py-14 sm:py-20 bg-[#FAF8FA] border-t border-[#E8E2E7]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10 space-y-2">
+            <span className="text-xs font-bold text-[#B83B63] uppercase tracking-widest">
+              Have Questions?
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold font-serif-brand text-[#19161A]">
+              Frequently Asked Questions
+            </h2>
+          </div>
+
+          <div className="space-y-3">
+            {FAQS.map((faq, index) => {
+              const isOpen = openFaq === index;
+              return (
+                <div
+                  key={index}
+                  className="rounded-xl border border-[#E8E2E7] bg-white overflow-hidden transition-all"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : index)}
+                    className="w-full p-4 sm:p-5 text-left font-bold text-xs sm:text-sm text-[#19161A] flex items-center justify-between gap-4 cursor-pointer"
+                  >
+                    <span>{faq.q}</span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-[#B83B63] shrink-0 transition-transform duration-200 ${
+                        isOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+                  {isOpen && (
+                    <div className="px-4 pb-4 sm:px-5 sm:pb-5 text-xs text-[#6D6670] leading-relaxed border-t border-[#FAF8FA]">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* 8. FIXED STICKY MOBILE CTA BAR */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E8E2E7] p-3 shadow-2xl flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-white border border-[#E8E2E7] shrink-0">
+            <Image
+              src="/product/sunscreen-bottle-offer.jpg"
+              alt="Sunscreen"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div>
+            <span className="text-xs font-bold text-[#19161A] block leading-tight">
+              DIMSGLOW Tinted Sunscreen
+            </span>
+            <span className="text-xs font-extrabold text-[#B83B63]">
+              ₹999 <span className="text-[10px] line-through text-[#9A939E]">₹1,299</span>
+            </span>
+          </div>
+        </div>
+
+        <Button
+          onClick={() => handleAddToCart(false)}
+          className="px-5 py-2.5 bg-linear-to-r from-[#B83B63] to-[#881337] text-white text-xs font-bold rounded-xl shadow-md shrink-0"
+        >
+          ORDER NOW
+        </Button>
+      </div>
     </StorefrontShell>
   );
 }

@@ -34,7 +34,7 @@ export const ProductSchema = z.object({
   media: z.array(
     z.object({
       publicId: z.string(),
-      secureUrl: z.string().url(),
+      secureUrl: z.string().min(1),
       altText: z.string().default('DIMSGLOW cosmetic product packaging'),
       isPrimary: z.boolean().default(false),
     })

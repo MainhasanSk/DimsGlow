@@ -150,38 +150,33 @@ export function StorefrontFooter() {
             </div>
           </div>
 
-          {/* Shop */}
+          {/* Featured Product */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Shop Categories</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Featured Product</h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link href="/collections/face" className="hover:text-white transition-colors">
-                  Face Essentials
+                <Link href="/products/tinted-sunscreen-spf50" className="hover:text-white transition-colors font-semibold text-[#D4AF37]">
+                  ★ Tinted Sunscreen SPF 50+
                 </Link>
               </li>
               <li>
-                <Link href="/collections/eyes" className="hover:text-white transition-colors">
-                  Eyes & Lashes
+                <Link href="/#results" className="hover:text-white transition-colors">
+                  Before & After Results
                 </Link>
               </li>
               <li>
-                <Link href="/collections/lips" className="hover:text-white transition-colors">
-                  Lipsticks & Tints
+                <Link href="/#benefits" className="hover:text-white transition-colors">
+                  Clinical UV & Blue Light Defense
                 </Link>
               </li>
               <li>
-                <Link href="/collections/nails" className="hover:text-white transition-colors">
-                  Nails & Lacquers
+                <Link href="/#reviews" className="hover:text-white transition-colors">
+                  Verified Customer Reviews
                 </Link>
               </li>
               <li>
-                <Link href="/collections/skin-care" className="hover:text-white transition-colors">
-                  Skincare Serums
-                </Link>
-              </li>
-              <li>
-                <Link href="/collections/perfumes" className="hover:text-white transition-colors">
-                  Luxury Perfumes
+                <Link href="/track-order" className="hover:text-white transition-colors">
+                  Track Your Order
                 </Link>
               </li>
             </ul>

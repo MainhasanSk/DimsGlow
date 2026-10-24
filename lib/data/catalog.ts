@@ -108,6 +108,122 @@ export const CATEGORIES: Record<string, CategoryInfo> = {
 // Curated reference products adhering to all schema rules
 export const CATALOG_PRODUCTS: Product[] = [
   {
+    "id": "prod_tinted_sunscreen_spf50",
+    "slug": "tinted-sunscreen-spf50",
+    "name": "DIMSGLOW Tinted Sunscreen SPF 50+ PA++++",
+    "tagline": "Fade Dark Spots. Reveal Your Glow. Broad Spectrum UVA/UVB Protection",
+    "description": "Your daily glow essential! Advanced broad-spectrum UV protection meets clinical skin tone correction. Formulated with SPF 50+ PA++++, it reduces tanning, fades dark spots and stubborn pigmentation, and defends against harmful blue light. Provides a weightless, hydrating finish with an invisible natural tint that blends seamlessly across all Indian skin tones. Dermatologically tested for all skin types.",
+    "categoryIds": [
+      "skin-care",
+      "face",
+      "offers",
+      "all"
+    ],
+    "status": "published",
+    "pricePaise": 99900,
+    "compareAtPricePaise": 129900,
+    "currency": "INR",
+    "media": [
+      {
+        "publicId": "dimsglow/products/sunscreen_bottle_offer",
+        "secureUrl": "/product/sunscreen-bottle-offer.jpg",
+        "altText": "DIMSGLOW Tinted Sunscreen SPF 50+ Bottle Offer",
+        "isPrimary": true
+      },
+      {
+        "publicId": "dimsglow/products/sunscreen_magazine_model",
+        "secureUrl": "/product/sunscreen-magazine-model.jpg",
+        "altText": "DIMSGLOW Sunscreen Featured on Beauty Today Magazine",
+        "isPrimary": false
+      },
+      {
+        "publicId": "dimsglow/products/sunscreen_before_after",
+        "secureUrl": "/product/sunscreen-before-after.jpg",
+        "altText": "DIMSGLOW Sunscreen Before and After Results",
+        "isPrimary": false
+      },
+      {
+        "publicId": "dimsglow/products/sunscreen_split_glow",
+        "secureUrl": "/product/sunscreen-split-glow.jpg",
+        "altText": "DIMSGLOW Sunscreen Fades Tan and Pigmentation",
+        "isPrimary": false
+      }
+    ],
+    "benefitPill": "Fades Tan & Pigmentation • SPF 50+",
+    "unlockFreeGift": true,
+    "ratingSummary": {
+      "average": 4.9,
+      "reviewCount": 1420
+    },
+    "trustBadges": [
+      "SPF 50+ PA++++",
+      "Fades Darkspots & Pigmentation",
+      "Dermatologically Tested",
+      "Blue Light Defense",
+      "Hydrating Finish"
+    ],
+    "variants": [
+      {
+        "id": "var_sunscreen_50ml",
+        "sku": "DIMS-SUN-50",
+        "title": "Single Bottle (50 ml)",
+        "options": [
+          {
+            "name": "Pack Size",
+            "value": "50 ml | 1.69 FL. OZ.",
+            "swatchColor": "#E89CAE"
+          }
+        ],
+        "pricePaise": 99900,
+        "compareAtPricePaise": 129900,
+        "onHand": 350,
+        "reserved": 12,
+        "lowStockThreshold": 10,
+        "active": true
+      },
+      {
+        "id": "var_sunscreen_duo",
+        "sku": "DIMS-SUN-DUO",
+        "title": "Glow Duo Twin Pack (2x 50 ml - Save ₹799)",
+        "options": [
+          {
+            "name": "Pack Size",
+            "value": "2x 50 ml (Twin Pack)",
+            "swatchColor": "#D85E7E"
+          }
+        ],
+        "pricePaise": 179900,
+        "compareAtPricePaise": 259800,
+        "onHand": 180,
+        "reserved": 5,
+        "lowStockThreshold": 10,
+        "active": true
+      },
+      {
+        "id": "var_sunscreen_trio",
+        "sku": "DIMS-SUN-TRIO",
+        "title": "Glow Trio Family Pack (3x 50 ml - Max Value)",
+        "options": [
+          {
+            "name": "Pack Size",
+            "value": "3x 50 ml (Trio Pack)",
+            "swatchColor": "#B52E52"
+          }
+        ],
+        "pricePaise": 249900,
+        "compareAtPricePaise": 389700,
+        "onHand": 100,
+        "reserved": 2,
+        "lowStockThreshold": 10,
+        "active": true
+      }
+    ],
+    "featured": true,
+    "bestseller": true,
+    "createdAt": 1729000000000,
+    "updatedAt": 1729800000000
+  },
+  {
     "id": "prod_skin_tint",
     "slug": "skin-tint-5-in-1",
     "name": "Skin Tint 5 In 1 Multifunctional Serum Foundation",
