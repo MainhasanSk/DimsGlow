@@ -165,7 +165,11 @@ Do not guess legal/tax/shipping/payment/return/staff permissions. Ask the owner 
   - **Drop-In Compatibility Adapters:** Implemented universal adapters for `next/image` (`ImageAdapter.tsx`), `next/link` (`LinkAdapter.tsx`), and `next/navigation` (`NavigationAdapter.tsx`), resolving all client routing and responsive asset rendering without breaking existing component contracts.
   - **Client-Side Routing & Firebase Integration:** Structured single-page application entry point in `index.html`, `src/main.tsx`, and `src/App.tsx`, preserving live storefront, cart drawer, checkout, order success, track order, and admin console screens directly over Firebase Client SDK.
   - **Verified Build & Tests:** `vite build` creates minified production bundle in 1.81s (`dist/index.html`, `dist/assets/*`). `tsc --noEmit` passed with 0 errors. All 47 tests passed in Vitest (`npm test`). Dev server active at `http://localhost:3000`.
-- **Current Task:** Ready for user review & push to GitHub.
+- **Phase 15 Hero 2K Assets & Navigation Bar Streamlining (Completed 2026-10-25):**
+  - **Single Product Buy Box:** Simplified buy box to single-product pricing (Launch price ₹999, original MRP ₹1,299).
+  - **Hero Section 2K Images:** Updated hero carousel with user's uncompressed 2K assets (`hero-section-img1.png` and `hero-section-img2.png`) in `public/product/` with hardware-accelerated `-webkit-optimize-contrast`.
+  - **Navigation Clean-Up:** Removed "CLINICAL BENEFITS", "REVIEWS 4.9", and "TRACK ORDER" links from desktop navbar and mobile drawer in `components/storefront/StorefrontHeader.tsx`.
+  - **Deployment:** Production build verified with `vite build` (1.28s) and pushed to GitHub `https://github.com/MainhasanSk/DimsGlow.git` on branch `main`.
 
 ## Update protocol
 
