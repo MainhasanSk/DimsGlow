@@ -30,6 +30,9 @@ export const Image: React.FC<ImageProps> = ({
         width: '100%',
         inset: 0,
         objectFit: 'cover',
+        imageRendering: '-webkit-optimize-contrast',
+        transform: 'translateZ(0)',
+        backfaceVisibility: 'hidden',
       }
     : {};
 
