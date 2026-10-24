@@ -180,42 +180,6 @@ export const CATALOG_PRODUCTS: Product[] = [
         "reserved": 12,
         "lowStockThreshold": 10,
         "active": true
-      },
-      {
-        "id": "var_sunscreen_duo",
-        "sku": "DIMS-SUN-DUO",
-        "title": "Glow Duo Twin Pack (2x 50 ml - Save ₹799)",
-        "options": [
-          {
-            "name": "Pack Size",
-            "value": "2x 50 ml (Twin Pack)",
-            "swatchColor": "#D85E7E"
-          }
-        ],
-        "pricePaise": 179900,
-        "compareAtPricePaise": 259800,
-        "onHand": 180,
-        "reserved": 5,
-        "lowStockThreshold": 10,
-        "active": true
-      },
-      {
-        "id": "var_sunscreen_trio",
-        "sku": "DIMS-SUN-TRIO",
-        "title": "Glow Trio Family Pack (3x 50 ml - Max Value)",
-        "options": [
-          {
-            "name": "Pack Size",
-            "value": "3x 50 ml (Trio Pack)",
-            "swatchColor": "#B52E52"
-          }
-        ],
-        "pricePaise": 249900,
-        "compareAtPricePaise": 389700,
-        "onHand": 100,
-        "reserved": 2,
-        "lowStockThreshold": 10,
-        "active": true
       }
     ],
     "featured": true,

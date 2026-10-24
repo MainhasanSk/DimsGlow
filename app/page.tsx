@@ -78,48 +78,8 @@ const PRODUCT_IMAGES: ProductImage[] = [
   },
 ];
 
-interface PackOption {
-  id: string;
-  sku: string;
-  name: string;
-  subtitle: string;
-  badge?: string;
-  pricePaise: number;
-  compareAtPricePaise: number;
-  quantity: number;
-}
-
-const PACK_OPTIONS: PackOption[] = [
-  {
-    id: 'var_sunscreen_50ml',
-    sku: 'DIMS-SUN-50',
-    name: '1 x Single Bottle (50 ml)',
-    subtitle: '1.69 FL. OZ. • 45-60 Days Supply',
-    pricePaise: 99900,
-    compareAtPricePaise: 129900,
-    quantity: 1,
-  },
-  {
-    id: 'var_sunscreen_duo',
-    sku: 'DIMS-SUN-DUO',
-    name: '2 x Glow Duo Pack (Twin Pack)',
-    subtitle: '2x 50 ml • Save ₹799 • Free Priority Delivery',
-    badge: 'MOST POPULAR',
-    pricePaise: 179900,
-    compareAtPricePaise: 259800,
-    quantity: 2,
-  },
-  {
-    id: 'var_sunscreen_trio',
-    sku: 'DIMS-SUN-TRIO',
-    name: '3 x Glow Trio Family Pack',
-    subtitle: '3x 50 ml • Maximum Value & Savings',
-    badge: 'BEST VALUE',
-    pricePaise: 249900,
-    compareAtPricePaise: 389700,
-    quantity: 3,
-  },
-];
+const PRODUCT_PRICE_PAISE = 99900;
+const COMPARE_PRICE_PAISE = 129900;
 
 const REVIEWS = [
   {
@@ -202,7 +162,6 @@ export default function HomePage() {
   const [isHeroSlidePaused, setIsHeroSlidePaused] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isSlidePaused, setIsSlidePaused] = useState(false);
-  const [selectedPack, setSelectedPack] = useState<PackOption>(PACK_OPTIONS[0]);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isAdding, setIsAdding] = useState(false);
 
@@ -244,14 +203,14 @@ export default function HomePage() {
     setIsAdding(true);
     try {
       await addToCart({
-        id: `prod_tinted_sunscreen_spf50_${selectedPack.id}`,
+        id: 'prod_tinted_sunscreen_spf50_var_sunscreen_50ml',
         productId: 'prod_tinted_sunscreen_spf50',
-        variantId: selectedPack.id,
-        productName: `DIMSGLOW Tinted Sunscreen SPF 50+ (${selectedPack.name})`,
-        variantTitle: selectedPack.name,
+        variantId: 'var_sunscreen_50ml',
+        productName: 'DIMSGLOW Tinted Sunscreen SPF 50+ (50 ml)',
+        variantTitle: '50 ml | 1.69 FL. OZ.',
         quantity: 1,
-        unitPricePaise: selectedPack.pricePaise,
-        compareAtPricePaise: selectedPack.compareAtPricePaise,
+        unitPricePaise: PRODUCT_PRICE_PAISE,
+        compareAtPricePaise: COMPARE_PRICE_PAISE,
         imageUrl: PRODUCT_IMAGES[0].src,
         slug: 'tinted-sunscreen-spf50',
       });
@@ -561,13 +520,13 @@ export default function HomePage() {
                   </span>
                   <div className="flex items-baseline gap-3 mt-1">
                     <span className="text-3xl sm:text-4xl font-black text-[#B83B63]">
-                      ₹{(selectedPack.pricePaise / 100).toLocaleString('en-IN')}
+                      ₹999
                     </span>
                     <span className="text-base line-through text-[#9A939E]">
-                      ₹{(selectedPack.compareAtPricePaise / 100).toLocaleString('en-IN')}
+                      ₹1,299
                     </span>
-                    <span className="text-xs font-bold text-[#B83B63] bg-[#B83B63]/10 px-2 py-0.5 rounded-full">
-                      SAVE ₹{((selectedPack.compareAtPricePaise - selectedPack.pricePaise) / 100).toLocaleString('en-IN')}
+                    <span className="text-xs font-bold text-[#B83B63] bg-[#B83B63]/10 px-2.5 py-0.5 rounded-full">
+                      SAVE ₹300 (23% OFF)
                     </span>
                   </div>
                 </div>
@@ -577,65 +536,13 @@ export default function HomePage() {
                 </span>
               </div>
 
-              {/* Pack Selector */}
-              <div className="space-y-3">
-                <label className="text-xs font-bold text-[#19161A] uppercase tracking-wider block">
-                  Select Pack Size:
-                </label>
-
-                <div className="space-y-2.5">
-                  {PACK_OPTIONS.map((pack) => {
-                    const isSelected = selectedPack.id === pack.id;
-                    const savings = (pack.compareAtPricePaise - pack.pricePaise) / 100;
-                    return (
-                      <div
-                        key={pack.id}
-                        onClick={() => setSelectedPack(pack)}
-                        className={`p-3.5 rounded-xl border-2 cursor-pointer transition-all flex items-center justify-between ${
-                          isSelected
-                            ? 'border-[#B83B63] bg-[#FFF5F8] shadow-sm'
-                            : 'border-[#E8E2E7] hover:border-[#B83B63]/40 bg-white'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                              isSelected ? 'border-[#B83B63]' : 'border-gray-300'
-                            }`}
-                          >
-                            {isSelected && (
-                              <div className="w-2 h-2 rounded-full bg-[#B83B63]" />
-                            )}
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs sm:text-sm font-bold text-[#19161A]">
-                                {pack.name}
-                              </span>
-                              {pack.badge && (
-                                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-[#D4AF37] text-[#19161A]">
-                                  {pack.badge}
-                                </span>
-                              )}
-                            </div>
-                            <span className="text-[11px] text-[#6D6670] block">
-                              {pack.subtitle}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="text-right">
-                          <span className="text-sm sm:text-base font-extrabold text-[#19161A] block">
-                            ₹{(pack.pricePaise / 100).toLocaleString('en-IN')}
-                          </span>
-                          <span className="text-[10px] text-[#B83B63] font-bold">
-                            Save ₹{savings.toLocaleString('en-IN')}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
+              {/* Single Product Specification Badge */}
+              <div className="p-3.5 rounded-xl border border-[#E8E2E7] bg-[#FAF8FA] flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#B83B63]" />
+                  <span className="font-bold text-[#19161A]">Single Bottle (50 ml | 1.69 FL. OZ.)</span>
                 </div>
+                <span className="text-[11px] font-semibold text-[#6D6670]">45–60 Days Supply</span>
               </div>
 
               {/* Action Buttons */}
@@ -646,7 +553,7 @@ export default function HomePage() {
                   className="w-full py-4 text-sm sm:text-base font-bold bg-[#19161A] hover:bg-black text-white rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
                 >
                   <ShoppingBag className="w-5 h-5" />
-                  <span>{isAdding ? 'ADDING TO BAG...' : 'ADD TO BAG • ₹' + (selectedPack.pricePaise / 100).toLocaleString('en-IN')}</span>
+                  <span>{isAdding ? 'ADDING TO BAG...' : 'ADD TO BAG • ₹999'}</span>
                 </Button>
 
                 <Button
