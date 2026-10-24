@@ -159,7 +159,13 @@ Do not guess legal/tax/shipping/payment/return/staff permissions. Ask the owner 
   - **Editorial Spotlight & Before/After Graphics Fully Uncropped:** Updated the "Beauty Today" magazine feature and "Before & After" transformation sections to render with explicit image dimensions (`width={682} height={1024}` and `width={702} height={1024}`) using `w-full h-auto block object-contain` and subtle `rounded-lg` radius. This completely eliminates clipping, ensuring the top issue header (`SKIN / BEAUTY / SELF CARE | VOL.12 ISSUE 08 | AUG 2025`) and bottom brand strip (`SKINCARE | CONFIDENCE | YOU`) are 100% visible on both mobile and desktop screens.
   - **Extensible Architecture Maintained:** Retained multi-product and multi-category database schema, cart, checkout, admin catalog, and invoice systems so new products can be added anytime in the future without breaking.
   - 47 unit/integration tests passing across 9 test suites (`npm test`). `tsc --noEmit` passed with 0 errors. Dev server running at `http://localhost:3000`.
-- **Current Task:** Phase 13B — End-to-End Visual Review & Production Deployment.
+- **Phase 14 Pure React + Vite Tech Stack Migration (Completed 2026-10-24):**
+  - **Git Backup:** Preserved the original Next.js codebase in branch `nextjs-backup` on GitHub (`origin/nextjs-backup`).
+  - **Vite & React Architecture:** Migrated project tech stack to pure React 19 + Vite 8 + `@vitejs/plugin-react` + `@tailwindcss/vite` + `react-router-dom`.
+  - **Drop-In Compatibility Adapters:** Implemented universal adapters for `next/image` (`ImageAdapter.tsx`), `next/link` (`LinkAdapter.tsx`), and `next/navigation` (`NavigationAdapter.tsx`), resolving all client routing and responsive asset rendering without breaking existing component contracts.
+  - **Client-Side Routing & Firebase Integration:** Structured single-page application entry point in `index.html`, `src/main.tsx`, and `src/App.tsx`, preserving live storefront, cart drawer, checkout, order success, track order, and admin console screens directly over Firebase Client SDK.
+  - **Verified Build & Tests:** `vite build` creates minified production bundle in 1.81s (`dist/index.html`, `dist/assets/*`). `tsc --noEmit` passed with 0 errors. All 47 tests passed in Vitest (`npm test`). Dev server active at `http://localhost:3000`.
+- **Current Task:** Ready for user review & push to GitHub.
 
 ## Update protocol
 

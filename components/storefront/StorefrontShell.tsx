@@ -10,7 +10,6 @@ import { WhatsAppButton } from './WhatsAppButton';
 export function StorefrontShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <AnnouncementBar />
       <BrandCategoryTabs />
       <StorefrontHeader />
       <main className="flex-1">{children}</main>

@@ -4,7 +4,9 @@ import React from 'react';
 import { MessageCircle } from 'lucide-react';
 
 export function WhatsAppButton() {
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '+913614556830';
+  const whatsappNumber =
+    (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_WHATSAPP_NUMBER) ||
+    '+913614556830';
   const cleanNumber = whatsappNumber.replace(/[^\d]/g, '');
   const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(
     'Hello DIMSGLOW Customer Care! I would like to inquire about your products.'
